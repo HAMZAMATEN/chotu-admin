@@ -163,23 +163,23 @@ class _SideBarScreenState extends State<SideBarScreen> {
                             ),
                             padding15,
                             // Create new event with icon
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.add_circle_outline_sharp,
-                                  color: AppColors.primaryColor,
-                                  size: 15,
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  'Create new event',
-                                  style: getRegularStyle(
-                                    color: AppColors.primaryColor,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ],
-                            ),
+                            // Row(
+                            //   children: [
+                            //     Icon(
+                            //       Icons.add_circle_outline_sharp,
+                            //       color: AppColors.primaryColor,
+                            //       size: 15,
+                            //     ),
+                            //     const SizedBox(width: 8),
+                            //     Text(
+                            //       'Create new event',
+                            //       style: getRegularStyle(
+                            //         color: AppColors.primaryColor,
+                            //         fontSize: 12,
+                            //       ),
+                            //     ),
+                            //   ],
+                            // ),
                             padding20,
                             // Add space before the search field
 
@@ -220,7 +220,7 @@ class _SideBarScreenState extends State<SideBarScreen> {
                               ),
                               child: ClipOval(
                                 child: Image.asset(
-                                  Assets.imagesSAQFIRemovebgPreview,
+                                  Assets.imagesAppLogo,
                                   fit: BoxFit.cover,
                                 ),
                               ),
