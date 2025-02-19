@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:chotu_admin/generated/assets.dart';
-import 'package:chotu_admin/screens/realtors/all_realtors.dart';
-import 'package:chotu_admin/screens/users/all_users.dart';
 import 'package:chotu_admin/utils/app_Colors.dart';
 import 'package:chotu_admin/utils/app_Paddings.dart';
 import 'package:chotu_admin/utils/app_text_widgets.dart';
@@ -11,6 +9,8 @@ import 'package:chotu_admin/widgets/custom_TextField.dart';
 import '../../providers/side_bar_provider.dart';
 
 class SideBarScreen extends StatefulWidget {
+  const SideBarScreen({super.key});
+
   @override
   State<SideBarScreen> createState() => _SideBarScreenState();
 }
@@ -64,11 +64,11 @@ class _SideBarScreenState extends State<SideBarScreen> {
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
                         child: Text(
                           "Main Menu",
                           style: getRegularStyle(
-                            color: Color(0xffC4C4C4),
+                            color: const Color(0xffC4C4C4),
                             fontSize: 14,
                           ),
                         ),
@@ -163,46 +163,15 @@ class _SideBarScreenState extends State<SideBarScreen> {
                             ),
                             padding15,
                             // Create new event with icon
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.add_circle_outline_sharp,
-                                  color: AppColors.primaryColor,
-                                  size: 15,
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  'Create new event',
-                                  style: getRegularStyle(
-                                    color: AppColors.primaryColor,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ],
-                            ),
+
                             padding20,
                             // Add space before the search field
 
                             // Search field
                             Padding(
-                              padding: EdgeInsets.only(bottom: 20),
-                              child: CustomTextField(
-                                title: '',
-                                controller: TextEditingController(),
-                                obscureText: false,
-                                textInputAction: TextInputAction.search,
-                                keyboardType: TextInputType.text,
-                                hintText: 'Search',
-                                width: 240,
-                                height: 40,
-                                suffixIcon: SizedBox(
-                                  height: 24,
-                                  width: 24,
-                                  child: Center(
-                                    child: SvgPicture.asset(
-                                        Assets.iconsSearchnormal1),
-                                  ),
-                                ),
+                              padding: const EdgeInsets.only(bottom: 20),
+                              child: Container(
+                                height: 60,
                               ),
                             ),
                             padding20,
@@ -219,16 +188,16 @@ class _SideBarScreenState extends State<SideBarScreen> {
                                 ),
                               ),
                               child: ClipOval(
-                                child: Image.asset(
-                                  Assets.imagesSAQFIRemovebgPreview,
-                                  fit: BoxFit.cover,
+                                child: Image.network(
+                                  'https://images.pexels.com/photos/29757529/pexels-photo-29757529/free-photo-of-silhouette-of-woman-against-ornate-yellow-glass.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+                                fit: BoxFit.cover,
                                 ),
                               ),
                             ),
                           ],
                         ),
                       ),
-                      Divider(
+                      const Divider(
                         height: 0,
                         thickness: 1,
                         color: Color(0xffE3E3E3),

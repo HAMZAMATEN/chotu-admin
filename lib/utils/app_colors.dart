@@ -10,7 +10,7 @@ class AppColors {
   static const Color textColor = Color(0xff000000);
   static const Color textLightColor = Color(0xff363C45);
   static const Color lightTextColor = Colors.black54;
-  static const Color textFieldFillColor = Color(0xffF7F7F7);
+  static const Color textFieldFillColor = Color(0xffFfffff);
   static const Color textFieldBorderColor = Color(0xffD9D9D9);
   static const Color textFieldHintColor = Color(0xffB0B4BE);
   static const Color textFieldErrorColor = Color(0xffEA4649);

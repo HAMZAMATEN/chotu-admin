@@ -5,7 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:chotu_admin/generated/assets.dart';
 import 'package:chotu_admin/providers/dashboard_provider.dart';
-import 'package:chotu_admin/screens/realtors/widgets/ShowRealtorPopupDialog.dart';
+import 'package:chotu_admin/screens/riders/widgets/ShowRiderPopupDialog.dart';
 import 'package:chotu_admin/utils/app_Paddings.dart';
 import 'package:chotu_admin/utils/app_text_widgets.dart';
 import 'package:chotu_admin/widgets/custom_TextField.dart';
