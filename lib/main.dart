@@ -1,59 +1,66 @@
-import 'package:chotu_admin/screens/riders/provider/rider_provider.dart';
-import 'package:chotu_admin/screens/shop_management/provider/shop_provider.dart';
+import 'package:chotu_admin/providers/users_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
-import 'core/data/data_provider.dart';
-import 'core/routes/app_pages.dart';
-import 'screens/category/provider/category_provider.dart';
-import 'screens/dashboard/provider/dash_board_provider.dart';
-import 'screens/main/main_screen.dart';
-import 'screens/main/provider/main_screen_provider.dart';
-import 'screens/notification/provider/notification_provider.dart';
-import 'screens/order/provider/order_provider.dart';
-import 'screens/sub_category/provider/sub_category_provider.dart';
-import 'utility/constants.dart';
-import 'utility/extensions.dart';
+import 'package:chotu_admin/providers/RealtorsProvider.dart';
+import 'package:chotu_admin/providers/add_properties_provider.dart';
+import 'package:chotu_admin/providers/additional_settings_provider.dart';
+import 'package:chotu_admin/providers/dashboard_provider.dart';
+import 'package:chotu_admin/providers/landing_page_provider.dart';
+import 'package:chotu_admin/providers/side_bar_provider.dart';
+import 'package:chotu_admin/screens/sidebar/side_bar_screen.dart';
+
+
+
+
 
 void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-  runApp(MultiProvider(providers: [
-    ChangeNotifierProvider(create: (context) => DataProvider()),
-    ChangeNotifierProvider(create: (context) => MainScreenProvider()),
-    ChangeNotifierProvider(
-        create: (context) => ShopProvider(context.dataProvider)),
-    ChangeNotifierProvider(
-        create: (context) => CategoryProvider(context.dataProvider)),
-    ChangeNotifierProvider(
-        create: (context) => SubCategoryProvider(context.dataProvider)),
-    ChangeNotifierProvider(
-        create: (context) => DashBoardProvider(context.dataProvider)),
-    ChangeNotifierProvider(
-        create: (context) => RiderProvider(context.dataProvider)),
-    ChangeNotifierProvider(
-        create: (context) => OrderProvider(context.dataProvider)),
-    ChangeNotifierProvider(
-        create: (context) => NotificationProvider(context.dataProvider)),
-  ], child: MyApp()));
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'ChotuApp chotu_admin Panel',
-      theme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: bgColor,
-        textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme)
-            .apply(bodyColor: Colors.white),
-        canvasColor: secondaryColor,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => SideBarProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => DashboardProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => RealtorProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => UsersProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => AddPropertiesProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => AdditionalSettingsProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => LandingPageProvider(),
+        ),
+      ],
+
+      child: MaterialApp(
+        title: 'CHOTU ADMIN',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
+          useMaterial3: true,
+          fontFamily: 'Quicksand',
+        ),
+        builder: EasyLoading.init(),
+        home: SideBarScreen(),
+        // home: LandingPageView(),
       ),
-      initialRoute: AppPages.HOME,
-      unknownRoute: GetPage(name: '/notFount', page: () => MainScreen()),
-      defaultTransition: Transition.cupertino,
-      getPages: AppPages.routes,
     );
   }
 }
