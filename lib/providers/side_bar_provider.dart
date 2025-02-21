@@ -1,11 +1,13 @@
+import 'package:chotu_admin/screens/users/Order_history_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:chotu_admin/screens/additional_settings/additional_settings_tab_screen.dart';
 import 'package:chotu_admin/screens/analytics/analytics_screen.dart';
 import 'package:chotu_admin/screens/dashboard/dashboard_screen.dart';
-import 'package:chotu_admin/screens/realtors/all_realtors.dart';
+import 'package:chotu_admin/screens/riders/all_riders_screen.dart';
 import 'package:chotu_admin/screens/users/all_users.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import '../screens/riders/ShiftDetailScreen.dart';
 import '../utils/app_Colors.dart';
 import '../utils/app_text_widgets.dart';
 
@@ -51,6 +53,7 @@ class SideBarProvider with ChangeNotifier {
     switch (index) {
       case 0:
         setScreen(DashboardScreen());
+        // setScreen(ShiftDetailScreen());
         break;
       case 1:
         setScreen(AnalyticsScreen());
@@ -65,7 +68,7 @@ class SideBarProvider with ChangeNotifier {
         setScreen(AllUsersScreen());
         break;
       case 4:
-        setScreen(AllRealtorScreen());
+        setScreen(AllRidersScreen());
         break;
       case 5:
         setScreen(AddSettingsTabScreen());

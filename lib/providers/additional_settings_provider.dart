@@ -69,7 +69,7 @@ class AdditionalSettingsProvider extends ChangeNotifier {
     {
       "title": "Our Mission",
       "description":
-          "To revolutionize the property market by providing an intuitive platform that connects buyers, renters, and realtors seamlessly, ensuring transparency and efficiency in every transaction.",
+          "To revolutionize the property market by providing an intuitive platform that connects buyers, renters, and riders seamlessly, ensuring transparency and efficiency in every transaction.",
     },
     {
       "title": "Our Vision",

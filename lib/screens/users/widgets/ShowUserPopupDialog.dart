@@ -1,3 +1,5 @@
+import 'package:chotu_admin/providers/side_bar_provider.dart';
+import 'package:chotu_admin/screens/users/Order_history_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:chotu_admin/generated/assets.dart';
@@ -5,6 +7,7 @@ import 'package:chotu_admin/utils/app_Colors.dart';
 import 'package:chotu_admin/utils/app_Paddings.dart';
 import 'package:chotu_admin/utils/app_text_widgets.dart';
 import 'package:chotu_admin/widgets/custom_Button.dart';
+import 'package:provider/provider.dart';
 
 void showUserProfileDialog(BuildContext context) {
   showDialog(
@@ -35,21 +38,43 @@ void showUserProfileDialog(BuildContext context) {
                   ),
                 ),
                 // User Image
-                const CircleAvatar(
-                  radius: 50,
-                  backgroundImage: AssetImage(
-                    Assets
-                        .imagesSAQFIRemovebgPreview, // Replace with user's image URL
+                Container(
+                  height: 100,
+                  width: 100,
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: AppColors.textFieldBorderColor,
+                    ),
+                    borderRadius: BorderRadius.circular(
+                      50,
+                    ),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(
+                      50,
+                    ),
+                    child: const Image(
+                        image: AssetImage(
+                      Assets.imagesAppLogo, // Replace with user's image URL
+                    )),
                   ),
                 ),
                 padding5,
                 // User Name and Role
                 Text(
-                  "Hassan Ali",
+                  "John Doe",
                   style: getMediumStyle(fontSize: 20, color: Colors.black),
                 ),
                 Text(
-                  "Buyer/Renter",
+                  "john@email.com",
+                  style: getRegularStyle(
+                    fontSize: 15,
+                    color: Color(0xffB5B8BC),
+                  ),
+                ),
+                Text(
+                  "House 4 Street 1 , WhiteField SH! 2HB , Main Street , London",
+                  textAlign: TextAlign.center,
                   style: getRegularStyle(
                     fontSize: 15,
                     color: Color(0xffB5B8BC),
@@ -81,10 +106,41 @@ void showUserProfileDialog(BuildContext context) {
                         style: getBoldStyle(color: Colors.black, fontSize: 20),
                       ),
                       padding10,
-                      buildInfoRow("Visited Properties", "57"),
-                      buildInfoRow("Bought Properties", "0"),
-                      buildInfoRow("Rented Properties (Short Term)", "2,326"),
-                      buildInfoRow("Rented Properties (Long Term)", "1,326"),
+                      buildInfoRow("All Orders", "57"),
+                      buildInfoRow("Completed Orders", "50"),
+                      buildInfoRow("Canceled Orders", "5"),
+                      buildInfoRow("Active Orders", "2"),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Overall History',
+                              style: getRegularStyle(
+                                  fontSize: 14, color: const Color(0xff7D7F88)),
+                            ),
+                            InkWell(
+                              onTap: () {
+                                Navigator.pop(context);
+                                context.read<SideBarProvider>().setScreen(
+                                      const OrderHistoryScreen(),
+                                    );
+                              },
+                              child: Text(
+                                'Check Now',
+                                style: getSemiBoldStyle(
+                                  color: AppColors.primaryColor,
+                                  fontSize: 14,
+                                ).copyWith(
+                                  decorationColor: AppColors.primaryColor,
+                                  decoration: TextDecoration.underline,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),

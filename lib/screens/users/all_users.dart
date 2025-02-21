@@ -4,7 +4,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:chotu_admin/screens/users/widgets/ShowUserPopupDialog.dart';
 import 'package:chotu_admin/utils/app_Paddings.dart';
 import 'package:chotu_admin/utils/app_text_widgets.dart';
-import 'package:chotu_admin/screens/realtors/widgets/ShowRealtorPopupDialog.dart';
 import 'package:chotu_admin/widgets/custom_TextField.dart';
 import 'package:provider/provider.dart';
 
@@ -33,7 +32,7 @@ class AllUsersScreen extends StatelessWidget {
             obscureText: false,
             textInputAction: TextInputAction.search,
             keyboardType: TextInputType.text,
-            hintText: 'Search realtors by name, email',
+            hintText: 'Search users by name, email',
             suffixIcon: SizedBox(
               height: 24,
               width: 24,

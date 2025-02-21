@@ -1,3 +1,4 @@
+import 'package:chotu_admin/screens/riders/widgets/AddRiderAlert.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
@@ -8,35 +9,65 @@ import 'package:chotu_admin/widgets/custom_TextField.dart';
 
 import '../../generated/assets.dart';
 import '../../utils/app_text_widgets.dart';
-import 'widgets/ShowRealtorPopupDialog.dart';
+import 'widgets/ShowRiderPopupDialog.dart';
 
-class AllRealtorScreen extends StatelessWidget {
-  const AllRealtorScreen({super.key});
+class AllRidersScreen extends StatelessWidget {
+  const AllRidersScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(
+      padding: const EdgeInsets.symmetric(
         horizontal: 30,
         vertical: 5,
       ),
       child: Column(
         children: [
-          CustomTextField(
-            width: MediaQuery.of(context).size.width,
-            title: '',
-            controller: TextEditingController(),
-            obscureText: false,
-            textInputAction: TextInputAction.search,
-            keyboardType: TextInputType.text,
-            hintText: 'Search realtors by name, email',
-            suffixIcon: SizedBox(
-              height: 24,
-              width: 24,
-              child: Center(
-                child: SvgPicture.asset(Assets.iconsSearchnormal1),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Expanded(
+                child: CustomTextField(
+                  width: MediaQuery.of(context).size.width,
+                  title: '',
+                  controller: TextEditingController(),
+                  obscureText: false,
+                  textInputAction: TextInputAction.search,
+                  keyboardType: TextInputType.text,
+                  hintText: 'Search riders by name, email',
+                  suffixIcon: SizedBox(
+                    height: 24,
+                    width: 24,
+                    child: Center(
+                      child: SvgPicture.asset(Assets.iconsSearchnormal1),
+                    ),
+                  ),
+                ),
               ),
-            ),
+              padding12,
+              InkWell(
+                onTap: () {
+                  showAddRiderDialog(context);
+                },
+                child: Align(
+                  alignment: Alignment.topRight,
+                  child: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      color: AppColors.primaryColor,
+                    ),
+                    child: Text(
+                      'Add New Rider',
+                      style: getSemiBoldStyle(
+                        color: AppColors.whiteColor,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
           padding30,
           Expanded(
@@ -183,7 +214,6 @@ class UserTable extends StatelessWidget {
                                 items: provider.statuses.map((status) {
                                   return DropdownMenuItem<String>(
                                     value: status,
-
                                     child: Row(
                                       children: [
                                         // Circle Indicator
@@ -257,4 +287,3 @@ class UserTable extends StatelessWidget {
     );
   }
 }
-
