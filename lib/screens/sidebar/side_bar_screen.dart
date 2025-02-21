@@ -163,7 +163,6 @@ class _SideBarScreenState extends State<SideBarScreen> {
                             ),
                             padding15,
                             // Create new event with icon
-<<<<<<< HEAD
                             // Row(
                             //   children: [
                             //     Icon(
@@ -181,9 +180,7 @@ class _SideBarScreenState extends State<SideBarScreen> {
                             //     ),
                             //   ],
                             // ),
-=======
 
->>>>>>> 7ca94a8762f4706c5f2b1b9b8f20066b590fd62f
                             padding20,
                             // Add space before the search field
 
@@ -208,17 +205,10 @@ class _SideBarScreenState extends State<SideBarScreen> {
                                 ),
                               ),
                               child: ClipOval(
-<<<<<<< HEAD
                                 child: Image.asset(
                                   Assets.imagesAppLogo,
                                   fit: BoxFit.cover,
-=======
-                                child: Image.network(
-                                  'https://images.pexels.com/photos/29757529/pexels-photo-29757529/free-photo-of-silhouette-of-woman-against-ornate-yellow-glass.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-                                fit: BoxFit.cover,
->>>>>>> 7ca94a8762f4706c5f2b1b9b8f20066b590fd62f
-                                ),
-                              ),
+          ))
                             ),
                           ],
                         ),
