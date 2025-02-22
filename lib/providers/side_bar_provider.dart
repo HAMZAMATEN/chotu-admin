@@ -1,4 +1,3 @@
-import 'package:chotu_admin/screens/users/Order_history_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:chotu_admin/screens/additional_settings/additional_settings_tab_screen.dart';
 import 'package:chotu_admin/screens/analytics/analytics_screen.dart';
@@ -6,16 +5,16 @@ import 'package:chotu_admin/screens/dashboard/dashboard_screen.dart';
 import 'package:chotu_admin/screens/riders/all_riders_screen.dart';
 import 'package:chotu_admin/screens/users/all_users.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
-import '../screens/riders/ShiftDetailScreen.dart';
-import '../utils/app_Colors.dart';
-import '../utils/app_text_widgets.dart';
+import '../pr.dart';
 
 class SideBarProvider with ChangeNotifier {
-  int _selectedIndex = 0;
+  int _selectedIndex = 2;
+
   int get selectedIndex => _selectedIndex;
 
-  final List<Widget> _screenStack = [DashboardScreen()]; // Stack to manage screens
+  final List<Widget> _screenStack = [
+    const DashboardScreen(),
+  ]; // Stack to manage screens
 
   Widget get currentScreen => _screenStack.last; // Always show top of stack
 
@@ -52,26 +51,24 @@ class SideBarProvider with ChangeNotifier {
   void _setScreenForIndex(int index) {
     switch (index) {
       case 0:
-        setScreen(DashboardScreen());
+        setScreen(const DashboardScreen());
         // setScreen(ShiftDetailScreen());
         break;
       case 1:
-        setScreen(AnalyticsScreen());
+        setScreen(const AnalyticsScreen());
         break;
       case 2:
-        setScreen(Text(
-          sideBarItems[index]['name'],
-          style: getSemiBoldStyle(color: AppColors.blackColor, fontSize: 30),
-        ));
+        setScreen(OrderDashboard());
+        // setScreen(OrderDetailsScreen());
         break;
       case 3:
-        setScreen(AllUsersScreen());
+        setScreen(const AllUsersScreen());
         break;
       case 4:
-        setScreen(AllRidersScreen());
+        setScreen(const AllRidersScreen());
         break;
       case 5:
-        setScreen(AddSettingsTabScreen());
+        setScreen(const AddSettingsTabScreen());
         break;
       default:
         setScreen(Container());
