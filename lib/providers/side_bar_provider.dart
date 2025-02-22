@@ -8,7 +8,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../pr.dart';
 
 class SideBarProvider with ChangeNotifier {
-  int _selectedIndex = 2;
+  int _selectedIndex = 0;
 
   int get selectedIndex => _selectedIndex;
 

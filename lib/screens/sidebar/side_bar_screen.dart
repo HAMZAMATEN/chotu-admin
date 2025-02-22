@@ -21,7 +21,7 @@ class _SideBarScreenState extends State<SideBarScreen> {
     // TODO: implement initState
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<SideBarProvider>(context, listen: false).setIndex(2);
+      Provider.of<SideBarProvider>(context, listen: false).setIndex(0);
     });
     super.initState();
   }
@@ -163,6 +163,23 @@ class _SideBarScreenState extends State<SideBarScreen> {
                             ),
                             padding15,
                             // Create new event with icon
+                            // Row(
+                            //   children: [
+                            //     Icon(
+                            //       Icons.add_circle_outline_sharp,
+                            //       color: AppColors.primaryColor,
+                            //       size: 15,
+                            //     ),
+                            //     const SizedBox(width: 8),
+                            //     Text(
+                            //       'Create new event',
+                            //       style: getRegularStyle(
+                            //         color: AppColors.primaryColor,
+                            //         fontSize: 12,
+                            //       ),
+                            //     ),
+                            //   ],
+                            // ),
 
                             padding20,
                             // Add space before the search field
@@ -188,11 +205,10 @@ class _SideBarScreenState extends State<SideBarScreen> {
                                 ),
                               ),
                               child: ClipOval(
-                                child: Image.network(
-                                  'https://images.pexels.com/photos/29757529/pexels-photo-29757529/free-photo-of-silhouette-of-woman-against-ornate-yellow-glass.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-                                fit: BoxFit.cover,
-                                ),
-                              ),
+                                child: Image.asset(
+                                  Assets.imagesAppLogo,
+                                  fit: BoxFit.cover,
+          ))
                             ),
                           ],
                         ),

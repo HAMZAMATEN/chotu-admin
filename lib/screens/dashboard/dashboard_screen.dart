@@ -1,3 +1,4 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -29,21 +30,21 @@ class DashboardScreen extends StatelessWidget {
         child: Column(
           children: [
             padding30,
-            _buildTopSection(),
+            _buildStatsSection(),
+            padding20,
+            // Row(
+            //   crossAxisAlignment: CrossAxisAlignment.start,
+            //   children: [
+            //     Expanded(child: _buildAddPropertyTypesSection()),
+            //     padding30,
+            //     Expanded(child: _buildAddEventTypesSection()),
+            //   ],
+            // ),
             padding20,
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(child: _buildAddPropertyTypesSection()),
-                padding30,
-                Expanded(child: _buildAddEventTypesSection()),
-              ],
-            ),
-            padding20,
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(child: _buildLatestRequestSection()),
+                Expanded(child: _buildRecentlyJoinedUsersSection()),
                 padding30,
                 Expanded(child: _buildSocialLinksSection()),
               ],
@@ -55,584 +56,81 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAddPropertyTypesSection() {
-    return Consumer<DashboardProvider>(
-      builder: (context, provider, child) {
-        return Container(
-          padding: EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: Color(0xffD9D9D9),
-            ),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Text(
-                    'Property Types',
-                    style:
-                        getMediumStyle(color: Color(0xff1f1f1f), fontSize: 20),
-                  ),
-                  Spacer(),
-                  InkWell(
-                    onTap: () {
-                      provider.togglePropertyCheckboxMode();
-                    },
-                    child: Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        color: provider.showPropertyCheckboxes
-                            ? Colors.grey
-                            : Colors.redAccent,
-                      ),
-                      child: Center(
-                        child: Text(
-                          provider.showPropertyCheckboxes ? 'Cancel' : 'Delete',
-                          style: getMediumStyle(color: Colors.white),
-                        ),
-                      ),
-                    ),
-                  ),
-                  padding10,
-                  if (!provider.showPropertyCheckboxes)
-                    InkWell(
-                      onTap: () {
-                        showAdaptiveDialog(
-                          context: context,
-                          barrierDismissible: true,
-                          // Allows closing the dialog by tapping outside
-                          builder: (context) {
-                            return Dialog(
-                              backgroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: Container(
-                                width: 370,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(16),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      // Close button
-                                      Align(
-                                        alignment: Alignment.topLeft,
-                                        child: IconButton(
-                                          icon: Container(
-                                              height: 34,
-                                              width: 34,
-                                              child: Center(
-                                                  child: Image.asset(
-                                                      Assets.iconsCross))),
-                                          onPressed: () =>
-                                              Navigator.pop(context),
-                                        ),
-                                      ),
-                                      // User Image
-                                      padding5,
-                                      // User Name and Role
-                                      Text(
-                                        "Add Property Type",
-                                        style: getSemiBoldStyle(
-                                            fontSize: 20, color: Colors.black),
-                                      ),
-                                      // User Information
 
-                                      CustomTextField(
-                                          title: '',
-                                          controller: provider
-                                              .addPropertyTypeController,
-                                          obscureText: false,
-                                          textInputAction: TextInputAction.done,
-                                          keyboardType: TextInputType.text,
-                                          hintText: 'Property Type'),
 
-                                      padding20,
-                                      // Action Buttons
 
-                                      CustomButton(
-                                        height: 50,
-                                        width: double.infinity,
-                                        btnColor: Colors.green,
-                                        btnText: 'Add',
-                                        btnTextColor: Colors.white,
-                                        onPress: () {
-                                          if (provider.addPropertyTypeController
-                                              .text.isNotEmpty) {
-                                            provider.addProperty(
-                                                provider
-                                                    .addPropertyTypeController
-                                                    .text,
-                                                context);
-                                          }
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                        );
-                      },
-                      child: Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          color: Colors.green,
-                        ),
-                        child: Center(
-                          child: Text(
-                            'Add New',
-                            style: getMediumStyle(color: Colors.white),
-                          ),
-                        ),
-                      ),
-                    ),
-                  SizedBox(width: 5),
-                  if (provider.showPropertyCheckboxes)
-                    InkWell(
-                      onTap: () {
-                        _showConfirmationDialog(context, provider);
-                      },
-                      child: Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          color: Colors.blueAccent,
-                        ),
-                        child: Center(
-                          child: Text(
-                            'Confirm',
-                            style: getMediumStyle(color: Colors.white),
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-              SizedBox(height: 20),
-              Wrap(
-                spacing: 10.0,
-                runSpacing: 8.0,
-                children: provider.propertyTypes
-                    .map((e) => _buildPropertyTypeButton(e, provider))
-                    .toList(),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
 
-  Widget _buildPropertyTypeButton(String label, DashboardProvider provider) {
-    return GestureDetector(
-      onTap: provider.showPropertyCheckboxes
-          ? () {
-              provider.togglePropertySelection(label);
-            }
-          : null,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (provider.showPropertyCheckboxes)
-            Checkbox(
-              activeColor: AppColors.primaryColor,
-              value: provider.selectedPropertyTypes.contains(label),
-              onChanged: (_) {
-                provider.togglePropertySelection(label);
-              },
-            ),
-          Container(
-            decoration: BoxDecoration(
-              color: AppColors.primaryColor,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(width: 1.5, color: AppColors.transparentColor),
-            ),
-            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            child: Text(
-              label,
-              style: getSemiBoldStyle(
-                color: Colors.white,
-                fontSize: MyFonts.size12,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showConfirmationDialog(
-      BuildContext context, DashboardProvider provider) {
-    showAdaptiveDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Center(
-              child: Text(
-            'Confirm Deletion',
-            style: getSemiBoldStyle(
-              color: Colors.black,
-              fontSize: 20,
-            ),
-          )),
-          content: Text(
-            'Are you sure you want to delete the selected properties?',
-            style: getMediumStyle(color: Colors.black),
-          ),
-          actions: [
-            InkWell(
-              overlayColor: WidgetStateColor.transparent,
-              onTap: () {
-                Navigator.pop(context);
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(vertical: 5, horizontal: 12),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  color: Colors.grey,
-                ),
-                child: Text(
-                  'Cancel',
-                  style: getMediumStyle(
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-            InkWell(
-              overlayColor: WidgetStateColor.transparent,
-              onTap: () {
-                provider.deleteSelectedProperties(context);
-                Navigator.pop(context);
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(vertical: 5, horizontal: 12),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8), color: Colors.red),
-                child: Text(
-                  'Confirm',
-                  style: getMediumStyle(
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _buildAddEventTypesSection() {
-    return Consumer<DashboardProvider>(
-      builder: (context, provider, child) {
-        return Container(
-          padding: EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: Color(0xffD9D9D9),
-            ),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Text(
-                    'Event Types',
-                    style:
-                        getMediumStyle(color: Color(0xff1f1f1f), fontSize: 20),
-                  ),
-                  Spacer(),
-                  InkWell(
-                    onTap: () {
-                      provider.toggleEventCheckboxMode();
-                    },
-                    child: Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        color: provider.showEventCheckboxes
-                            ? Colors.grey
-                            : Colors.redAccent,
-                      ),
-                      child: Center(
-                        child: Text(
-                          provider.showEventCheckboxes ? 'Cancel' : 'Delete',
-                          style: getMediumStyle(color: Colors.white),
-                        ),
-                      ),
-                    ),
-                  ),
-                  padding10,
-                  if (!provider.showEventCheckboxes)
-                    InkWell(
-                      onTap: () {
-                        showAdaptiveDialog(
-                          context: context,
-                          barrierDismissible: true,
-                          builder: (context) {
-                            return Dialog(
-                              backgroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: Container(
-                                width: 370,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(16),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Align(
-                                        alignment: Alignment.topLeft,
-                                        child: IconButton(
-                                          icon: Container(
-                                            height: 34,
-                                            width: 34,
-                                            child: Center(
-                                              child: Image.asset(
-                                                Assets.iconsCross,
-                                              ),
-                                            ),
-                                          ),
-                                          onPressed: () =>
-                                              Navigator.pop(context),
-                                        ),
-                                      ),
-                                      padding5,
-                                      Text(
-                                        "Add Event Type",
-                                        style: getSemiBoldStyle(
-                                            fontSize: 20, color: Colors.black),
-                                      ),
-                                      CustomTextField(
-                                        title: '',
-                                        controller:
-                                            provider.addEventTypeController,
-                                        obscureText: false,
-                                        textInputAction: TextInputAction.done,
-                                        keyboardType: TextInputType.text,
-                                        hintText: 'Event Type',
-                                      ),
-                                      padding20,
-                                      CustomButton(
-                                        height: 50,
-                                        width: double.infinity,
-                                        btnColor: Colors.green,
-                                        btnText: 'Add',
-                                        btnTextColor: Colors.white,
-                                        onPress: () {
-                                          if (provider.addEventTypeController
-                                              .text.isNotEmpty) {
-                                            provider.addEvent(
-                                                provider.addEventTypeController
-                                                    .text,
-                                                context);
-                                          }
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                        );
-                      },
-                      child: Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          color: Colors.green,
-                        ),
-                        child: Center(
-                          child: Text(
-                            'Add New',
-                            style: getMediumStyle(color: Colors.white),
-                          ),
-                        ),
-                      ),
-                    ),
-                  SizedBox(width: 5),
-                  if (provider.showEventCheckboxes)
-                    InkWell(
-                      onTap: () {
-                        _showEventConfirmationDialog(context, provider);
-                      },
-                      child: Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          color: Colors.blueAccent,
-                        ),
-                        child: Center(
-                          child: Text(
-                            'Confirm',
-                            style: getMediumStyle(color: Colors.white),
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-              SizedBox(height: 20),
-              Wrap(
-                spacing: 10.0,
-                runSpacing: 8.0,
-                children: provider.eventTypes
-                    .map((e) => _buildEventTypeButton(e, provider))
-                    .toList(),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildEventTypeButton(String label, DashboardProvider provider) {
-    return GestureDetector(
-      onTap: provider.showEventCheckboxes
-          ? () {
-              provider.toggleEventSelection(label);
-            }
-          : null,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (provider.showEventCheckboxes)
-            Checkbox(
-              activeColor: AppColors.primaryColor,
-              value: provider.selectedEventTypes.contains(label),
-              onChanged: (_) {
-                provider.toggleEventSelection(label);
-              },
-            ),
-          Container(
-            decoration: BoxDecoration(
-              color: AppColors.primaryColor,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(width: 1.5, color: AppColors.transparentColor),
-            ),
-            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            child: Text(
-              label,
-              style: getSemiBoldStyle(
-                color: Colors.white,
-                fontSize: MyFonts.size12,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showEventConfirmationDialog(
-      BuildContext context, DashboardProvider provider) {
-    showAdaptiveDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Center(
-              child: Text(
-            'Confirm Deletion',
-            style: getSemiBoldStyle(
-              color: Colors.black,
-              fontSize: 20,
-            ),
-          )),
-          content: Text(
-            'Are you sure you want to delete the selected events?',
-            style: getMediumStyle(color: Colors.black),
-          ),
-          actions: [
-            InkWell(
-              overlayColor: WidgetStateColor.transparent,
-              onTap: () {
-                Navigator.pop(context);
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(vertical: 5, horizontal: 12),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  color: Colors.grey,
-                ),
-                child: Text(
-                  'Cancel',
-                  style: getMediumStyle(
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-            InkWell(
-              overlayColor: WidgetStateColor.transparent,
-              onTap: () {
-                provider.deleteSelectedEvents(context);
-                Navigator.pop(context);
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(vertical: 5, horizontal: 12),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8), color: Colors.red),
-                child: Text(
-                  'Confirm',
-                  style: getMediumStyle(
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _buildTopSection() {
-    return Row(
+  /// build stats section
+  Widget _buildStatsSection() {
+    return Column(
       children: [
-        Expanded(
-          child: _buildTopCard(
-              imgPath: Assets.iconsRevenue,
-              title: 'Revenue',
-              amount: '166,580',
-              increase: '5%'),
+        Row(
+          children: [
+            Expanded(
+              child: _buildTopCard(
+                  imgPath: Assets.iconsRevenue,
+                  title: 'Revenue',
+                  amount: '166,580',
+                  increase: '5%'),
+            ),
+            padding20,
+            Expanded(
+              child: _buildTopCard(
+                  imgPath: Assets.iconsProduct,
+                  title: 'Total Orders',
+                  amount: '430',
+                  increase: '2%'),
+            ),
+
+          ],
         ),
-        padding30,
-        Expanded(
-          child: _buildTopCard(
-              imgPath: Assets.iconsProduct,
-              title: 'Product Sold',
-              amount: '5,679',
-              increase: '2%'),
+        padding10,
+        Row(
+          children: [
+            Expanded(
+              child: _buildTopCard(
+                  imgPath: Assets.iconsProduct,
+                  title: 'Total Users',
+                  amount: '430',
+                  increase: '2%'),
+            ),
+            padding20,
+            Expanded(
+              child: _buildTopCard(
+                  imgPath: Assets.iconsCustomer,
+                  title: 'Total Rides',
+                  amount: '51,580',
+                  increase: '4%'),
+            ),
+
+
+          ],
         ),
-        padding30,
-        Expanded(
-          child: _buildTopCard(
-              imgPath: Assets.iconsCustomer,
-              title: 'Customers',
-              amount: '51,580',
-              increase: '4%'),
-        ),
+        padding10,
+        Row(
+          children: [
+
+
+
+            Expanded(
+              child: _buildPieChart("Revenue & Orders Info", {
+                Color(0xffFF4D4D): 'Revenue', // Give to Rent
+                Color(0xffC084FC): 'Total Orders', // Want to Sell
+              }),
+            ),
+            padding20,
+
+
+            Expanded(
+              child: _buildPieChart("Total Rider's & User's Info", {
+                Color(0xffFF4D4D): "Rider's", // Give to Rent
+                Color(0xffC084FC): "User's", // Want to Sell
+              }),
+            ),
+          ],
+        )
+
+
       ],
     );
   }
@@ -707,7 +205,8 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildLatestRequestSection() {
+ /// build recently joined users section
+  Widget _buildRecentlyJoinedUsersSection() {
     return Consumer<DashboardProvider>(
       builder: (context, provider, child) {
         return Container(
@@ -727,7 +226,7 @@ class DashboardScreen extends StatelessWidget {
               Row(
                 children: [
                   Text(
-                    'Latest Requests',
+                    'Recently Joined Users',
                     style:
                         getMediumStyle(color: Color(0xff1f1f1f), fontSize: 20),
                   ),
@@ -782,6 +281,7 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
+  /// build social links section
   Widget _buildSocialLinksSection() {
     return Container(
       padding: EdgeInsets.all(20),
@@ -798,9 +298,30 @@ class DashboardScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Link to Play & App store',
+            'Delivery Charges & Link to Play & App store',
             style: getMediumStyle(color: Color(0xff1f1f1f), fontSize: 20),
           ),
+          padding20,
+
+          CustomTextField(
+              title: 'Delivery Charges',
+              controller: TextEditingController(
+                text: '200',
+              ),
+              obscureText: false,
+              textInputAction: TextInputAction.done,
+              keyboardType: TextInputType.text,
+              suffixIcon: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Icon(
+                  Icons.monetization_on_outlined
+                  ,
+                  color: Color(0xffEA4649),
+                  size: 20,
+                ),
+              ),
+              hintText: ''),
+
           padding20,
           CustomTextField(
               title: 'Link of the app at play store',
@@ -867,6 +388,80 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 }
+/// build pie chart
+Widget _buildPieChart(String title, Map<Color, String> data) {
+  return Container(
+    padding: EdgeInsets.all(20),
+    decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Color(0xffD9D9D9))),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          textAlign: TextAlign.center,
+        ),
+        padding8,
+        Row(
+          children: [
+            Container(
+              height: 150,
+              width: 150,
+              child: PieChart(
+                PieChartData(
+                  sections: data.entries
+                      .map(
+                        (entry) => PieChartSectionData(
+                      color: entry.key,
+                      titleStyle: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  )
+                      .toList(),
+                  sectionsSpace: 4,
+                  centerSpaceRadius: 30,
+                ),
+              ),
+            ),
+            Spacer(),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: data.entries.map((e) {
+                return Padding(
+                  padding: EdgeInsets.only(bottom: 8.0),
+                  child: Row(
+                    children: [
+                      Container(
+                        height: 27,
+                        width: 27,
+                        decoration: BoxDecoration(
+                            shape: BoxShape.circle, color: e.key),
+                      ),
+                      padding5,
+                      Text(
+                        e.value,
+                        style: getRegularStyle(
+                            color: Colors.black, fontSize: 12),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
+        ),
+      ],
+    ),
+  );
+}
+
+
 
 class UserTable extends StatelessWidget {
   const UserTable({Key? key}) : super(key: key);
