@@ -70,7 +70,7 @@ class CustomButtonWithIcon extends StatelessWidget {
 
   const CustomButtonWithIcon(
       {super.key,
-      this.height = 60,
+      this.height = 48,
       required this.width,
       this.radius = 10,
       this.iconPath = '',
@@ -108,7 +108,7 @@ class CustomButtonWithIcon extends StatelessWidget {
                 btnText,
                 style: getMediumStyle(
                   color: btnTextColor,
-                  fontSize: MyFonts.size14,
+                  fontSize: MyFonts.size12,
                 ),
               ),
               Spacer(),
