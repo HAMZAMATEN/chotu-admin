@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:chotu_admin/screens/additional_settings/additional_settings_tab_screen.dart';
-import 'package:chotu_admin/screens/analytics/analytics_screen.dart';
 import 'package:chotu_admin/screens/dashboard/dashboard_screen.dart';
 import 'package:chotu_admin/screens/riders/all_riders_screen.dart';
 import 'package:chotu_admin/screens/users/all_users.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../pr.dart';
+import '../screens/shops/shops_screen.dart';
 
 class SideBarProvider with ChangeNotifier {
   int _selectedIndex = 0;
@@ -20,7 +20,7 @@ class SideBarProvider with ChangeNotifier {
 
   List<Map<String, dynamic>> sideBarItems = [
     {"name": "Dashboard", "icon": FontAwesomeIcons.home},
-    {"name": "Analytics", "icon": FontAwesomeIcons.chartBar},
+    {"name": "Shops", "icon": FontAwesomeIcons.shop},
     {"name": "Orders", "icon": Icons.reorder},
     {"name": "All Users", "icon": FontAwesomeIcons.users},
     {"name": "All Riders", "icon": Icons.delivery_dining_outlined},
@@ -55,7 +55,7 @@ class SideBarProvider with ChangeNotifier {
         // setScreen(ShiftDetailScreen());
         break;
       case 1:
-        setScreen(const AnalyticsScreen());
+        setScreen( ShopsScreen());
         break;
       case 2:
         setScreen(OrderDashboard());

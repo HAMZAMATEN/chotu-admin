@@ -13,7 +13,7 @@ class AdditionalSettingsProvider extends ChangeNotifier {
     FaqItem(
       question: "What is the purpose of this app?",
       answer:
-          "This app allows users to rent, sell, and buy properties effortlessly. It provides detailed property analytics, user statistics, and supports both short-term and long-term rental options.",
+          "This app allows users to rent, sell, and buy properties effortlessly. It provides detailed property shops, user statistics, and supports both short-term and long-term rental options.",
     ),
     FaqItem(
       question: "Who can use this app?",
@@ -64,7 +64,7 @@ class AdditionalSettingsProvider extends ChangeNotifier {
     {
       "title": "About SAQFI",
       "description":
-          "Welcome to SAQFI, your number one source for all things property-related. We're dedicated to providing you the very best of property listings, with an emphasis on reliability, user-friendliness, and comprehensive analytics.",
+          "Welcome to SAQFI, your number one source for all things property-related. We're dedicated to providing you the very best of property listings, with an emphasis on reliability, user-friendliness, and comprehensive shops.",
     },
     {
       "title": "Our Mission",

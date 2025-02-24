@@ -81,6 +81,14 @@ class DashboardScreen extends StatelessWidget {
                   amount: '430',
                   increase: '2%'),
             ),
+ padding20,
+            Expanded(
+              child: _buildTopCard(
+                  imgPath: Assets.iconsProduct,
+                  title: 'Cancel Orders',
+                  amount: '430',
+                  increase: '2%'),
+            ),
 
           ],
         ),
@@ -90,8 +98,8 @@ class DashboardScreen extends StatelessWidget {
             Expanded(
               child: _buildTopCard(
                   imgPath: Assets.iconsProduct,
-                  title: 'Total Users',
-                  amount: '430',
+                  title: 'Total Shops',
+                  amount: '10',
                   increase: '2%'),
             ),
             padding20,
@@ -99,6 +107,15 @@ class DashboardScreen extends StatelessWidget {
               child: _buildTopCard(
                   imgPath: Assets.iconsCustomer,
                   title: 'Total Rides',
+                  amount: '51,580',
+                  increase: '4%'),
+            ),
+
+            padding20,
+            Expanded(
+              child: _buildTopCard(
+                  imgPath: Assets.iconsCustomer,
+                  title: 'Total Users',
                   amount: '51,580',
                   increase: '4%'),
             ),
@@ -113,9 +130,9 @@ class DashboardScreen extends StatelessWidget {
 
 
             Expanded(
-              child: _buildPieChart("Revenue & Orders Info", {
+              child: _buildPieChart("Revenue & Shop's Info", {
                 Color(0xffFF4D4D): 'Revenue', // Give to Rent
-                Color(0xffC084FC): 'Total Orders', // Want to Sell
+                Color(0xff45CF8D): "Total Shop's", // Want to Sell
               }),
             ),
             padding20,
@@ -124,7 +141,15 @@ class DashboardScreen extends StatelessWidget {
             Expanded(
               child: _buildPieChart("Total Rider's & User's Info", {
                 Color(0xffFF4D4D): "Rider's", // Give to Rent
-                Color(0xffC084FC): "User's", // Want to Sell
+                Color(0xff45CF8D): "User's", // Want to Sell
+              }),
+            ),padding20,
+
+
+            Expanded(
+              child: _buildPieChart("Order's Info", {
+                Color(0xffFF4D4D): "Total Order's", // Give to Rent
+                Color(0xff45CF8D): "Cancel Order's", // Want to Sell
               }),
             ),
           ],
@@ -187,7 +212,7 @@ class DashboardScreen extends StatelessWidget {
               Text(
                 increase,
                 style: getMediumStyle(
-                  color: Color(0xffFF4D4D),
+                  color:Color(0xff45CF8D),
                   fontSize: 16,
                 ),
               ),
@@ -316,7 +341,8 @@ class DashboardScreen extends StatelessWidget {
                 child: Icon(
                   Icons.monetization_on_outlined
                   ,
-                  color: Color(0xffEA4649),
+                  color:                     Color(0xff45CF8D),
+
                   size: 20,
                 ),
               ),
@@ -335,7 +361,8 @@ class DashboardScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
                   'copy link',
-                  style: getMediumStyle(color: Color(0xffEA4649), fontSize: 14),
+                  style: getMediumStyle(color:                     Color(0xff45CF8D),
+                      fontSize: 14),
                 ),
               ),
               hintText: ''),
@@ -346,7 +373,8 @@ class DashboardScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
                   'copy link',
-                  style: getMediumStyle(color: Color(0xffEA4649), fontSize: 14),
+                  style: getMediumStyle(color:                     Color(0xff45CF8D),
+                      fontSize: 14),
                 ),
               ),
               controller: TextEditingController(
