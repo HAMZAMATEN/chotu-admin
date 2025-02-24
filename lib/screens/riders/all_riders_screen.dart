@@ -70,6 +70,7 @@ class AllRidersScreen extends StatelessWidget {
             ],
           ),
           padding30,
+
           Expanded(
             child: SingleChildScrollView(
               child: Container(

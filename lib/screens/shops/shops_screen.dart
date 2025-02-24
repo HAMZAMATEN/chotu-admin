@@ -1,10 +1,14 @@
+import 'package:chotu_admin/screens/shops/widgets/addNewShopDialogBox.dart';
 import 'package:chotu_admin/utils/app_Colors.dart';
 import 'package:chotu_admin/utils/app_Paddings.dart';
 import 'package:chotu_admin/utils/app_text_widgets.dart';
 import 'package:chotu_admin/widgets/custom_Button.dart';
 import 'package:chotu_admin/widgets/custom_TextField.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
+
+import '../../generated/assets.dart';
 
   class ShopsScreen extends StatefulWidget {
   @override
@@ -54,47 +58,60 @@ class _ShopsScreenState extends State<ShopsScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 10),
 
-                  /// Search Bar
-                  Align(
-                    alignment: Alignment.topLeft,
-                    child: SizedBox(
-                      height: 48,
-                      width: 300,
-                      child: TextFormField(
-                        style: getRegularStyle(
-                            color: AppColors.textColor, fontSize: 12),
-                        controller: TextEditingController(),
-                        decoration: InputDecoration(
-                          isDense: true,
-                          hintText: 'Search shop by name',
-                          border: const OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Color.fromRGBO(231, 234, 243, 1),
-                                width: .6),
-                          ),
-                          hintStyle: getRegularStyle(
-                              color: AppColors.textColor, fontSize: 12),
-                          filled: true,
-                          fillColor: Colors.white,
-                          enabledBorder: const OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: AppColors.primaryColor, width: .6),
-                          ),
-                          focusedBorder: const OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: AppColors.primaryColor, width: .6),
-                          ),
-                          disabledBorder: const OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: AppColors.primaryColor, width: .6),
+                  /// Search Bar & add shop button
+
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Expanded(
+                        child: CustomTextField(
+                          width: MediaQuery.of(context).size.width,
+                          title: '',
+                          controller: TextEditingController(),
+                          obscureText: false,
+                          textInputAction: TextInputAction.search,
+                          keyboardType: TextInputType.text,
+                          hintText: 'Search Shops by name',
+                          suffixIcon: SizedBox(
+                            height: 24,
+                            width: 24,
+                            child: Center(
+                              child: SvgPicture.asset(Assets.iconsSearchnormal1),
+                            ),
                           ),
                         ),
                       ),
-                    ),
+                      padding12,
+                      InkWell(
+                        onTap: () {
+                          showAddShopDialog(context);
+                        },
+                        child: Align(
+                          alignment: Alignment.topRight,
+                          child: Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              color: AppColors.primaryColor,
+                            ),
+                            child: Text(
+                              'Add New Shop',
+                              style: getSemiBoldStyle(
+                                color: AppColors.whiteColor,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 16),
+                  padding30,
+
+
+
 
                   // Scrollable Data Table
 
