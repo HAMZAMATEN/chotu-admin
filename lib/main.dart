@@ -19,6 +19,7 @@ import 'package:chotu_admin/screens/sidebar/side_bar_screen.dart';
 void main() {
   runApp(const MyApp());
 }
+// git remote set-url origin https://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@github.com/HAMZAMATEN/chotu-admin.git
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key})
