@@ -51,6 +51,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => LandingPageProvider(),
         ),
+
       ],
 
       child: GetMaterialApp(
