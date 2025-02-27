@@ -1,6 +1,8 @@
 import 'package:chotu_admin/providers/users_provider.dart';
+import 'package:chotu_admin/screens/session/login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:chotu_admin/providers/RealtorsProvider.dart';
 import 'package:chotu_admin/providers/add_properties_provider.dart';
@@ -50,7 +52,7 @@ class MyApp extends StatelessWidget {
         ),
       ],
 
-      child: MaterialApp(
+      child: GetMaterialApp(
         title: 'CHOTU ADMIN',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(

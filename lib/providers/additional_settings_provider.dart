@@ -13,37 +13,37 @@ class AdditionalSettingsProvider extends ChangeNotifier {
     FaqItem(
       question: "What is the purpose of this app?",
       answer:
-          "This app allows users to rent, sell, and buy properties effortlessly. It provides detailed property shops, user statistics, and supports both short-term and long-term rental options.",
+      "This app allows users to browse, buy, and sell products seamlessly. It offers a wide range of categories, secure payment options, and user-friendly navigation for a smooth shopping experience.",
     ),
     FaqItem(
       question: "Who can use this app?",
       answer:
-          "The app is designed for Buyers/Renters, Realtors managing property listings, and Property owners who want to sell or rent their properties.",
+      "The app is designed for shoppers looking for great deals, sellers who want to list their products, and businesses aiming to reach a broader audience.",
     ),
     FaqItem(
-      question: "How can I search for properties to rent or buy?",
+      question: "How can I search for products?",
       answer:
-          "You can use the search feature to filter properties based on location, property type, price range, and availability (short-term or long-term).",
+      "You can use the search bar to filter products by category, price range, brand, and availability. Advanced filters help you find exactly what you need.",
     ),
     FaqItem(
-      question: "How do I list my property for sale or rent?",
+      question: "How do I list an item for sale?",
       answer:
-          "You can list your property by navigating to the 'Add Property' section in the app. Fill in the property details, upload images, and set the price.",
+      "You can list your products by going to the 'Sell' section in the app. Simply upload product images, add a description, set a price, and publish your listing.",
     ),
     FaqItem(
-      question: "How can I make payments for property transactions?",
+      question: "What payment methods are available?",
       answer:
-          "You can make payments through integrated payment gateways like Stripe or other available options in the app.",
+      "The app supports multiple payment options, including credit/debit cards, PayPal, and digital wallets, ensuring secure and convenient transactions.",
     ),
     FaqItem(
-      question: "Is my personal information secure?",
+      question: "Is my personal and payment information secure?",
       answer:
-          "Yes, the app follows strict privacy policies and uses advanced encryption to protect your data.",
+      "Yes, the app follows strict security protocols, including data encryption and fraud protection, to keep your information safe.",
     ),
     FaqItem(
       question: "What should I do if the app crashes or freezes?",
       answer:
-          "Try restarting the app. If the issue persists, contact our support team through the 'Help & Support' section.",
+      "Try closing and reopening the app. If the problem persists, please contact our support team through the 'Help & Support' section.",
     ),
   ];
 
@@ -58,26 +58,24 @@ class AdditionalSettingsProvider extends ChangeNotifier {
   TextEditingController aboutUsTitleController = TextEditingController();
   TextEditingController aboutUsDescriptionController = TextEditingController();
 
-  final List<Map<String, String>> _aboutUsContent =
-
-  [
+  final List<Map<String, String>> _aboutUsContent = [
     {
-      "title": "About SAQFI",
+      "title": "About Chotu App",
       "description":
-          "Welcome to SAQFI, your number one source for all things property-related. We're dedicated to providing you the very best of property listings, with an emphasis on reliability, user-friendliness, and comprehensive shops.",
+      "Welcome to Chotu App, your go-to platform for seamless live order management. We are committed to delivering a fast, reliable, and user-friendly experience, making online ordering effortless for businesses and customers alike.",
     },
     {
       "title": "Our Mission",
       "description":
-          "To revolutionize the property market by providing an intuitive platform that connects buyers, renters, and riders seamlessly, ensuring transparency and efficiency in every transaction.",
+      "To transform the commerce industry by providing a real-time ordering platform that connects businesses and customers efficiently, ensuring smooth transactions and instant order processing.",
     },
     {
       "title": "Our Vision",
       "description":
-          "To be the leading property platform globally, recognized for innovation, trustworthiness, and exceptional user experience.",
+      "To become the leading live order platform, recognized for innovation, trust, and an unmatched ordering experience.",
     },
-    // Add more sections if needed
   ];
+
   List<Map<String, String>> get aboutUsContent => _aboutUsContent;
 
   final List<Map<String, String>> _contactUsContent = [

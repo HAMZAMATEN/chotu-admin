@@ -1,5 +1,7 @@
+import 'package:chotu_admin/screens/session/login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:chotu_admin/generated/assets.dart';
 import 'package:chotu_admin/utils/app_Colors.dart';
@@ -74,6 +76,7 @@ class _SideBarScreenState extends State<SideBarScreen> {
                         ),
                       ),
                       padding20,
+                      /// screens
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 24),
                         child: Column(
@@ -127,6 +130,47 @@ class _SideBarScreenState extends State<SideBarScreen> {
                           }).toList(),
                         ),
                       ),
+                      /// logout button
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: InkWell(
+                          overlayColor:
+                          WidgetStateProperty.all(Colors.transparent),
+                          hoverColor: const Color(0xffF6F6F6),
+                          onTap: () {
+                            Get.offAll(LoginView());
+
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.only(bottom: 10),
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.logout,
+                                  color:                               const Color(0xffABABAB)
+                                  ,
+                                  size: 16,
+                                ), // Use the item's icon
+                                padding15,
+                                Text(
+                                  'Logout', // Use the item's name
+                                  style: getMediumStyle(
+                                    color:
+                                    const Color(0xffABABAB),
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+
                     ],
                   ),
                 ),

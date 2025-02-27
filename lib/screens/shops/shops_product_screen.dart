@@ -44,14 +44,34 @@ class _ShopProductsScreenState extends State<ShopProductsScreen> {
                 children: [
 
                   /// back icon
-                  InkWell(
-                    overlayColor: WidgetStatePropertyAll<Color>(Colors.transparent),
-                      onTap: (){
-                        Navigator.pop(context);
-                      },
-                      child: Align(
-                          alignment: Alignment.topLeft,
-                          child: Icon(Icons.arrow_back_ios))),
+                  Row(
+                    children: [
+                      InkWell(
+                          overlayColor: WidgetStatePropertyAll<Color>(Colors.transparent),
+                          onTap: (){
+                            Navigator.pop(context);
+                          },
+                          child: Align(
+                              alignment: Alignment.topLeft,
+                              child: Icon(Icons.arrow_back_ios))),
+                      padding20,
+                      Expanded(
+                        child: Text(
+                          'Shop Name',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+
+                          style: getBoldStyle(
+                            color: Colors.black,
+                            fontSize: 16,
+
+                          ),
+                        ),
+                      ),
+
+
+                    ],
+                  ),
                   padding30,
                   /// Status Summary Cards
                   Row(

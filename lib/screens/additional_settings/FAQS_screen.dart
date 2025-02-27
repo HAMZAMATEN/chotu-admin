@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:chotu_admin/providers/additional_settings_provider.dart';
 import 'package:chotu_admin/utils/app_text_widgets.dart';
@@ -79,7 +80,7 @@ class FaqsScreen extends StatelessWidget {
 
   Widget _buildFAQCard({required String question, required String answer}) {
     return Container(
-      padding: EdgeInsets.only(left: 20, top: 20, bottom: 20, right: 70),
+      padding: EdgeInsets.only(left: 20, top: 20, bottom: 10, right: 20),
       decoration: BoxDecoration(
         color: AppColors.whiteColor,
         borderRadius: BorderRadius.circular(6),
@@ -112,6 +113,9 @@ class FaqsScreen extends StatelessWidget {
             ),
           ),
           padding10,
+          Align(
+            alignment: Alignment.bottomRight,
+              child: IconButton(onPressed: (){}, icon: Icon(Icons.delete,color: Colors.green,)))
         ],
       ),
     );
