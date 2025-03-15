@@ -1,0 +1,45 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "chotu-admin-app",
+          "appId": "1:493629751703:android:c0ffa5635014361617c4d2",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "ios": {
+        "default": {
+          "projectId": "chotu-admin-app",
+          "appId": "1:493629751703:ios:325a58f6c908d54a17c4d2",
+          "uploadDebugSymbols": false,
+          "fileOutput": "ios/Runner/GoogleService-Info.plist"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "chotu-admin-app",
+          "configurations": {
+            "android": "1:493629751703:android:c0ffa5635014361617c4d2",
+            "ios": "1:493629751703:ios:325a58f6c908d54a17c4d2",
+            "web": "1:493629751703:web:bc61fa8061fa20ba17c4d2"
+          }
+        }
+      }
+    }
+  },
+  "hosting": {
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}

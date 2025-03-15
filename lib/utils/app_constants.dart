@@ -6,4 +6,7 @@ class AppConstants {
   }
   static bool isArabic = false;
   static String currentAddress = '';
+
+  static String authToken = '';
+
 }
