@@ -8,7 +8,7 @@ class HivePreferences {
   }
 
   static getIsLogin(){
-    sessionBox.get('isLogin');
+   return sessionBox.get('isLogin');
   }
 
 
@@ -17,9 +17,8 @@ class HivePreferences {
   }
 
   static getAuthToken(){
-    sessionBox.get('authToken');
+   return sessionBox.get('authToken');
   }
-
 
 
 }

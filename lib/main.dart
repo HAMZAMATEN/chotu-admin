@@ -18,7 +18,10 @@ import 'package:chotu_admin/providers/landing_page_provider.dart';
 import 'package:chotu_admin/providers/side_bar_provider.dart';
 import 'package:chotu_admin/screens/sidebar/side_bar_screen.dart';
 
+import 'providers/store_provider.dart';
 import 'screens/session/login_view.dart';
+
+// flutter run -d chrome --web-browser-flag="--disable-web-security" --web-browser-flag="--disable-site-isolation-trials"
 
 late Box sessionBox;
 final navigatorKey = GlobalKey<NavigatorState>();
@@ -102,6 +105,9 @@ class _MyAppState extends State<MyApp> {
         ),
         ChangeNotifierProvider(
           create: (_) => ApiServicesProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => StoreProvider(),
         ),
       ],
       child: GetMaterialApp(

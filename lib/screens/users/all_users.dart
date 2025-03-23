@@ -1,3 +1,4 @@
+import 'package:chotu_admin/model/user_model.dart';
 import 'package:chotu_admin/providers/users_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -6,15 +7,27 @@ import 'package:chotu_admin/utils/app_Paddings.dart';
 import 'package:chotu_admin/utils/app_text_widgets.dart';
 import 'package:chotu_admin/widgets/custom_TextField.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../../generated/assets.dart';
 import '../../providers/RealtorsProvider.dart';
-import '../../utils/app_Colors.dart';
+import '../../utils/app_colors.dart';
+import 'widgets/user_tile_widget.dart';
 
-
-
-class AllUsersScreen extends StatelessWidget {
+class AllUsersScreen extends StatefulWidget {
   const AllUsersScreen({super.key});
+
+  @override
+  State<AllUsersScreen> createState() => _AllUsersScreenState();
+}
+
+class _AllUsersScreenState extends State<AllUsersScreen> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Provider.of<UsersProvider>(context, listen: false).getAllUsers();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,12 +80,15 @@ class AllUsersScreen extends StatelessWidget {
 }
 
 class UserTable extends StatelessWidget {
-  const UserTable({Key? key}) : super(key: key);
+   UserTable({Key? key}) : super(key: key);
+
+  late UsersProvider usersProvider;
 
   @override
   Widget build(BuildContext context) {
     return Consumer<UsersProvider>(
       builder: (context, provider, child) {
+        usersProvider = provider ;
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
@@ -92,7 +108,7 @@ class UserTable extends StatelessWidget {
                 Expanded(
                   flex: 3,
                   child: Text(
-                    "Joining Date and User Frequency",
+                    "Contact Information",
                     style: getMediumStyle(
                         color: const Color(0xffABABAB), fontSize: 14),
                   ),
@@ -128,137 +144,49 @@ class UserTable extends StatelessWidget {
             // Custom divider
 
             padding3,
-            // User Rows
-            ListView.separated(
-              padding: EdgeInsets.zero,
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              itemCount: provider.users.length,
-              separatorBuilder: (context, index) => const Divider(
-                color: Color(0xffF1F1F1),
-                thickness: 1,
-              ),
-              itemBuilder: (context, index) {
-                final user = provider.users[index];
-                return Padding(
-                  padding: EdgeInsets.only(top: 6),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        flex: 1,
-                        child: Text(
-                          user["name"]!,
-                          style: getRegularStyle(
-                              color: const Color(0xff1F1F1F), fontSize: 16),
-                        ),
-                      ),
-                      padding15,
-                      Expanded(
-                        flex: 3,
-                        child: Text(
-                          user["info"]!,
-                          style: getRegularStyle(
-                              color: const Color(0xff1F1F1F), fontSize: 16),
-                        ),
-                      ),
-                      padding15,
-                      Expanded(
-                        child: Center(
-                          child: Container(
-                            height: 40,
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
-                              color: provider.getStatusColor(user['status']),
-                            ),
-                            child: DropdownButtonHideUnderline(
-                              child: DropdownButton<String>(
-                                icon: null,
-                                value: user['status'],
-                                dropdownColor: Colors.white,
-                                isExpanded: false,
-                                style: getMediumStyle(
-                                  fontSize: 14,
-                                  color: provider.getTextColor(user['status']),
-                                ),
-                                items: provider.statuses.map((status) {
-                                  return DropdownMenuItem<String>(
-                                    value: status,
 
-                                    child: Row(
-                                      children: [
-                                        // Circle Indicator
-                                        Container(
-                                          height: 10,
-                                          width: 10,
-                                          margin:
-                                          const EdgeInsets.only(right: 10),
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            color: provider
-                                                .getStatusIndicatorColor(
-                                                status),
-                                          ),
-                                        ),
-                                        // Status Text
-                                        Text(
-                                          status,
-                                          style: getMediumStyle(
-                                              color: Colors.black,
-                                              fontSize: 14),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                }).toList(),
-                                onChanged: (newValue) {
-                                  if (newValue != null) {
-                                    provider.updateStatus(index, newValue);
-                                  }
-                                },
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      padding15,
-                      Expanded(
-                        child: InkWell(
-                          onTap: () {
-                            showUserProfileDialog(context);
-                          },
-                          child: Center(
-                            child: Container(
-                              height: 40,
-                              width: 80,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(8),
-                                color: AppColors.primaryColor.withOpacity(.7),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  'See More',
-                                  style: getMediumStyle(
-                                      color: AppColors.whiteColor,
-                                      fontSize: 12),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
+            //Shimmer User List
+            if(provider.allUsersList == null )...[
+              ListView.separated(
+                padding: EdgeInsets.zero,
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: provider.users.length,
+                separatorBuilder: (context, index) => const Divider(
+                  color: Color(0xffF1F1F1),
+                  thickness: 1,
+                ),
+                itemBuilder: (context, index) {
+                  final user = provider.users[index];
+                  return Padding(
+                    padding: EdgeInsets.only(top: 6),
+                    child: shimmerUserTile(user, provider, index, context),
+                  );
+                },
+              ),
+            ]else...[
+              ListView.separated(
+                padding: EdgeInsets.zero,
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: provider.allUsersList!.length,
+                separatorBuilder: (context, index) => const Divider(
+                  color: Color(0xffF1F1F1),
+                  thickness: 1,
+                ),
+                itemBuilder: (context, index) {
+                  UserModel user = provider.allUsersList![index];
+                  return Padding(
+                    padding: EdgeInsets.only(top: 6),
+                    child: UserListTile(userModel: user,),
+                  );
+                },
+              ),
+            ],
           ],
         );
       },
     );
   }
+
 }
-
-

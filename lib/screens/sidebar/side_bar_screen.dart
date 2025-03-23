@@ -1,5 +1,5 @@
-
 import 'package:chotu_admin/screens/session/login_view.dart';
+import 'package:chotu_admin/utils/hive_prefrences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -77,6 +77,7 @@ class _SideBarScreenState extends State<SideBarScreen> {
                         ),
                       ),
                       padding20,
+
                       /// screens
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -131,38 +132,36 @@ class _SideBarScreenState extends State<SideBarScreen> {
                           }).toList(),
                         ),
                       ),
+
                       /// logout button
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 24),
                         child: InkWell(
                           overlayColor:
-                          WidgetStateProperty.all(Colors.transparent),
+                              WidgetStateProperty.all(Colors.transparent),
                           hoverColor: const Color(0xffF6F6F6),
                           onTap: () {
+                            HivePreferences.setIsLogin(false);
                             Get.offAll(LoginView());
-
                           },
                           child: Container(
                             margin: const EdgeInsets.only(bottom: 10),
                             padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(12),
-
                             ),
                             child: Row(
                               children: [
                                 Icon(
                                   Icons.logout,
-                                  color:                               const Color(0xffABABAB)
-                                  ,
+                                  color: const Color(0xffABABAB),
                                   size: 16,
                                 ), // Use the item's icon
                                 padding15,
                                 Text(
                                   'Logout', // Use the item's name
                                   style: getMediumStyle(
-                                    color:
-                                    const Color(0xffABABAB),
+                                    color: const Color(0xffABABAB),
                                     fontSize: 16,
                                   ),
                                 ),
@@ -171,7 +170,6 @@ class _SideBarScreenState extends State<SideBarScreen> {
                           ),
                         ),
                       ),
-
                     ],
                   ),
                 ),
@@ -240,21 +238,20 @@ class _SideBarScreenState extends State<SideBarScreen> {
 
                             // Profile icon
                             Container(
-                              height: 46,
-                              width: 46,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  width: 1,
-                                  color: AppColors.primaryColor,
+                                height: 46,
+                                width: 46,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    width: 1,
+                                    color: AppColors.primaryColor,
+                                  ),
                                 ),
-                              ),
-                              child: ClipOval(
-                                child: Image.asset(
+                                child: ClipOval(
+                                    child: Image.asset(
                                   Assets.imagesAppLogo,
                                   fit: BoxFit.cover,
-          ))
-                            ),
+                                ))),
                           ],
                         ),
                       ),

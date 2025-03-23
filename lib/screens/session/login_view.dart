@@ -1,6 +1,7 @@
 import 'package:chotu_admin/main.dart';
 import 'package:chotu_admin/providers/session_provider.dart';
 import 'package:chotu_admin/utils/app_Paddings.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
@@ -89,14 +90,15 @@ class _LoginViewState extends State<LoginView> {
                                       }
                                       return null;
                                     },
+
                                     onChanged: (value) {},
                                     showCursor: true,
                                     controller: value.emailController,
                                     cursorColor: Colors.black,
                                     decoration: InputDecoration(
-                                      labelText: 'Email',
+                                      labelText: ' Email',
                                       labelStyle: TextStyle(color: Colors.black),
-                                      hintText: 'Enter your email address',
+                                      hintText: ' Enter your email address',
                                       hintStyle: TextStyle(color: Colors.black54),
                                       contentPadding: const EdgeInsets.all(4.0),
                                       enabledBorder: const OutlineInputBorder(
@@ -138,11 +140,11 @@ class _LoginViewState extends State<LoginView> {
                                     showCursor: true,
                                     cursorColor: Colors.black,
                                     decoration: InputDecoration(
-                                      labelText: 'Password',
+                                      labelText: ' Password',
                                       floatingLabelAlignment:
                                           FloatingLabelAlignment.start,
                                       labelStyle: TextStyle(color: Colors.black),
-                                      hintText: 'Enter your password',
+                                      hintText: ' Enter your password',
                                       hintStyle: TextStyle(color: Colors.black54),
                                       contentPadding: const EdgeInsets.all(4.0),
                                       enabledBorder: const OutlineInputBorder(
@@ -178,25 +180,49 @@ class _LoginViewState extends State<LoginView> {
                                     btnTextColor: Colors.white,
                                     onPress: () async {
                                       if (fromKey.currentState!.validate()) {
-                                        // String enteredEmail =
-                                        //     emailController.text.trim();
-                                        // String enteredPassword =
-                                        //     passwordController.text;
                                         ShowToastDialog.showLoader('Please Wait');
                                         await value.login();
-                                        // if (validCredentials.containsKey(enteredEmail) && validCredentials[enteredEmail] == enteredPassword) {
-                                        //   await sessionBox.put('isLogin', true);
-                                        //   print("Login Success and isLogin value is ${await sessionBox.get('isLogin')}");
-                                        //   ShowToastDialog.showLoader('Please Wait');
-                                        //   Get.offAll(() => const SideBarScreen());
-                                        //   ShowToastDialog.closeLoader();
-                                        // } else {
-                                        //   ShowToastDialog.showToast(
-                                        //       'Invalid Credentials');
-                                        // }
                                       }
                                     },
                                   ),
+                                  const SizedBox(height: 20.0),
+
+                                  /// login button
+                                  CustomButton(
+                                    height: 50,
+                                    width: double.infinity,
+                                    btnColor: AppColors.primaryColor,
+                                    btnText: 'Login By Pass',
+                                    btnTextColor: Colors.white,
+                                    onPress: () async {
+                                      value.emailController.text = 'admin@example.com';
+                                      value.passController.text = 'securepassword123';
+                                      if (fromKey.currentState!.validate()) {
+                                        ShowToastDialog.showLoader('Please Wait');
+                                        await value.login();
+                                      }
+                                    },
+                                  ),
+                                  // if(kDebugMode)...[
+                                  //   const SizedBox(height: 20.0),
+                                  //
+                                  //   /// login button
+                                  //   CustomButton(
+                                  //     height: 50,
+                                  //     width: double.infinity,
+                                  //     btnColor: AppColors.primaryColor,
+                                  //     btnText: 'Login By Pass',
+                                  //     btnTextColor: Colors.white,
+                                  //     onPress: () async {
+                                  //         value.emailController.text = 'admin@example.com';
+                                  //         value.passController.text = 'securepassword123';
+                                  //       if (fromKey.currentState!.validate()) {
+                                  //         ShowToastDialog.showLoader('Please Wait');
+                                  //         await value.login();
+                                  //       }
+                                  //     },
+                                  //   ),
+                                  // ],
                                   padding20,
                                 ],
                               ),
