@@ -5,9 +5,12 @@ import 'package:chotu_admin/model/category_model.dart';
 import 'package:chotu_admin/model/shop_model.dart';
 import 'package:chotu_admin/providers/api_services_provider.dart';
 import 'package:chotu_admin/utils/api_consts.dart';
+import 'package:chotu_admin/utils/app_constants.dart';
 import 'package:chotu_admin/utils/functions.dart';
 import 'package:chotu_admin/utils/toast_dialogue.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 
@@ -92,6 +95,111 @@ class StoreProvider extends ChangeNotifier {
       AppFunctions.showToastMessage(message: "Exception while updateStoreStatus: $e");
       ShowToastDialog.closeLoader();
     }
+  }
+
+
+  /// adding shop variables
+
+  TextEditingController addressController = TextEditingController();
+  TextEditingController latitudeController = TextEditingController();
+  TextEditingController longitudeController = TextEditingController();
+
+  Map<String,dynamic>? storeImageMap;
+  Map<String,dynamic>? storeCoverImageMap;
+
+  int? categoryId;
+
+  setImagesMapsToNull(){
+    storeImageMap = null ;
+    storeCoverImageMap = null ;
+    notifyListeners();
+  }
+
+  updateCategoryId(int id){
+    categoryId = id;
+  }
+
+  Future<void> pickStoreImage(BuildContext context) async{
+    Map<String,dynamic>? imageFileMap = await AppFunctions().pickImageOnWeb(context);
+    if(imageFileMap != null){
+      storeImageMap = imageFileMap;
+      notifyListeners();
+    }
+  }
+  Future<void> pickStoreCoverImage(BuildContext context) async{
+    Map<String,dynamic>? imageFileMap = await AppFunctions().pickImageOnWeb(context);
+    if(imageFileMap != null){
+      storeCoverImageMap = imageFileMap;
+      notifyListeners();
+    }
+  }
+
+
+  Future<void> addShopToDataBase(Map<String,dynamic> body,BuildContext context) async{
+    try{
+      EasyLoading.showToast("Uploading image files");
+      final uri = Uri.parse('https://chotuapp.deeptech.pk/api/store'); // 🔁 Replace with your API
+      final request = await http.MultipartRequest('POST', uri);
+
+      // Add image file
+      request.files.add(
+        http.MultipartFile.fromBytes(
+          'f_img',
+          storeImageMap!['image'],
+          filename: storeImageMap!['fileName'],
+        ),
+      );
+
+      // Add image file
+      request.files.add(
+        http.MultipartFile.fromBytes(
+          'c_img',
+          storeCoverImageMap!['image'],
+          filename: storeCoverImageMap!['fileName'],
+        ),
+      );
+
+
+      request.headers['Content-Type'] = 'multipart/form-data';
+      request.headers['Authorization'] = 'Bearer ${AppConstants.authToken}';
+      // Add text fields
+      request.fields['name'] = body['name'];
+      request.fields['category_id'] = body['category_id'];
+      request.fields['address'] = body['address'];
+      request.fields['longitude'] = body['longitude'];
+      request.fields['latitude'] = body['latitude'];
+      request.fields['status'] = '1';
+
+      // Send request
+      final response = await request.send();
+
+      if (response.statusCode == 201) {
+        EasyLoading.dismiss();
+        setAllStoresToNull();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('Shop added successfully!')),
+        );
+        Navigator.of(context).pop(); // Close the dialog
+        getAllStores();
+        print('STORE ADDED SUCCESSFULLY');
+      } else {
+        EasyLoading.dismiss();
+        print('Store Addition failed: ${response.statusCode}');
+        print('Store Addition failed: ${await response.stream.bytesToString}');
+      }
+
+    } catch(e){
+      EasyLoading.dismiss();
+      print('Store Addition failed: ${e}');
+      print("EXCEPTION WHILE ADDING SHOP TO DB");
+    }
+
+  }
+
+  setAllStoresToNull(){
+    allStoresList = null;
+    notifyListeners();
   }
 
 

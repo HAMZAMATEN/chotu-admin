@@ -17,7 +17,7 @@ import 'package:chotu_admin/providers/dashboard_provider.dart';
 import 'package:chotu_admin/providers/landing_page_provider.dart';
 import 'package:chotu_admin/providers/side_bar_provider.dart';
 import 'package:chotu_admin/screens/sidebar/side_bar_screen.dart';
-
+import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'providers/store_provider.dart';
 import 'screens/session/login_view.dart';
 
@@ -28,6 +28,7 @@ final navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  setUrlStrategy(PathUrlStrategy());
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -67,6 +68,7 @@ class _MyAppState extends State<MyApp> {
     } else if (HivePreferences.getIsLogin() == true) {
       alreadyLogin = true;
       AppConstants.authToken = HivePreferences.getAuthToken();
+      print("AUTH TOKEN IS ${AppConstants.authToken}");
       updateLoading(false);
     } else {
       alreadyLogin = false;

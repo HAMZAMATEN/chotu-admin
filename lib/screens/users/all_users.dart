@@ -29,6 +29,8 @@ class _AllUsersScreenState extends State<AllUsersScreen> {
     Provider.of<UsersProvider>(context, listen: false).getAllUsers();
   }
 
+  TextEditingController searchController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -39,21 +41,23 @@ class _AllUsersScreenState extends State<AllUsersScreen> {
       child: Column(
         children: [
           CustomTextField(
-            width: MediaQuery.of(context).size.width,
-            title: '',
-            controller: TextEditingController(),
-            obscureText: false,
-            textInputAction: TextInputAction.search,
-            keyboardType: TextInputType.text,
-            hintText: 'Search users by name, email',
-            suffixIcon: SizedBox(
-              height: 24,
-              width: 24,
-              child: Center(
-                child: SvgPicture.asset(Assets.iconsSearchnormal1),
+              width: MediaQuery.of(context).size.width,
+              title: '',
+              controller: searchController,
+              obscureText: false,
+              textInputAction: TextInputAction.search,
+              keyboardType: TextInputType.text,
+              hintText: 'Search users by name, email',
+              suffixIcon: SizedBox(
+                height: 24,
+                width: 24,
+                child: Center(
+                  child: SvgPicture.asset(Assets.iconsSearchnormal1),
+                ),
               ),
-            ),
-          ),
+              onChanged: (string) {
+                setState(() {});
+              }),
           padding30,
           Expanded(
             child: SingleChildScrollView(
@@ -67,7 +71,9 @@ class _AllUsersScreenState extends State<AllUsersScreen> {
                     )),
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-                  child: UserTable(),
+                  child: UserTable(
+                    controllerText: searchController.text,
+                  ),
                 ),
               ),
             ),
@@ -80,7 +86,9 @@ class _AllUsersScreenState extends State<AllUsersScreen> {
 }
 
 class UserTable extends StatelessWidget {
-   UserTable({Key? key}) : super(key: key);
+  String controllerText;
+
+  UserTable({Key? key, required this.controllerText}) : super(key: key);
 
   late UsersProvider usersProvider;
 
@@ -88,7 +96,7 @@ class UserTable extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<UsersProvider>(
       builder: (context, provider, child) {
-        usersProvider = provider ;
+        usersProvider = provider;
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
@@ -146,7 +154,7 @@ class UserTable extends StatelessWidget {
             padding3,
 
             //Shimmer User List
-            if(provider.allUsersList == null )...[
+            if (provider.allUsersList == null) ...[
               ListView.separated(
                 padding: EdgeInsets.zero,
                 shrinkWrap: true,
@@ -164,22 +172,35 @@ class UserTable extends StatelessWidget {
                   );
                 },
               ),
-            ]else...[
+            ] else ...[
               ListView.separated(
                 padding: EdgeInsets.zero,
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
                 itemCount: provider.allUsersList!.length,
-                separatorBuilder: (context, index) => const Divider(
-                  color: Color(0xffF1F1F1),
-                  thickness: 1,
-                ),
+                separatorBuilder: (context, index) {
+                  UserModel user = provider.allUsersList![index];
+                  return user.name
+                          .toLowerCase()
+                          .contains(controllerText.toLowerCase())
+                      ? Divider(
+                          color: Color(0xffF1F1F1),
+                          thickness: 1,
+                        )
+                      : SizedBox();
+                },
                 itemBuilder: (context, index) {
                   UserModel user = provider.allUsersList![index];
-                  return Padding(
-                    padding: EdgeInsets.only(top: 6),
-                    child: UserListTile(userModel: user,),
-                  );
+                  return user.name
+                          .toLowerCase()
+                          .contains(controllerText.toLowerCase())
+                      ? Padding(
+                          padding: EdgeInsets.only(top: 6),
+                          child: UserListTile(
+                            userModel: user,
+                          ),
+                        )
+                      : SizedBox();
                 },
               ),
             ],
@@ -188,5 +209,4 @@ class UserTable extends StatelessWidget {
       },
     );
   }
-
 }

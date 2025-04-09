@@ -132,7 +132,7 @@ class _UserListTileState extends State<UserListTile> {
         Expanded(
           child: InkWell(
             onTap: () {
-              showUserProfileDialog(context);
+              showUserProfileDialog(widget.userModel,context);
             },
             child: Center(
               child: Container(
@@ -245,9 +245,6 @@ Widget shimmerUserTile(Map<String, dynamic> user, UsersProvider provider,
         padding15,
         Expanded(
           child: InkWell(
-            onTap: () {
-              showUserProfileDialog(context);
-            },
             child: Center(
               child: Container(
                 height: 40,

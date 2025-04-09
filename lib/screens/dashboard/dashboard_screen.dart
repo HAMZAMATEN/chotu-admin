@@ -618,7 +618,7 @@ class UserTable extends StatelessWidget {
                   Expanded(
                     child: InkWell(
                       onTap: () {
-                        showUserProfileDialog(context);
+                        // showUserProfileDialog(context);
                       },
                       child: Center(
                         child: Container(
