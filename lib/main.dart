@@ -29,6 +29,11 @@ final navigatorKey = GlobalKey<NavigatorState>();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   setUrlStrategy(PathUrlStrategy());
+  // final ph = Permi;
+  // final requested = await ph.requestPermissions([
+  //   PermissionGroup.locationAlways,
+  //   PermissionGroup.locationWhenInUse
+  // ]);
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );

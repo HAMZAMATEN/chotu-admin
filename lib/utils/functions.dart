@@ -1,8 +1,9 @@
 import 'dart:typed_data';
 
+import 'package:chotu_admin/main.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+// import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:chotu_admin/utils/app_colors.dart';
 import 'package:chotu_admin/utils/app_text_widgets.dart';
@@ -38,16 +39,20 @@ class AppFunctions {
   }
 
   static showToastMessage({required String message}) {
-    Fluttertoast.showToast(
-        msg: "${message}",
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIosWeb: 5,
-        backgroundColor: AppColors.primaryColor,
-        textColor: Colors.white,
-        fontSize: 16.0,
-        webBgColor: "linear-gradient(to right, #096237, #07ff86)",
-        webPosition: "right");
+    ScaffoldMessenger.of(navigatorKey.currentState!.context).showSnackBar(
+      const SnackBar(
+          content: Text('Shop added successfully!')),
+    );
+    // Fluttertoast.showToast(
+    //     msg: "${message}",
+    //     toastLength: Toast.LENGTH_LONG,
+    //     gravity: ToastGravity.CENTER,
+    //     timeInSecForIosWeb: 5,
+    //     backgroundColor: AppColors.primaryColor,
+    //     textColor: Colors.white,
+    //     fontSize: 16.0,
+    //     webBgColor: "linear-gradient(to right, #096237, #07ff86)",
+    //     webPosition: "right");
   }
 
   Uint8List? image;

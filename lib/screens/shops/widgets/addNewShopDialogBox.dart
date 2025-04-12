@@ -6,7 +6,7 @@ import 'package:chotu_admin/utils/app_text_widgets.dart';
 import 'package:chotu_admin/utils/functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:geocoding/geocoding.dart';
+// import 'package:geocoding/geocoding.dart';
 import 'package:provider/provider.dart';
 
 import '../../../generated/assets.dart';
@@ -386,42 +386,48 @@ class _GoogleMapPickerState extends State<GoogleMapPicker> {
   LatLng? _selectedLatLng;
   Set<Marker> _markers = {};
 
-  late StoreProvider storeProvider;
+  // late StoreProvider storeProvider;
 
   @override
   void initState() {
     super.initState();
-    storeProvider = Provider.of<StoreProvider>(context, listen: false);
     _determinePosition();
   }
 
   Future<void> _determinePosition() async {
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      print('Location services are disabled.');
-      return;
+    // bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    // if (!serviceEnabled) {
+    //   print('Location services are disabled.');
+    //   return;
+    // }
+
+
+    try{
+      LocationPermission permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.deniedForever ||
+          permission == LocationPermission.denied) {
+        print('Location permissions are denied.');
+        setState(() {});
+        return;
+      }
+
+      Position position = await Geolocator.getCurrentPosition();
+      setState(() {
+        _currentLatLng = LatLng(position.latitude, position.longitude);
+        _markers.add(
+          Marker(
+            markerId: MarkerId("current"),
+            position: _currentLatLng!,
+            infoWindow: InfoWindow(title: "Current Location"),
+          ),
+        );
+        Provider.of<StoreProvider>(context, listen: false).latitudeController.text = position.latitude.toString();
+        Provider.of<StoreProvider>(context, listen: false).longitudeController.text = position.longitude.toString();
+      });
+    }catch(e){
+      print("EXCEPTION WHILE _determinePosition $e");
     }
 
-    LocationPermission permission = await Geolocator.requestPermission();
-    if (permission == LocationPermission.deniedForever ||
-        permission == LocationPermission.denied) {
-      print('Location permissions are denied.');
-      return;
-    }
-
-    Position position = await Geolocator.getCurrentPosition();
-    setState(() {
-      _currentLatLng = LatLng(position.latitude, position.longitude);
-      _markers.add(
-        Marker(
-          markerId: MarkerId("current"),
-          position: _currentLatLng!,
-          infoWindow: InfoWindow(title: "Current Location"),
-        ),
-      );
-      storeProvider.latitudeController.text = position.latitude.toString();
-      storeProvider.longitudeController.text = position.longitude.toString();
-    });
   }
 
   void _onMapCreated(GoogleMapController controller) {
@@ -439,8 +445,8 @@ class _GoogleMapPickerState extends State<GoogleMapPicker> {
           infoWindow: InfoWindow(title: "Selected Location"),
         ),
       );
-      storeProvider.latitudeController.text = latLng.latitude.toString();
-      storeProvider.longitudeController.text = latLng.longitude.toString();
+      Provider.of<StoreProvider>(context, listen: false).latitudeController.text = latLng.latitude.toString();
+      Provider.of<StoreProvider>(context, listen: false).longitudeController.text = latLng.longitude.toString();
     });
     print("Selected lat: ${latLng.latitude}, long: ${latLng.longitude}");
   }
