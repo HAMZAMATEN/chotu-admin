@@ -6,6 +6,8 @@ class AppConstants {
   }
   static bool isArabic = false;
   static String currentAddress = '';
+  static String googleMapApiKey = 'AIzaSyC2fWxeerzaACQnhahbU85T83o4fTTOszw';
+
 
   static String authToken = '';
 
