@@ -87,6 +87,7 @@ class _AllRidersScreenState extends State<AllRidersScreen> {
             ],
           ),
           padding30,
+
           Expanded(
             child: SingleChildScrollView(
               child: Container(
