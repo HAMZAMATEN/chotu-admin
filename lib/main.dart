@@ -10,7 +10,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:chotu_admin/providers/RealtorsProvider.dart';
+import 'package:chotu_admin/providers/riders_provider.dart';
 import 'package:chotu_admin/providers/add_properties_provider.dart';
 import 'package:chotu_admin/providers/additional_settings_provider.dart';
 import 'package:chotu_admin/providers/dashboard_provider.dart';
@@ -93,7 +93,7 @@ class _MyAppState extends State<MyApp> {
           create: (_) => DashboardProvider(),
         ),
         ChangeNotifierProvider(
-          create: (_) => RealtorProvider(),
+          create: (_) => RidersProvider(),
         ),
         ChangeNotifierProvider(
           create: (_) => UsersProvider(),

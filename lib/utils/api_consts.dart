@@ -16,4 +16,8 @@ class APIConstants {
   static String getAllUsers = baseUrl + "api/all/users";
   static String updateUserStatus = baseUrl + "api/update/user/status/";
 
+  // RIDER constants
+  static String getAllRiders = baseUrl + "api/all/riders";
+  static String updateRiderStatus = baseUrl + "api/update/rider/status/";
+
 }

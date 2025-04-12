@@ -35,7 +35,7 @@ Widget CustomTextField(
           fontSize: 14,
         ),
       ),
-      padding8,
+      if (title != "") padding8,
       Container(
         width: width,
         child: TextFormField(
