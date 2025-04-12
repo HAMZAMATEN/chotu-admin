@@ -8,6 +8,7 @@ class AppConstants {
   static String currentAddress = '';
   static String googleMapApiKey = 'AIzaSyC2fWxeerzaACQnhahbU85T83o4fTTOszw';
 
+
   static String authToken = '';
 
 }

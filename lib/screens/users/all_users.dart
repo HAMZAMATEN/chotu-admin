@@ -11,6 +11,7 @@ import 'package:shimmer/shimmer.dart';
 
 import '../../generated/assets.dart';
 import '../../providers/riders_provider.dart';
+
 import '../../utils/app_colors.dart';
 import 'widgets/user_tile_widget.dart';
 
