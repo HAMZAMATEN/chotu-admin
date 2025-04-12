@@ -1,5 +1,6 @@
 import 'package:chotu_admin/firebase_options.dart';
 import 'package:chotu_admin/providers/api_services_provider.dart';
+import 'package:chotu_admin/providers/categories_provider.dart';
 import 'package:chotu_admin/providers/session_provider.dart';
 import 'package:chotu_admin/providers/users_provider.dart';
 import 'package:chotu_admin/utils/app_constants.dart';
@@ -81,7 +82,7 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  // This widget is the root of your application.
+  /// This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -91,6 +92,8 @@ class _MyAppState extends State<MyApp> {
         ),
         ChangeNotifierProvider(
           create: (_) => DashboardProvider(),
+        ), ChangeNotifierProvider(
+          create: (_) => CategoriesProvider(),
         ),
         ChangeNotifierProvider(
           create: (_) => RealtorProvider(),

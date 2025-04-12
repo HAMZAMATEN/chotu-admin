@@ -11,6 +11,10 @@ class APIConstants {
 
   // categories constants
   static String getAllCategories = baseUrl + "api/store/categories";
+  static String updateCategoryStatus = baseUrl + "api/update/category/status/";
+  static String deleteCategory = baseUrl + "api/delete/category/";
+  static String addCategory = baseUrl + "api/store/add/category";
+
 
   // Users constants
   static String getAllUsers = baseUrl + "api/all/users";
