@@ -39,7 +39,6 @@ dependencies:
   flutter_svg: ^2.0.5
   fl_chart: ^0.67.0
   google_maps_flutter: ^2.5.0
-  geocoding: ^2.1.1
   dropdown_button2: ^2.3.9
   image_picker_for_web: ^3.0.3
   image_picker: ^1.0.0
@@ -57,6 +56,16 @@ dependencies:
   carousel_slider: ^5.0.0
   dots_indicator: ^3.0.0
   font_awesome_flutter: ^10.8.0
+  hive_flutter: ^1.1.0
+  isar: ^3.1.0+1
+  firebase_core:
+  http:
+#  fluttertoast:
+  shimmer: ^3.0.0
+  file_picker: ^10.0.0
+  google_maps_flutter_web: ^0.5.5
+  geolocator: ^10.1.0
+  permission_handler: ^12.0.0
 
 dev_dependencies:
   flutter_test:
