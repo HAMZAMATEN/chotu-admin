@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "493629751703",
+    "project_id": "chotu-admin-app",
+    "storage_bucket": "chotu-admin-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:493629751703:android:c0ffa5635014361617c4d2",
+        "android_client_info": {
+          "package_name": "com.example.chotu_admin"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAmh2Zi847mYTX9c2PkSXmEmdpE7XIq1yk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

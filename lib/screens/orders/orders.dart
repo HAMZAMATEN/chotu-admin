@@ -1,10 +1,15 @@
+import 'package:chotu_admin/screens/orders/widgets/ShowOrderDetailPopupDialog.dart';
 import 'package:chotu_admin/utils/app_Colors.dart';
 import 'package:chotu_admin/utils/app_Paddings.dart';
 import 'package:chotu_admin/utils/app_text_widgets.dart';
 import 'package:chotu_admin/widgets/custom_Button.dart';
 import 'package:chotu_admin/widgets/custom_TextField.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
+
+import '../../generated/assets.dart';
+import 'orderDetailScreen.dart';
 
 class OrderDashboard extends StatefulWidget {
   @override
@@ -37,7 +42,7 @@ class _OrderDashboardState extends State<OrderDashboard> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // Header Row with Date Range and Branch Selector
+                  /// Header Row with Date Range and Branch Selector
                   Row(
                     children: [
                       Expanded(
@@ -222,7 +227,7 @@ class _OrderDashboardState extends State<OrderDashboard> {
                   ),
                   const SizedBox(height: 16),
 
-                  // Status Summary Cards
+                  /// Status Summary Cards
                   Row(
                     children: [
                       Expanded(
@@ -238,46 +243,32 @@ class _OrderDashboardState extends State<OrderDashboard> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
+                  /// Search Bar
 
-                  // Search Bar
-                  Align(
-                    alignment: Alignment.topLeft,
-                    child: SizedBox(
-                      height: 48,
-                      width: 300,
-                      child: TextFormField(
-                        style: getRegularStyle(
-                            color: AppColors.textColor, fontSize: 12),
-                        controller: TextEditingController(),
-                        decoration: InputDecoration(
-                          isDense: true,
-                          hintText: 'Search by order id',
-                          border: const OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Color.fromRGBO(231, 234, 243, 1),
-                                width: .6),
-                          ),
-                          hintStyle: getRegularStyle(
-                              color: AppColors.textColor, fontSize: 12),
-                          filled: true,
-                          fillColor: Colors.white,
-                          enabledBorder: const OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: AppColors.primaryColor, width: .6),
-                          ),
-                          focusedBorder: const OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: AppColors.primaryColor, width: .6),
-                          ),
-                          disabledBorder: const OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: AppColors.primaryColor, width: .6),
+                  Row(
+                    children:[
+                      Expanded(
+                        child: CustomTextField(
+                          width: MediaQuery.of(context).size.width,
+                          title: '',
+                          controller: TextEditingController(),
+                          obscureText: false,
+                          textInputAction: TextInputAction.search,
+                          keyboardType: TextInputType.text,
+                          hintText: 'Search Shops by name',
+                          suffixIcon: SizedBox(
+                            height: 24,
+                            width: 24,
+                            child: Center(
+                              child: SvgPicture.asset(Assets.iconsSearchnormal1),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
+                      )
+                    ] ,
                   ),
+
+
                   const SizedBox(height: 16),
 
                   // Scrollable Data Table
@@ -329,75 +320,81 @@ class _OrderDashboardState extends State<OrderDashboard> {
 
   Widget _buildOrderCard(BuildContext context) {
     return FractionallySizedBox(
-      widthFactor: 1 / 3.16, // Takes 1/3 of the parent width
-      child: Container(
-        width: double.infinity,
-        decoration: BoxDecoration(color: Colors.white, boxShadow: [
-          BoxShadow(
-              offset: const Offset(0, 0),
-              blurRadius: 7,
-              spreadRadius: 0,
-              color: Colors.black.withOpacity(.25)),
-        ]),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              height: 51,
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.topRight,
-                  colors: [
-                    Color(0xff45CF8D),
-                    Color(0xff046938),
-                  ],
+      widthFactor: 1 / 3.16,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 10),
+        child: InkWell(
+          onTap: ()=>showOrderDetailDialog(context),
+          child: Container(
+            width: double.infinity,
+            decoration: BoxDecoration(color: Colors.white, boxShadow: [
+              BoxShadow(
+                  offset: const Offset(0, 0),
+                  blurRadius: 7,
+                  spreadRadius: 0,
+                  color: Colors.black.withOpacity(.25)),
+            ]),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  height: 51,
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.topRight,
+                      colors: [
+                        Color(0xff45CF8D),
+                        Color(0xff046938),
+                      ],
+                    ),
+                  ),
+                  child: Center(
+                      child: Text(
+                    'Order No - xxxxx',
+                    style: getMediumStyle(color: Colors.white, fontSize: 16),
+                  )),
                 ),
-              ),
-              child: Center(
-                  child: Text(
-                'Order No - xxxxx',
-                style: getMediumStyle(color: Colors.white, fontSize: 16),
-              )),
-            ),
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 10.0, vertical: 14),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10.0, vertical: 14),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Order Details',
-                        style: getMediumStyle(
-                            color: AppColors.textColor, fontSize: 16),
+                      Row(
+                        children: [
+                          Text(
+                            'Order Details',
+                            style: getMediumStyle(
+                                color: AppColors.textColor, fontSize: 16),
+                          ),
+                          Spacer(),
+                          Text(
+                            'Delivered',
+                            style: getBoldStyle(
+                                color: AppColors.primaryColor, fontSize: 16),
+                          ),
+                        ],
                       ),
-                      Spacer(),
-                      Text(
-                        'Delivered',
-                        style: getBoldStyle(
-                            color: AppColors.primaryColor, fontSize: 16),
+                      padding16,
+                      _buildRow(title: 'Shops Used', description: '3'),
+                      _buildRow(title: 'Products', description: '7'),
+                      _buildRow(title: 'Delivery Date', description: '20 Feb 2025'),
+                      _buildRow(title: 'Customer', description: 'Customer 1'),
+                      _buildRow(title: 'Rider', description: 'Rider 1'),
+                      _buildRow(title: 'Shop', description: 'Shop 1'),
+                      padding16,
+                      const Divider(
+                        color: Color(0xffAFA9A9),
                       ),
+                      _buildRow(title: 'Total Billing', description: 'Rs. 394'),
                     ],
                   ),
-                  padding16,
-                  _buildRow(title: 'Shops Used', description: '3'),
-                  _buildRow(title: 'Products', description: '7'),
-                  _buildRow(title: 'Delivery Date', description: '20 Feb 2025'),
-                  _buildRow(title: 'Customer', description: 'Customer 1'),
-                  _buildRow(title: 'Rider', description: 'Rider 1'),
-                  _buildRow(title: 'Shop', description: 'Shop 1'),
-                  padding16,
-                  const Divider(
-                    color: Color(0xffAFA9A9),
-                  ),
-                  _buildRow(title: 'Total Billing', description: 'Rs. 394'),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

@@ -68,7 +68,8 @@ class DashboardScreen extends StatelessWidget {
           children: [
             Expanded(
               child: _buildTopCard(
-                  imgPath: Assets.iconsRevenue,
+                  iconPath: Icons.monetization_on,
+
                   title: 'Revenue',
                   amount: '166,580',
                   increase: '5%'),
@@ -76,8 +77,18 @@ class DashboardScreen extends StatelessWidget {
             padding20,
             Expanded(
               child: _buildTopCard(
-                  imgPath: Assets.iconsProduct,
+                  iconPath: Icons.reorder,
+
                   title: 'Total Orders',
+                  amount: '430',
+                  increase: '2%'),
+            ),
+ padding20,
+            Expanded(
+              child: _buildTopCard(
+                  iconPath: Icons.cancel,
+
+                  title: 'Cancel Orders',
                   amount: '430',
                   increase: '2%'),
             ),
@@ -89,16 +100,27 @@ class DashboardScreen extends StatelessWidget {
           children: [
             Expanded(
               child: _buildTopCard(
-                  imgPath: Assets.iconsProduct,
-                  title: 'Total Users',
-                  amount: '430',
+                  iconPath: Icons.shopify_sharp,
+
+                  title: 'Total Shops',
+                  amount: '10',
                   increase: '2%'),
             ),
             padding20,
             Expanded(
               child: _buildTopCard(
-                  imgPath: Assets.iconsCustomer,
+                  iconPath: Icons.verified_user,
+
                   title: 'Total Rides',
+                  amount: '51,580',
+                  increase: '4%'),
+            ),
+
+            padding20,
+            Expanded(
+              child: _buildTopCard(
+                iconPath: Icons.supervised_user_circle,
+                  title: 'Total Users',
                   amount: '51,580',
                   increase: '4%'),
             ),
@@ -113,9 +135,9 @@ class DashboardScreen extends StatelessWidget {
 
 
             Expanded(
-              child: _buildPieChart("Revenue & Orders Info", {
+              child: _buildPieChart("Revenue & Shop's Info", {
                 Color(0xffFF4D4D): 'Revenue', // Give to Rent
-                Color(0xffC084FC): 'Total Orders', // Want to Sell
+                Colors.green: "Total Shop's", // Want to Sell
               }),
             ),
             padding20,
@@ -124,7 +146,16 @@ class DashboardScreen extends StatelessWidget {
             Expanded(
               child: _buildPieChart("Total Rider's & User's Info", {
                 Color(0xffFF4D4D): "Rider's", // Give to Rent
-                Color(0xffC084FC): "User's", // Want to Sell
+                Colors.green: "User's", // Want to Sell
+              }),
+            ),padding20,
+
+
+            Expanded(
+              child: _buildPieChart("Order's Info", {
+                Colors.blue: "Total Order's",
+                Colors.green: "Delivered Order's",
+                Color(0xffFF4D4D): "Cancel Order's",
               }),
             ),
           ],
@@ -136,7 +167,7 @@ class DashboardScreen extends StatelessWidget {
   }
 
   Widget _buildTopCard({
-    required String imgPath,
+    required IconData iconPath,
     required String title,
     required String amount,
     required String increase,
@@ -155,7 +186,9 @@ class DashboardScreen extends StatelessWidget {
               Container(
                 height: 24,
                 width: 24,
-                child: Center(child: Image.asset(imgPath)),
+                child: Center(child: Icon(iconPath,
+                color: Colors.green,
+                )),
               ),
               padding5,
               Text(
@@ -169,7 +202,7 @@ class DashboardScreen extends StatelessWidget {
           ),
           padding10,
           Text(
-            '$amount YER',
+            '$amount',
             style: getMediumStyle(color: Color(0xff1f1f1f), fontSize: 32),
           ),
           padding10,
@@ -181,13 +214,14 @@ class DashboardScreen extends StatelessWidget {
                 child: Center(
                   child: SvgPicture.asset(
                     Assets.iconsTrendup,
+                    color: Colors.green,
                   ),
                 ),
               ),
               Text(
                 increase,
                 style: getMediumStyle(
-                  color: Color(0xffFF4D4D),
+                  color:Colors.green,
                   fontSize: 16,
                 ),
               ),
@@ -231,45 +265,46 @@ class DashboardScreen extends StatelessWidget {
                         getMediumStyle(color: Color(0xff1f1f1f), fontSize: 20),
                   ),
                   Spacer(),
-                  Container(
-                    height: 40,
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      color: Color(0xffFAFAFA),
-                      border: Border.all(
-                        color: Color(0xffdddddd),
-                        width: 1,
-                      ),
-                    ),
-                    child: DropdownButtonHideUnderline(
-                      child: DropdownButton<String>(
-                        icon: null,
-                        value: provider.selectedStatus,
-                        dropdownColor: Colors.white,
-                        isExpanded: false,
-                        style: getMediumStyle(
-                          fontSize: 14,
-                          color: Color(0xff8F8F8F),
-                        ),
-                        items: provider.statuses.map((status) {
-                          return DropdownMenuItem<String>(
-                            value: status,
-                            child: Text(
-                              status,
-                              style: getMediumStyle(
-                                  color: Colors.black, fontSize: 14),
-                            ),
-                          );
-                        }).toList(),
-                        onChanged: (newValue) {
-                          if (newValue != null) {
-                            provider.setSelectedStatus(newValue);
-                          }
-                        },
-                      ),
-                    ),
-                  ),
+                  SizedBox(),
+                  // Container(
+                  //   height: 40,
+                  //   padding: const EdgeInsets.symmetric(horizontal: 10),
+                  //   decoration: BoxDecoration(
+                  //     borderRadius: BorderRadius.circular(8),
+                  //     color: Color(0xffFAFAFA),
+                  //     border: Border.all(
+                  //       color: Color(0xffdddddd),
+                  //       width: 1,
+                  //     ),
+                  //   ),
+                  //   child: DropdownButtonHideUnderline(
+                  //     child: DropdownButton<String>(
+                  //       icon: null,
+                  //       value: provider.selectedStatus,
+                  //       dropdownColor: Colors.white,
+                  //       isExpanded: false,
+                  //       style: getMediumStyle(
+                  //         fontSize: 14,
+                  //         color: Color(0xff8F8F8F),
+                  //       ),
+                  //       items: provider.statuses.map((status) {
+                  //         return DropdownMenuItem<String>(
+                  //           value: status,
+                  //           child: Text(
+                  //             status,
+                  //             style: getMediumStyle(
+                  //                 color: Colors.black, fontSize: 14),
+                  //           ),
+                  //         );
+                  //       }).toList(),
+                  //       onChanged: (newValue) {
+                  //         if (newValue != null) {
+                  //           provider.setSelectedStatus(newValue);
+                  //         }
+                  //       },
+                  //     ),
+                  //   ),
+                  // ),
                 ],
               ),
               padding20,
@@ -316,7 +351,8 @@ class DashboardScreen extends StatelessWidget {
                 child: Icon(
                   Icons.monetization_on_outlined
                   ,
-                  color: Color(0xffEA4649),
+                  color:                     Colors.green,
+
                   size: 20,
                 ),
               ),
@@ -335,7 +371,8 @@ class DashboardScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
                   'copy link',
-                  style: getMediumStyle(color: Color(0xffEA4649), fontSize: 14),
+                  style: getMediumStyle(color:                     Colors.green,
+                      fontSize: 14),
                 ),
               ),
               hintText: ''),
@@ -346,7 +383,8 @@ class DashboardScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
                   'copy link',
-                  style: getMediumStyle(color: Color(0xffEA4649), fontSize: 14),
+                  style: getMediumStyle(color:                    Colors.green,
+                      fontSize: 14),
                 ),
               ),
               controller: TextEditingController(
@@ -580,7 +618,7 @@ class UserTable extends StatelessWidget {
                   Expanded(
                     child: InkWell(
                       onTap: () {
-                        showRealtorProfileDialog(context);
+                        // showUserProfileDialog(context);
                       },
                       child: Center(
                         child: Container(
@@ -588,7 +626,7 @@ class UserTable extends StatelessWidget {
                           width: 80,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8),
-                            color: AppColors.primaryColor.withOpacity(.7),
+                            color: Colors.green,
                           ),
                           child: Center(
                             child: Text(
