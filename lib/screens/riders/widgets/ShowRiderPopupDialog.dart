@@ -1,4 +1,7 @@
+import 'package:chotu_admin/providers/riders_provider.dart';
 import 'package:chotu_admin/screens/riders/ShiftDetailScreen.dart';
+import 'package:chotu_admin/widgets/ShowConformationAlert.dart';
+import 'package:chotu_admin/widgets/cache_image_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -11,7 +14,10 @@ import 'package:chotu_admin/utils/app_Paddings.dart';
 import 'package:chotu_admin/utils/app_text_widgets.dart';
 import 'package:chotu_admin/widgets/custom_Button.dart';
 
-void showRealtorProfileDialog(BuildContext context) {
+import '../../../model/all_riders_model.dart';
+import 'add_edit_rider_alert.dart';
+
+void showRealtorProfileDialog(BuildContext context, Rider rider) {
   showDialog(
     context: context,
     barrierDismissible: true, // Allows closing the dialog by tapping outside
@@ -22,7 +28,7 @@ void showRealtorProfileDialog(BuildContext context) {
           borderRadius: BorderRadius.circular(16),
         ),
         child: SizedBox(
-          width: 370,
+          width: 420,
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: SingleChildScrollView(
@@ -56,26 +62,22 @@ void showRealtorProfileDialog(BuildContext context) {
                       borderRadius: BorderRadius.circular(
                         50,
                       ),
-                      child: const Image(
-                          image: AssetImage(
-                        Assets.imagesAppLogo, // Replace with user's image URL
-                      )),
+                      child: rider.profileImage != null
+                          ? CacheImageWidget(imageUrl: rider.profileImage ?? "")
+                          : const Image(
+                              image: AssetImage(
+                              Assets
+                                  .imagesAppLogo, // Replace with user's image URL
+                            )),
                     ),
                   ),
                   padding5,
                   // User Name and Role
                   Text(
-                    "John Doe",
+                    rider.name.toString(),
                     style: getMediumStyle(fontSize: 20, color: Colors.black),
                   ),
-                  Text(
-                    "Rider",
-                    style: getRegularStyle(
-                      fontSize: 15,
-                      color: Color(0xffB5B8BC),
-                    ),
-                  ),
-                  padding20,
+                  padding12,
                   // User Information
                   Container(
                     decoration: BoxDecoration(
@@ -99,133 +101,100 @@ void showRealtorProfileDialog(BuildContext context) {
                       children: [
                         Text(
                           'Rider Information',
-                          style: getBoldStyle(color: Colors.black, fontSize: 20),
+                          style:
+                              getBoldStyle(color: Colors.black, fontSize: 20),
                         ),
                         padding10,
-                        buildInfoRow("Orders Assigned", "57"),
-                        buildInfoRow("Orders Completed", "57"),
-                        buildInfoRow("Order Pending", "0"),
-                        buildInfoRow("Behaviour", "90%"),
-                        buildInfoRow("Shift Work", "100%"),
-                        buildInfoRow("Total Earnings", "13000 PKR"),
-                        // Consumer<SideBarProvider>(
-                        //   builder: (context, provider, child) {
-                        //     return Padding(
-                        //       padding: const EdgeInsets.symmetric(vertical: 4),
-                        //       child: Row(
-                        //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        //         children: [
-                        //           Text(
-                        //             "Overall Ratings",
-                        //             style: getRegularStyle(
-                        //                 fontSize: 14, color: Color(0xff7D7F88)),
-                        //           ),
-                        //           InkWell(
-                        //             onTap: () {
-                        //               Navigator.pop(context);
-                        //               provider.setScreen(
-                        //                 const ReviewScreen(),
-                        //               );
-                        //             },
-                        //             child: Text(
-                        //               "Check Reviews",
-                        //               style: getMediumStyle(
-                        //                 color: Colors.black,
-                        //                 fontSize: 14,
-                        //               ),
-                        //             ),
-                        //           ),
-                        //         ],
-                        //       ),
-                        //     );
-                        //   },
+                        buildInfoRow("Email", rider.email ?? ""),
+                        buildInfoRow("Phone Number", rider.mobileNo ?? ""),
+                        buildInfoRow("CNIC", rider.nic ?? ""),
+
+                        if (rider.city != null)
+                          buildInfoRow("City", rider.city ?? ""),
+                        if (rider.fullAddress != null)
+                          buildInfoRow("Full Address", rider.fullAddress ?? ""),
+                        if (rider.flatHouseNo != null)
+                          buildInfoRow(
+                              "Flat/House No", rider.flatHouseNo ?? ""),
+                        if (rider.flatSocity != null)
+                          buildInfoRow("Flat/Society", rider.flatSocity ?? ""),
+                        if (rider.floor != null)
+                          buildInfoRow("Floor", rider.floor ?? ""),
+
+                        padding10,
+                        // Container(
+                        //   height: 25,
+                        //   child: RatingBar.builder(
+                        //     initialRating: 4,
+                        //     minRating: 1,
+                        //     direction: Axis.horizontal,
+                        //     allowHalfRating: false,
+                        //     unratedColor: Color(0xffd4d4d4),
+                        //     itemCount: 5,
+                        //     itemSize: 20,
+                        //     itemPadding: EdgeInsets.symmetric(horizontal: 2.0),
+                        //     itemBuilder: (context, _) => SvgPicture.asset(
+                        //       Assets.iconsStar,
+                        //       color: Color(0xffFFC700),
+                        //     ),
+                        //     onRatingUpdate: (rating) {},
+                        //   ),
                         // ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 4),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'Shift Details',
-                                style: getRegularStyle(
-                                    fontSize: 14, color: const Color(0xff7D7F88)),
-                              ),
-                              InkWell(
-                                onTap: () {
-                                  Navigator.pop(context);
-                                  context.read<SideBarProvider>().setScreen(
-                                    const ShiftDetailScreen(),
-                                  );
-                                },
-                                child: Text(
-                                  'Check Now',
-                                  style: getSemiBoldStyle(
-                                    color: AppColors.primaryColor,
-                                    fontSize: 14,
-                                  ).copyWith(
-                                    decorationColor: AppColors.primaryColor,
-                                    decoration: TextDecoration.underline,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        padding10,
-                        Container(
-                          height: 25,
-                          child: RatingBar.builder(
-                            initialRating: 4,
-                            minRating: 1,
-                            direction: Axis.horizontal,
-                            allowHalfRating: false,
-                            unratedColor: Color(0xffd4d4d4),
-                            itemCount: 5,
-                            itemSize: 20,
-                            itemPadding: EdgeInsets.symmetric(horizontal: 2.0),
-                            itemBuilder: (context, _) => SvgPicture.asset(
-                              Assets.iconsStar,
-                              color: Color(0xffFFC700),
-                            ),
-                            onRatingUpdate: (rating) {},
-                          ),
-                        ),
-                        padding15,
+                        // padding15,
                       ],
                     ),
                   ),
-                  padding10,
-                  // User Joining Date
-                  Text(
-                    "Joined at 14/12/2024 and is a frequent poster",
-                    style: getMediumStyle(
-                      color: Colors.black,
-                      fontSize: 15,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  padding15,
+                  // padding10,
+                  // // User Joining Date
+                  // Text(
+                  //   "Joined at 14/12/2024 and is a frequent poster",
+                  //   style: getMediumStyle(
+                  //     color: Colors.black,
+                  //     fontSize: 15,
+                  //   ),
+                  //   textAlign: TextAlign.center,
+                  // ),
+                  padding12,
                   // Action Buttons
 
                   CustomButton(
                     height: 50,
                     width: double.infinity,
                     btnColor: AppColors.primaryColor,
-                    btnText: 'Contact',
+                    btnText: 'Update Profile',
                     btnTextColor: Colors.white,
-                    onPress: () {},
+                    onPress: () {
+                      Provider.of<RidersProvider>(context, listen: false)
+                          .getRiderUpdateData(rider);
+                      Navigator.pop(context);
+                      showAddEditRiderDialog(
+                        context,
+                        isEdit: true,
+                        id: rider.id.toString(),
+                      );
+                    },
                   ),
 
                   const SizedBox(height: 8),
-                  TextButton(
-                    onPressed: () {},
-                    child: Text(
-                      "Ban Profile",
-                      style: getMediumStyle(
-                        color: Colors.black,
-                        fontSize: 17,
-                      ),
-                    ),
+                  CustomButton(
+                    height: 50,
+                    width: double.infinity,
+                    btnColor: Colors.transparent,
+                    btnText: 'Remove Profile',
+                    btnTextColor: AppColors.textColor,
+                    onPress: () {
+                      showCustomConfirmationDialog(
+                          context: context,
+                          message: "Do you really want to remove the rider?",
+                          onConfirm: () {
+                            Provider.of<RidersProvider>(context, listen: false)
+                                .removeRiderFromDataBase(
+                              context,
+                              rider.id.toString(),
+                            );
+                          },
+                          confirmText: "Yes, remove it!");
+                    },
                   ),
                 ],
               ),
@@ -243,15 +212,26 @@ Widget buildInfoRow(String title, String value) {
     child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          title,
-          style: getRegularStyle(fontSize: 14, color: Color(0xff7D7F88)),
+        Expanded(
+          child: Text(
+            title,
+            style: getRegularStyle(fontSize: 14, color: Color(0xff7D7F88)),
+          ),
         ),
-        Text(
-          value,
-          style: getMediumStyle(
-            color: Colors.black,
-            fontSize: 14,
+        padding12,
+        Expanded(
+          flex: 2,
+          child: Align(
+            alignment: Alignment.topRight,
+            child: Text(
+              value,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+              style: getSemiBoldStyle(
+                color: Colors.black,
+                fontSize: 12,
+              ),
+            ),
           ),
         ),
       ],

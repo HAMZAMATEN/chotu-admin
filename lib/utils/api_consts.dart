@@ -23,6 +23,7 @@ class APIConstants {
   // RIDER constants
   static String getAllRiders = baseUrl + "api/all/riders";
   static String updateRiderStatus = baseUrl + "api/update/rider/status/";
+  static String removeRider = baseUrl + "api/remove/rider/";
 
 
 }
