@@ -93,6 +93,7 @@ class RidersProvider with ChangeNotifier {
   }
 
   List<Rider>? allRidersList;
+  List<Rider>? filterRidersList;
 
   Pagination? pagination;
 
@@ -111,6 +112,8 @@ class RidersProvider with ChangeNotifier {
   Future<void> getAllRiders(int page) async {
     setCurrentPage(page);
     allRidersList = null;
+    filterRidersList = null;
+    searchController.clear();
     try {
       http.Response response = await apiServicesProvider
           .getRequestResponse("${APIConstants.getAllRiders}?page=$page");
@@ -132,7 +135,11 @@ class RidersProvider with ChangeNotifier {
           tempRidersList.add(user);
         });
         allRidersList?.clear();
+
         allRidersList = tempRidersList;
+        filterRidersList?.clear();
+
+        filterRidersList = tempRidersList;
       }
       notifyListeners();
     } catch (e) {
@@ -140,6 +147,8 @@ class RidersProvider with ChangeNotifier {
       AppFunctions.showToastMessage(message: "Exception while getAllUsers: $e");
     }
   }
+
+  /// update rider status
 
   Future<void> updateRiderStatus(Rider rider) async {
     try {
@@ -173,6 +182,8 @@ class RidersProvider with ChangeNotifier {
       ShowToastDialog.closeLoader();
     }
   }
+
+  /// add rider
 
   // Controllers for input fields
   final emailController = TextEditingController();
@@ -418,11 +429,10 @@ class RidersProvider with ChangeNotifier {
     notifyListeners();
   }
 
-
-  Future<void> updateRider(BuildContext context,String id) async {
+  Future<void> updateRider(BuildContext context, String id) async {
     try {
       // EasyLoading.showToast("Uploading Rider Data");
-      ShowToastDialog.showLoader("Uploading Rider Data");
+      ShowToastDialog.showLoader("Updating Rider Data");
       final uri = Uri.parse(
           'https://chotuapp.deeptech.pk/api/update/rider/$id'); // 🔁 Replace with your API
       final request = await http.MultipartRequest('POST', uri);
@@ -436,9 +446,6 @@ class RidersProvider with ChangeNotifier {
             filename: storeRiderImage!['fileName'],
           ),
         );
-      }else if(imageUrl !=null){
-        request.fields['profile_image'] = imageUrl; // "rider"
-
       }
 
       request.headers['Content-Type'] = 'multipart/form-data';
@@ -465,13 +472,13 @@ class RidersProvider with ChangeNotifier {
       final response = await request.send();
 
       if (response.statusCode == 200) {
-        await getAllRiders(_currentPage);
         Navigator.of(context).pop(); // Close the dialog
         EasyLoading.dismiss();
         resetAllFields();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Rider added successfully!')),
+          const SnackBar(content: Text('Rider updated successfully!')),
         );
+        await getAllRiders(_currentPage);
         print('RIDER ADDED SUCCESSFULLY');
       } else {
         final responseBody = await response.stream.bytesToString();
@@ -493,7 +500,8 @@ class RidersProvider with ChangeNotifier {
 
             ShowToastDialog.showToast(errorMessage.trim());
           } else {
-            ShowToastDialog.showToast("Failed to add rider. Please try again.");
+            ShowToastDialog.showToast(
+                "Failed to update rider. Please try again.");
           }
         } catch (e) {
           print('Error parsing response: $e');
@@ -506,8 +514,33 @@ class RidersProvider with ChangeNotifier {
       print('Rider Addition failed: ${e}');
       print("EXCEPTION WHILE ADDING RIDER TO DB");
       ShowToastDialog.showToast(
-          "EXCEPTION WHILE ADDING RIDER. PLEASE TRY AGAIN LATER.");
+          "EXCEPTION WHILE UPDATING RIDER. PLEASE TRY AGAIN LATER.");
     }
   }
 
+  /// search riders
+
+  var searchController = TextEditingController();
+
+  void searchRiders(val) {
+    if (allRidersList != null) {
+      allRidersList = filterRidersList;
+      allRidersList = List.from(allRidersList!
+          .where((e) =>
+              e.name
+                  .toString()
+                  .toLowerCase()
+                  .contains(val.toString().toLowerCase()) ||
+              e.email
+                  .toString()
+                  .toLowerCase()
+                  .contains(val.toString().toLowerCase()) ||
+              e.mobileNo.toString().contains(val) ||
+              e.nic.toString().contains(val))
+          .toList());
+
+      print('length:::${allRidersList!.length}');
+      notifyListeners();
+    }
+  }
 }
