@@ -45,13 +45,16 @@ class _AllRidersScreenState extends State<AllRidersScreen> {
                 children: [
                   Expanded(
                     child: CustomTextField(
+                      onChanged: (val){
+                        provider.searchRiders(val);
+                      },
                       width: MediaQuery.of(context).size.width,
                       title: '',
-                      controller: TextEditingController(),
+                      controller: provider.searchController,
                       obscureText: false,
                       textInputAction: TextInputAction.search,
                       keyboardType: TextInputType.text,
-                      hintText: 'Search riders by name, email',
+                      hintText: 'Search riders by name, email,number or nic',
                       suffixIcon: SizedBox(
                         height: 24,
                         width: 24,
