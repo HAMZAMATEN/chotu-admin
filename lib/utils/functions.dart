@@ -40,8 +40,8 @@ class AppFunctions {
 
   static showToastMessage({required String message}) {
     ScaffoldMessenger.of(navigatorKey.currentState!.context).showSnackBar(
-      const SnackBar(
-          content: Text('Shop added successfully!')),
+      SnackBar(
+          content: Text(message)),
     );
     // Fluttertoast.showToast(
     //     msg: "${message}",

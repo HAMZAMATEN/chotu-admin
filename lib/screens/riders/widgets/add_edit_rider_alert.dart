@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chotu_admin/providers/riders_provider.dart';
 import 'package:chotu_admin/utils/app_Colors.dart';
 import 'package:chotu_admin/utils/app_Paddings.dart';
@@ -12,12 +13,17 @@ import 'package:provider/provider.dart';
 import '../../../generated/assets.dart';
 import '../../../widgets/custom_TextField.dart';
 
-class AddRiderDialog extends StatefulWidget {
+class AddEditRiderDialog extends StatefulWidget {
+  final bool isEdit;
+  final String id;
+
+  const AddEditRiderDialog({super.key, required this.isEdit, required this.id});
+
   @override
-  _AddRiderDialogState createState() => _AddRiderDialogState();
+  _AddEditRiderDialogState createState() => _AddEditRiderDialogState();
 }
 
-class _AddRiderDialogState extends State<AddRiderDialog> {
+class _AddEditRiderDialogState extends State<AddEditRiderDialog> {
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -70,16 +76,21 @@ class _AddRiderDialogState extends State<AddRiderDialog> {
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(50),
-                        child: provider.storeRiderImage == null
+                        child: provider.storeRiderImage == null &&
+                                provider.imageUrl == null
                             ? Center(
                                 child: SvgPicture.asset(
                                   Assets.iconsMageUsersFill,
                                 ),
                               )
-                            : Image.memory(
-                                provider.storeRiderImage!['image'],
-                                fit: BoxFit.cover,
-                              ),
+                            : provider.storeRiderImage == null &&
+                                    provider.imageUrl != null
+                                ? CachedNetworkImage(
+                                    imageUrl: provider.imageUrl)
+                                : Image.memory(
+                                    provider.storeRiderImage!['image'],
+                                    fit: BoxFit.cover,
+                                  ),
                       ),
                     ),
                   ),
@@ -141,7 +152,8 @@ class _AddRiderDialogState extends State<AddRiderDialog> {
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 8.0),
                                   child: CustomTextField(
-                                    hintText: 'Password (At-least 8 characters)',
+                                    hintText:
+                                        'Password (At-least 8 characters)',
                                     isBoldHint: true,
                                     controller: provider.passwordController,
                                     obscureText: false,
@@ -452,7 +464,11 @@ class _AddRiderDialogState extends State<AddRiderDialog> {
             InkWell(
               onTap: () {
                 if (_formKey.currentState!.validate()) {
-                  provider.addRiderToDataBase(context);
+                  if (widget.isEdit) {
+                    provider.updateRider(context, widget.id);
+                  } else {
+                    provider.addRiderToDataBase(context);
+                  }
                   // Add rider logic goes here
                 }
               },
@@ -462,7 +478,7 @@ class _AddRiderDialogState extends State<AddRiderDialog> {
                     borderRadius: BorderRadius.circular(8),
                     color: AppColors.primaryColor),
                 child: Text(
-                  'Add Rider',
+                  widget.isEdit ? "Update Rider" : 'Add Rider',
                   style: getMediumStyle(
                     color: Colors.white,
                   ),
@@ -476,9 +492,14 @@ class _AddRiderDialogState extends State<AddRiderDialog> {
   }
 }
 
-void showAddRiderDialog(BuildContext context) {
+void showAddEditRiderDialog(BuildContext context,
+    {required bool isEdit, required String id}) {
   showDialog(
     context: context,
-    builder: (context) => Container(child: AddRiderDialog()),
+    builder: (context) => Container(
+        child: AddEditRiderDialog(
+      isEdit: isEdit,
+      id: id,
+    )),
   );
 }

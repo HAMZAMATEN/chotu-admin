@@ -31,7 +31,7 @@ class CustomButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onPress,
-      overlayColor: WidgetStateColor.transparent,
+      borderRadius: BorderRadius.circular(radius),
       child: Container(
         height: height,
         width: width,

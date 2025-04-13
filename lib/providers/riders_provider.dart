@@ -94,15 +94,39 @@ class RidersProvider with ChangeNotifier {
 
   List<Rider>? allRidersList;
 
-  Future<void> getAllRiders() async {
+  Pagination? pagination;
+
+  int _currentPage = 1;
+
+  int get currentPage => _currentPage;
+
+  void setCurrentPage(val) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _currentPage = val;
+
+      notifyListeners();
+    });
+  }
+
+  Future<void> getAllRiders(int page) async {
+    setCurrentPage(page);
+    allRidersList = null;
     try {
       http.Response response = await apiServicesProvider
-          .getRequestResponse(APIConstants.getAllRiders);
+          .getRequestResponse("${APIConstants.getAllRiders}?page=$page");
 
       print("RESPONSE CODE FOR getAllRiders ${response.statusCode}");
       if (response.statusCode == 200) {
+        AllRidersModel riderModel =
+            AllRidersModel.fromJson(jsonDecode(response.body));
         List<Rider> tempRidersList = [];
+
         List<dynamic> dataList = (jsonDecode(response.body))['data'];
+
+        pagination = riderModel.pagination;
+
+        setCurrentPage(pagination!.currentPage ?? 1);
+
         dataList.forEach((shopData) {
           Rider user = Rider.fromJson(shopData);
           tempRidersList.add(user);
@@ -112,6 +136,7 @@ class RidersProvider with ChangeNotifier {
       }
       notifyListeners();
     } catch (e) {
+      print('Exception while getAllUsers: $e');
       AppFunctions.showToastMessage(message: "Exception while getAllUsers: $e");
     }
   }
@@ -273,7 +298,7 @@ class RidersProvider with ChangeNotifier {
       final response = await request.send();
 
       if (response.statusCode == 200) {
-        await getAllRiders();
+        await getAllRiders(_currentPage);
         Navigator.of(context).pop(); // Close the dialog
         EasyLoading.dismiss();
         resetAllFields();
@@ -337,4 +362,152 @@ class RidersProvider with ChangeNotifier {
 
     notifyListeners();
   }
+
+  /// remove rider
+
+  Future<void> removeRiderFromDataBase(BuildContext context, String id) async {
+    try {
+      // EasyLoading.showToast("Uploading Rider Data");
+      ShowToastDialog.showLoader("Removing Rider Data");
+
+      http.Response response = await apiServicesProvider
+          .getRequestResponse("${APIConstants.removeRider}$id");
+
+      if (response.statusCode == 200) {
+        Navigator.of(context).pop(); // Close the dialog
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Rider removed successfully!')),
+        );
+        EasyLoading.dismiss();
+        await getAllRiders(_currentPage);
+
+        print('RIDER REMOVED SUCCESSFULLY');
+      } else {
+        final responseBody = await response.body;
+        print('Rider Addition failed: $responseBody');
+
+        ShowToastDialog.showToast("Failed to remove rider. Please try again.");
+
+        EasyLoading.dismiss();
+      }
+    } catch (e) {
+      EasyLoading.dismiss();
+      print('Rider Addition failed: ${e}');
+      print("EXCEPTION WHILE ADDING RIDER TO DB");
+      ShowToastDialog.showToast(
+          "EXCEPTION WHILE REMOVING RIDER. PLEASE TRY AGAIN LATER.");
+    }
+  }
+
+  /// update rider data
+
+  var imageUrl;
+
+  void getRiderUpdateData(Rider rider) {
+    emailController.text = rider.email ?? "";
+    nameController.text = rider.name ?? "";
+    passwordController.text = rider.password ?? "";
+    phoneController.text = rider.mobileNo ?? "";
+    cnicController.text = rider.nic ?? "";
+    cityController.text = rider.city ?? "";
+    flatSocietyController.text = rider.flatSocity ?? "";
+    flatHouseNoController.text = rider.flatHouseNo ?? "";
+    floorController.text = rider.floor ?? "";
+    addressController.text = rider.fullAddress ?? "";
+    imageUrl = rider.profileImage ?? "";
+    notifyListeners();
+  }
+
+
+  Future<void> updateRider(BuildContext context,String id) async {
+    try {
+      // EasyLoading.showToast("Uploading Rider Data");
+      ShowToastDialog.showLoader("Uploading Rider Data");
+      final uri = Uri.parse(
+          'https://chotuapp.deeptech.pk/api/update/rider/$id'); // 🔁 Replace with your API
+      final request = await http.MultipartRequest('POST', uri);
+
+      // Add image file
+      if (storeRiderImage != null) {
+        request.files.add(
+          http.MultipartFile.fromBytes(
+            'profile_image',
+            storeRiderImage!['image'],
+            filename: storeRiderImage!['fileName'],
+          ),
+        );
+      }else if(imageUrl !=null){
+        request.fields['profile_image'] = imageUrl; // "rider"
+
+      }
+
+      request.headers['Content-Type'] = 'multipart/form-data';
+      request.headers['Authorization'] = 'Bearer ${AppConstants.authToken}';
+      // Add text fields
+      request.fields['nic'] = cnicController.text; // "0023456789121"
+      request.fields['name'] = nameController.text; // "rider"
+      request.fields['email'] = emailController.text; // "i@am.rider31"
+      request.fields['password'] = passwordController.text; // "rider123"
+      request.fields['mobile_no'] = phoneController.text; // "12345678912"
+      request.fields['city'] = cityController.text; // "Lahore"
+      request.fields['address'] =
+          addressController.text; // "123, Some Street, Lahore, Pakistan"
+      request.fields['latitude'] = latitude
+          .toString(); // or from picked place: latLng.latitude.toString()
+      request.fields['longitude'] = longitude
+          .toString(); // or from picked place: latLng.longitude.toString()
+      request.fields['flat_socity'] =
+          flatSocietyController.text; // "Some Society Name"
+      request.fields['flat_house_no'] = flatHouseNoController.text; // "12B"
+      request.fields['floor'] = floorController.text; // "3rd"
+
+      // Send request
+      final response = await request.send();
+
+      if (response.statusCode == 200) {
+        await getAllRiders(_currentPage);
+        Navigator.of(context).pop(); // Close the dialog
+        EasyLoading.dismiss();
+        resetAllFields();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Rider added successfully!')),
+        );
+        print('RIDER ADDED SUCCESSFULLY');
+      } else {
+        final responseBody = await response.stream.bytesToString();
+        print('Rider Addition failed: $responseBody');
+
+        try {
+          final decodedBody = json.decode(responseBody);
+
+          if (decodedBody['errors'] != null) {
+            final errors = decodedBody['errors'] as Map<String, dynamic>;
+
+            String errorMessage = '';
+
+            errors.forEach((key, value) {
+              if (value is List && value.isNotEmpty) {
+                errorMessage += '${value[0]}\n';
+              }
+            });
+
+            ShowToastDialog.showToast(errorMessage.trim());
+          } else {
+            ShowToastDialog.showToast("Failed to add rider. Please try again.");
+          }
+        } catch (e) {
+          print('Error parsing response: $e');
+          ShowToastDialog.showToast("Unexpected error occurred.");
+        }
+        EasyLoading.dismiss();
+      }
+    } catch (e) {
+      EasyLoading.dismiss();
+      print('Rider Addition failed: ${e}');
+      print("EXCEPTION WHILE ADDING RIDER TO DB");
+      ShowToastDialog.showToast(
+          "EXCEPTION WHILE ADDING RIDER. PLEASE TRY AGAIN LATER.");
+    }
+  }
+
 }

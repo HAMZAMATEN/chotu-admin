@@ -1,5 +1,6 @@
-import 'package:chotu_admin/screens/riders/widgets/AddRiderAlert.dart';
+import 'package:chotu_admin/screens/riders/widgets/add_edit_rider_alert.dart';
 import 'package:chotu_admin/screens/riders/widgets/shimmer_effect_rider.dart';
+import 'package:chotu_admin/widgets/pagination_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
@@ -25,89 +26,105 @@ class _AllRidersScreenState extends State<AllRidersScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    Provider.of<RidersProvider>(context, listen: false).getAllRiders();
+    Provider.of<RidersProvider>(context, listen: false).getAllRiders(1);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 30,
-        vertical: 5,
-      ),
-      child: Column(
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
+    return Consumer<RidersProvider>(
+      builder: (context, provider, child) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 30,
+            vertical: 5,
+          ),
+          child: Column(
             children: [
-              Expanded(
-                child: CustomTextField(
-                  width: MediaQuery.of(context).size.width,
-                  title: '',
-                  controller: TextEditingController(),
-                  obscureText: false,
-                  textInputAction: TextInputAction.search,
-                  keyboardType: TextInputType.text,
-                  hintText: 'Search riders by name, email',
-                  suffixIcon: SizedBox(
-                    height: 24,
-                    width: 24,
-                    child: Center(
-                      child: SvgPicture.asset(Assets.iconsSearchnormal1),
-                    ),
-                  ),
-                ),
-              ),
-              padding12,
-              InkWell(
-                onTap: () {
-                  Provider.of<RidersProvider>(context, listen: false)
-                      .resetAllFields();
-
-                  showAddRiderDialog(context);
-                },
-                child: Align(
-                  alignment: Alignment.topRight,
-                  child: Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      color: AppColors.primaryColor,
-                    ),
-                    child: Text(
-                      'Add New Rider',
-                      style: getSemiBoldStyle(
-                        color: AppColors.whiteColor,
-                        fontSize: 16,
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Expanded(
+                    child: CustomTextField(
+                      width: MediaQuery.of(context).size.width,
+                      title: '',
+                      controller: TextEditingController(),
+                      obscureText: false,
+                      textInputAction: TextInputAction.search,
+                      keyboardType: TextInputType.text,
+                      hintText: 'Search riders by name, email',
+                      suffixIcon: SizedBox(
+                        height: 24,
+                        width: 24,
+                        child: Center(
+                          child: SvgPicture.asset(Assets.iconsSearchnormal1),
+                        ),
                       ),
                     ),
                   ),
+                  padding12,
+                  InkWell(
+                    onTap: () {
+                      Provider.of<RidersProvider>(context, listen: false)
+                          .resetAllFields();
+
+                      showAddEditRiderDialog(context, isEdit: false, id: "");
+                    },
+                    child: Align(
+                      alignment: Alignment.topRight,
+                      child: Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          color: AppColors.primaryColor,
+                        ),
+                        child: Text(
+                          'Add New Rider',
+                          style: getSemiBoldStyle(
+                            color: AppColors.whiteColor,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              padding30,
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: Color(0xffF1F1F1),
+                          width: 1,
+                        )),
+                    child: Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+                      child: UserTable(),
+                    ),
+                  ),
                 ),
               ),
+              padding20,
+              PaginationWidget(
+                currentPage: provider.currentPage,
+                lastPage: provider.pagination == null
+                    ? 1
+                    : provider.pagination!.lastPage ?? 1,
+                onPageSelected: (int selectedPage) {
+                  // fetch data for selectedPage
+                  print("Go to page $selectedPage");
+                  provider.getAllRiders(selectedPage);
+                },
+              ),
+              padding20,
             ],
           ),
-          padding30,
-
-          Expanded(
-            child: SingleChildScrollView(
-              child: Container(
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: Color(0xffF1F1F1),
-                      width: 1,
-                    )),
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-                  child: UserTable(),
-                ),
-              ),
-            ),
-          ),
-          padding20,
-        ],
-      ),
+        );
+      },
     );
   }
 }
@@ -302,7 +319,7 @@ class UserTable extends StatelessWidget {
                         Expanded(
                           child: InkWell(
                             onTap: () {
-                              showRealtorProfileDialog(context);
+                              showRealtorProfileDialog(context, rider);
                             },
                             child: Center(
                               child: Container(
