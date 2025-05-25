@@ -9,8 +9,10 @@ import 'package:chotu_admin/utils/hive_prefrences.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:chotu_admin/providers/riders_provider.dart';
 import 'package:chotu_admin/providers/add_properties_provider.dart';
@@ -31,11 +33,7 @@ final navigatorKey = GlobalKey<NavigatorState>();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   setUrlStrategy(PathUrlStrategy());
-  // final ph = Permi;
-  // final requested = await ph.requestPermissions([
-  //   PermissionGroup.locationAlways,
-  //   PermissionGroup.locationWhenInUse
-  // ]);
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );

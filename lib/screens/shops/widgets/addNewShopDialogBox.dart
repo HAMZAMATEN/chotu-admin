@@ -6,6 +6,8 @@ import 'package:chotu_admin/utils/app_text_widgets.dart';
 import 'package:chotu_admin/utils/functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:permission_handler/permission_handler.dart';
 // import 'package:geocoding/geocoding.dart';
 import 'package:provider/provider.dart';
 
@@ -13,7 +15,10 @@ import '../../../generated/assets.dart';
 import '../../../widgets/custom_TextField.dart';
 import 'dart:async';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:geolocator/geolocator.dart';
+// import 'package:geolocator/geolocator.dart';
+// import 'package:geolocator/geolocator.dart';
+// import 'package:geolocator_android/geolocator_android.dart';
+import 'package:geolocator_web/geolocator_web.dart';
 
 class AddShopDialog extends StatefulWidget {
   @override
@@ -403,27 +408,57 @@ class _GoogleMapPickerState extends State<GoogleMapPicker> {
 
 
     try{
-      LocationPermission permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.deniedForever ||
-          permission == LocationPermission.denied) {
-        print('Location permissions are denied.');
-        setState(() {});
-        return;
+
+      // LocationPermission permission = await Geolocator.requestPermission();
+      // if (permission == LocationPermission.deniedForever ||
+      //     permission == LocationPermission.denied) {
+      //   print('Location permissions are denied.');
+      //   setState(() {});
+      //   return;
+      // }
+
+
+      var status = await Permission.location.status;
+      if (status.isDenied) {
+        print("PERMISSION IS Denied");
+        // We haven't asked for permission yet or the permission has been denied before, but not permanently.
+        await Permission.location.request();
+        Position position = await Geolocator.getCurrentPosition();
+        setState(() {
+          _currentLatLng = LatLng(position.latitude, position.longitude);
+          _markers.add(
+            Marker(
+              markerId: MarkerId("current"),
+              position: _currentLatLng!,
+              infoWindow: InfoWindow(title: "Current Location"),
+            ),
+          );
+          Provider.of<StoreProvider>(context, listen: false).latitudeController.text = position.latitude.toString();
+          Provider.of<StoreProvider>(context, listen: false).longitudeController.text = position.longitude.toString();
+        });
+      }else{
+        Position position = await Geolocator.getCurrentPosition();
+        setState(() {
+          _currentLatLng = LatLng(position.latitude, position.longitude);
+          _markers.add(
+            Marker(
+              markerId: MarkerId("current"),
+              position: _currentLatLng!,
+              infoWindow: InfoWindow(title: "Current Location"),
+            ),
+          );
+          Provider.of<StoreProvider>(context, listen: false).latitudeController.text = position.latitude.toString();
+          Provider.of<StoreProvider>(context, listen: false).longitudeController.text = position.longitude.toString();
+        });
       }
 
-      Position position = await Geolocator.getCurrentPosition();
-      setState(() {
-        _currentLatLng = LatLng(position.latitude, position.longitude);
-        _markers.add(
-          Marker(
-            markerId: MarkerId("current"),
-            position: _currentLatLng!,
-            infoWindow: InfoWindow(title: "Current Location"),
-          ),
-        );
-        Provider.of<StoreProvider>(context, listen: false).latitudeController.text = position.latitude.toString();
-        Provider.of<StoreProvider>(context, listen: false).longitudeController.text = position.longitude.toString();
-      });
+// You can also directly ask permission about its status.
+      if (await Permission.location.isRestricted) {
+        print("PERMISSION IS RESTRICTED");
+        await Permission.location.request();
+        // The OS restricts access, for example, because of parental controls.
+      }
+
     }catch(e){
       print("EXCEPTION WHILE _determinePosition $e");
     }

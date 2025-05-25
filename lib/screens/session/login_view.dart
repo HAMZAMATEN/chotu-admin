@@ -195,8 +195,8 @@ class _LoginViewState extends State<LoginView> {
                                     btnText: 'Login By Pass',
                                     btnTextColor: Colors.white,
                                     onPress: () async {
-                                      value.emailController.text = 'admin@example.com';
-                                      value.passController.text = 'securepassword123';
+                                      value.emailController.text = 'jane@example.com';
+                                      value.passController.text = 'password';
                                       if (fromKey.currentState!.validate()) {
                                         ShowToastDialog.showLoader('Please Wait');
                                         await value.login();

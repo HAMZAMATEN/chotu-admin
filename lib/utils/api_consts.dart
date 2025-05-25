@@ -1,6 +1,6 @@
 class APIConstants {
 
-  static String baseUrl = "https://chotuapp.deeptech.pk/";
+  static String baseUrl = "https://burakvpn.raibs.co/";
 
 // Admin constants
   static String adminLogin = baseUrl + "api";
