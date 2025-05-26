@@ -225,9 +225,9 @@ class _AddShopDialogState extends State<AddShopDialog> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: CustomTextField(
-                        title: 'Address',
+                        title: 'Address ${provider.selectedAddress  != "" ?  ': '+provider.selectedAddress : ''}',
                         enabled: true,
-                        controller: provider.addressController,
+                        controller: provider.locationSearchController,
                         obscureText: false,
                         textInputAction: TextInputAction.next,
                         keyboardType: TextInputType.phone,
@@ -237,8 +237,78 @@ class _AddShopDialogState extends State<AddShopDialog> {
                             return "Please enter shop address";
                           }
                           return null;
-                        }),
+                        },
+                      onChanged: (value) {
+                        if (value.isNotEmpty) {
+                          provider.fetchSuggestions(value);
+                        } else {
+                          provider.clearSuggestions();
+                        }
+                      },
+                    ),
+
                   ),
+                  const SizedBox(height: 20),
+                  if(provider.suggestions.isNotEmpty)...[
+                    Container(
+                      height: 400,
+                      decoration: BoxDecoration(
+                        color: Colors.white24,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: provider.suggestions.length,
+                        itemBuilder: (context, index) {
+                          final place = provider.suggestions[index];
+                          return ListTile(
+                            title: Text(
+                              place['description'] ?? '',
+                              style: getRegularStyle(
+                                  color: AppColors.textColor, fontSize: 14),
+                            ),
+                            subtitle: Text(
+                              place['structured_formatting']
+                              ?['secondary_text'] ??
+                                  '',
+                              style: getRegularStyle(
+                                  color: AppColors.textColor, fontSize: 12),
+                            ),
+                            onTap: () async {
+                              provider.selectedAddress =
+                                  place["description"] ?? '';
+
+                              final placeId = place["place_id"];
+                              if (placeId != null) {
+                                final latLng =
+                                await provider.getPlaceDetails(placeId);
+                                if (latLng != null) {
+                                  print("PICKED LAT LANG ARE:::$latLng");
+                                  if(provider.mapController != null){
+                                    print("MAP CONTROLLER IS NOT NULL");
+                                    provider.mapController!.animateCamera(
+                                      CameraUpdate.newLatLng(latLng),
+                                    );
+                                    Marker marker = Marker(
+                                      markerId: MarkerId("selected"),
+                                      position: latLng,
+                                      infoWindow: InfoWindow(title: "Selected Location"),
+                                    );
+                                    provider.addMarker(marker);
+                                  }else{
+                                    print("MAP CONTROLLER IS NULL");
+                                  }
+
+                                }
+                              }
+                              FocusScope.of(context).unfocus();
+                              provider.clearSuggestions();
+                            },
+                          );
+                        },
+                      ),
+                    )
+                  ],
                   const SizedBox(height: 20),
                   Row(
                     children: [
@@ -317,7 +387,7 @@ class _AddShopDialogState extends State<AddShopDialog> {
                         Map<String,String> body = {
                           'name': _shopNameController.text,
                           'category_id': provider.categoryId.toString(),
-                          'address': provider.addressController.text,
+                          'address': provider.locationSearchController.text,
                           'latitude': provider.latitudeController.text,
                           'longitude': provider.longitudeController.text,
                         };
@@ -381,15 +451,16 @@ void showAddShopDialog(BuildContext context) {
 }
 
 class GoogleMapPicker extends StatefulWidget {
+
+  GoogleMapPicker({Key? key,}) : super(key: key);
   @override
   _GoogleMapPickerState createState() => _GoogleMapPickerState();
 }
 
 class _GoogleMapPickerState extends State<GoogleMapPicker> {
-  late GoogleMapController _mapController;
+
   LatLng? _currentLatLng;
   LatLng? _selectedLatLng;
-  Set<Marker> _markers = {};
 
   // late StoreProvider storeProvider;
 
@@ -400,110 +471,70 @@ class _GoogleMapPickerState extends State<GoogleMapPicker> {
   }
 
   Future<void> _determinePosition() async {
-    // bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    // if (!serviceEnabled) {
-    //   print('Location services are disabled.');
-    //   return;
-    // }
-
-
     try{
-
-      // LocationPermission permission = await Geolocator.requestPermission();
-      // if (permission == LocationPermission.deniedForever ||
-      //     permission == LocationPermission.denied) {
-      //   print('Location permissions are denied.');
-      //   setState(() {});
-      //   return;
-      // }
-
-
-      var status = await Permission.location.status;
-      if (status.isDenied) {
-        print("PERMISSION IS Denied");
-        // We haven't asked for permission yet or the permission has been denied before, but not permanently.
-        await Permission.location.request();
-        Position position = await Geolocator.getCurrentPosition();
-        setState(() {
-          _currentLatLng = LatLng(position.latitude, position.longitude);
-          _markers.add(
-            Marker(
-              markerId: MarkerId("current"),
-              position: _currentLatLng!,
-              infoWindow: InfoWindow(title: "Current Location"),
-            ),
-          );
-          Provider.of<StoreProvider>(context, listen: false).latitudeController.text = position.latitude.toString();
-          Provider.of<StoreProvider>(context, listen: false).longitudeController.text = position.longitude.toString();
-        });
-      }else{
-        Position position = await Geolocator.getCurrentPosition();
-        setState(() {
-          _currentLatLng = LatLng(position.latitude, position.longitude);
-          _markers.add(
-            Marker(
-              markerId: MarkerId("current"),
-              position: _currentLatLng!,
-              infoWindow: InfoWindow(title: "Current Location"),
-            ),
-          );
-          Provider.of<StoreProvider>(context, listen: false).latitudeController.text = position.latitude.toString();
-          Provider.of<StoreProvider>(context, listen: false).longitudeController.text = position.longitude.toString();
-        });
-      }
-
-// You can also directly ask permission about its status.
-      if (await Permission.location.isRestricted) {
-        print("PERMISSION IS RESTRICTED");
-        await Permission.location.request();
-        // The OS restricts access, for example, because of parental controls.
-      }
-
+      setState(() {
+        _currentLatLng = LatLng(24.86146, 67.00994); // Default to Karachi coordinates
+        Provider.of<StoreProvider>(context,listen: false).markers.add(
+          Marker(
+            markerId: MarkerId("current"),
+            position: _currentLatLng!,
+            infoWindow: InfoWindow(title: "Current Location"),
+          ),
+        );
+        Provider.of<StoreProvider>(context, listen: false).latitudeController.text = _currentLatLng!.latitude.toString();
+        Provider.of<StoreProvider>(context, listen: false).longitudeController.text = _currentLatLng!.longitude.toString();
+      });
     }catch(e){
-      print("EXCEPTION WHILE _determinePosition $e");
+      print("EXCEPTION WHILE adding marker $e");
     }
 
   }
 
-  void _onMapCreated(GoogleMapController controller) {
-    _mapController = controller;
-  }
-
-  Future<void> _onMapTapped(LatLng latLng) async {
-    setState(() {
-      _selectedLatLng = latLng;
-      _markers.removeWhere((m) => m.markerId == MarkerId("selected"));
-      _markers.add(
-        Marker(
-          markerId: MarkerId("selected"),
-          position: latLng,
-          infoWindow: InfoWindow(title: "Selected Location"),
-        ),
-      );
-      Provider.of<StoreProvider>(context, listen: false).latitudeController.text = latLng.latitude.toString();
-      Provider.of<StoreProvider>(context, listen: false).longitudeController.text = latLng.longitude.toString();
-    });
-    print("Selected lat: ${latLng.latitude}, long: ${latLng.longitude}");
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 600,
-      height: 400,
-      child: _currentLatLng == null
-          ? Center(child: CircularProgressIndicator())
-          : GoogleMap(
-              initialCameraPosition: CameraPosition(
-                target: _currentLatLng!,
-                zoom: 14,
-              ),
-              onMapCreated: _onMapCreated,
-              markers: _markers,
-              onTap: _onMapTapped,
-              myLocationEnabled: true,
-              myLocationButtonEnabled: true,
-            ),
+    return Consumer<StoreProvider>(
+      builder: (context,provider,child) {
+        return Container(
+          width: 600,
+          height: 400,
+          child: _currentLatLng == null
+              ? Center(child: CircularProgressIndicator())
+              : GoogleMap(
+                  initialCameraPosition: CameraPosition(
+                    target: _currentLatLng!,
+                    zoom: 14,
+                  ),
+                  onMapCreated: (GoogleMapController controller) {
+                    provider.setMapController(controller);
+                  },
+                  markers: provider.markers,
+                  onTap: (LatLng latLng){
+                  //   setState(() {
+                  //     _selectedLatLng = latLng;
+                  //     provider.markers.removeWhere((m) => m.markerId == MarkerId("selected"));
+                  //     provider.markers.add(
+                  //       Marker(
+                  //         markerId: MarkerId("selected"),
+                  //         position: latLng,
+                  //         infoWindow: InfoWindow(title: "Selected Location"),
+                  //       ),
+                  //     );
+                  //     Provider.of<StoreProvider>(context, listen: false).latitudeController.text = latLng.latitude.toString();
+                  //     Provider.of<StoreProvider>(context, listen: false).longitudeController.text = latLng.longitude.toString();
+                  //   });
+                  //   print("Selected lat: ${latLng.latitude}, long: ${latLng.longitude}");
+                    Marker marker = Marker(
+                      markerId: MarkerId("selected"),
+                      position: latLng,
+                      infoWindow: InfoWindow(title: "Selected Location"),
+                    );
+                    provider.addMarker(marker);
+                  },
+                  myLocationEnabled: true,
+                  myLocationButtonEnabled: true,
+                ),
+        );
+      }
     );
   }
 }

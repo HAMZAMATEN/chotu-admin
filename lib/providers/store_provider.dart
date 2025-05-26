@@ -11,6 +11,7 @@ import 'package:chotu_admin/utils/toast_dialogue.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 
@@ -22,6 +23,26 @@ class StoreProvider extends ChangeNotifier {
   int inActiveStoresLength = 0;
 
   List<CategoryModel>? allCategoriesList;
+
+
+  //Map Realated Variables
+  Set<Marker> markers = {};
+  GoogleMapController? mapController;
+
+  // Fetch location suggestions variables
+  TextEditingController locationSearchController = TextEditingController();
+  String selectedAddress = "";
+  List<dynamic> _suggestions = [];
+
+  List<dynamic> get suggestions => _suggestions;
+
+  LatLng _latLng = LatLng(0.0, 0.0);
+
+  LatLng get latLng => _latLng;
+
+  bool _suggestionLoading = false;
+
+  bool get suggestionLoading => _suggestionLoading;
 
 
   Future<void> getAllStores() async{
@@ -100,7 +121,6 @@ class StoreProvider extends ChangeNotifier {
 
   /// adding shop variables
 
-  TextEditingController addressController = TextEditingController();
   TextEditingController latitudeController = TextEditingController();
   TextEditingController longitudeController = TextEditingController();
 
@@ -202,5 +222,84 @@ class StoreProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+
+
+
+
+  setSuggestionLoading(val) {
+    _suggestionLoading = val;
+    notifyListeners();
+  }
+
+  Future<void> fetchSuggestions(String query) async {
+    setSuggestionLoading(true);
+    if (query.isEmpty) return;
+
+    String country =  "PK";
+
+    String url =
+        "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$query&components=country:$country&key=${AppConstants.googleMapApiKey}";
+
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      print("SUGGESTIONS RESPONSE IS ${data}");
+      _suggestions = [];
+      _suggestions = (data["predictions"] as List);
+      notifyListeners();
+      setSuggestionLoading(false);
+    } else {
+      print("Error fetching suggestions: ${response.body}");
+      _suggestions = [];
+      setSuggestionLoading(false);
+
+    }
+  }
+
+
+  // Fetch lat & lng using place_id
+  Future<LatLng?> getPlaceDetails(String placeId) async {
+    String url =
+        "https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&fields=geometry&key=${AppConstants.googleMapApiKey}";
+
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final location = data["result"]["geometry"]["location"];
+      double lat = location["lat"];
+      double lng = location["lng"];
+
+      _latLng = LatLng(lat, lng);
+      print("Selected Location - $_latLng");
+      return _latLng;
+      notifyListeners();
+    } else {
+      print("Error fetching place details: ${response.body}");
+      return null;
+    }
+  }
+
+  setMapController(GoogleMapController controller){
+    mapController = controller;
+    notifyListeners();
+  }
+
+
+  addMarker(Marker marker){
+    markers.removeWhere((m) => m.markerId == MarkerId("selected"));
+    markers.add(marker);
+    latitudeController.text = latLng.latitude.toString();
+    longitudeController.text = latLng.longitude.toString();
+    print("MARKER IS ADDED ${markers}");
+    notifyListeners();
+  }
+
+  clearSuggestions() {
+    locationSearchController.clear();
+    _suggestions = [];
+    notifyListeners();
+  }
 
 }
