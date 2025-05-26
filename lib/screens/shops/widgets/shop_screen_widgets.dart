@@ -74,6 +74,9 @@ class _ShopCardWidgetState extends State<ShopCardWidget> {
                             stalePeriod: Duration(days: 5),
                           ),
                         ),
+                        errorListener: (error){
+                          print("ERROR WHILE LOADING IMAGE URL : ${widget.storeModel.cImg} & error : ${error}");
+                        }
                       ), // Using NetworkImage directly
                       fit: BoxFit.cover,
                     ),

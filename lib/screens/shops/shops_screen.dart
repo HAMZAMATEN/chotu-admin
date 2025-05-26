@@ -14,7 +14,8 @@ import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../generated/assets.dart';
-import 'widgets/main_screen_widgets.dart';
+import 'widgets/shop_screen_widgets.dart';
+
 
 class ShopsScreen extends StatefulWidget {
   @override
