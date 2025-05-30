@@ -233,7 +233,7 @@ class _AddShopDialogState extends State<AddShopDialog> {
                         keyboardType: TextInputType.phone,
                         hintText: '',
                         validator: (val) {
-                          if (val == null || val.isEmpty) {
+                          if (provider.selectedAddress.isEmpty || provider.selectedAddress == "") {
                             return "Please enter shop address";
                           }
                           return null;
@@ -387,7 +387,7 @@ class _AddShopDialogState extends State<AddShopDialog> {
                         Map<String,String> body = {
                           'name': _shopNameController.text,
                           'category_id': provider.categoryId.toString(),
-                          'address': provider.locationSearchController.text,
+                          'address': provider.selectedAddress,
                           'latitude': provider.latitudeController.text,
                           'longitude': provider.longitudeController.text,
                         };

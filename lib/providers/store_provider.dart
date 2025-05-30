@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:chotu_admin/main.dart';
 import 'package:chotu_admin/model/category_model.dart';
+import 'package:chotu_admin/model/pagination_model.dart';
 import 'package:chotu_admin/model/shop_model.dart';
 import 'package:chotu_admin/providers/api_services_provider.dart';
 import 'package:chotu_admin/utils/api_consts.dart';
@@ -18,7 +19,9 @@ import 'package:http/http.dart' as http;
 class StoreProvider extends ChangeNotifier {
   ApiServicesProvider apiServicesProvider = navigatorKey.currentContext!.read<ApiServicesProvider>();
 
-  List<StoreModel>? allStoresList;
+  // List<StoreModel>? allStoresList;
+  Map<int,List<StoreModel>?>? pageViseStoresMap = {};
+  PaginationModel? storePagination;
   int activeStoresLength = 0;
   int inActiveStoresLength = 0;
 
@@ -51,14 +54,16 @@ class StoreProvider extends ChangeNotifier {
 
       print("RESPONSE CODE FOR getAllStores ${response.statusCode}");
       if(response.statusCode == 200){
-        List<StoreModel> tempSotresList = [];
+        storePagination = PaginationModel.fromJson(jsonDecode(response.body)['pagination']);
+        List<StoreModel> tempStoresList = [];
         List<dynamic> dataList = (jsonDecode(response.body))['data'];
         dataList.forEach((shopData){
           StoreModel store = StoreModel.fromJson(shopData);
-          tempSotresList.add(store);
+          tempStoresList.add(store);
         });
-        allStoresList?.clear();
-        allStoresList = tempSotresList;
+        // allStoresList?.clear();
+        // allStoresList = tempSotresList;
+        pageViseStoresMap?[storePagination!.currentPage] = tempStoresList;
       }
       notifyListeners();
     }catch(e){
@@ -103,10 +108,10 @@ class StoreProvider extends ChangeNotifier {
         }
 
         // Find index of the store in allStoresList
-        int index = allStoresList!.indexWhere((store) => store.id == storeModel.id);
+        int index = pageViseStoresMap![storePagination!.currentPage]!.indexWhere((store) => store.id == storeModel.id);
 
         if (index != -1) {
-          allStoresList![index] = tempModel; // Update the store in the list
+          pageViseStoresMap![storePagination!.currentPage]![index] = tempModel; // Update the store in the list
         }
         AppFunctions.showToastMessage(message: "Store Status Updated Successfully");
       }
@@ -157,8 +162,11 @@ class StoreProvider extends ChangeNotifier {
 
   Future<void> addShopToDataBase(Map<String,dynamic> body,BuildContext context) async{
     try{
+      print("ADD SHOP BODY IS ");
+      print(body);
       EasyLoading.showToast("Uploading image files");
-      final uri = Uri.parse('https://chotuapp.deeptech.pk/api/store'); // 🔁 Replace with your API
+      EasyLoading.show();
+      final uri = Uri.parse(APIConstants.addStore); // 🔁 Replace with your API
       final request = await http.MultipartRequest('POST', uri);
 
       // Add image file
@@ -218,7 +226,8 @@ class StoreProvider extends ChangeNotifier {
   }
 
   setAllStoresToNull(){
-    allStoresList = null;
+    pageViseStoresMap![storePagination!.currentPage] = [];
+    // allStoresList = null;
     notifyListeners();
   }
 

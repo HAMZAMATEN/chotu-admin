@@ -40,138 +40,147 @@ class _ShopsScreenState extends State<ShopsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.bgColor,
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Consumer<StoreProvider>(builder: (context, provider, child) {
-          storeProvider = provider;
-          if(provider.allStoresList != null ){
-            provider.activeStoresLength = provider.allStoresList!.where((store)=>store.status == 1).toList().length;
-            provider.inActiveStoresLength = provider.allStoresList!.where((store)=>store.status == 0).toList().length;
-          }
-          return Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  offset: const Offset(0, 0),
-                  color: Colors.black.withOpacity(.1),
-                  blurRadius: 2,
-                  spreadRadius: 0,
-                )
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Consumer<StoreProvider>(builder: (context, provider, child) {
+            storeProvider = provider;
+            if(provider.allStoresList != null ){
+              provider.activeStoresLength = provider.allStoresList!.where((store)=>store.status == 1).toList().length;
+              provider.inActiveStoresLength = provider.allStoresList!.where((store)=>store.status == 0).toList().length;
+            }
+            return Column(
+              children: [
+                shopeStatsWidget(),
+                const SizedBox(height: 10),
+
+                /// Search Bar & add shop button
+
+                shopSearchField(context),
+                padding30,
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        offset: const Offset(0, 0),
+                        color: Colors.black.withOpacity(.1),
+                        blurRadius: 2,
+                        spreadRadius: 0,
+                      )
+                    ],
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: SingleChildScrollView(
+                      child: (provider.allStoresList == null || provider.allCategoriesList == null)
+                          ? shimmerShopWidget(context)
+                          : shopBodyWidget(context),
+                    ),
+                  ),
+                ),
+                Text("HERE IS THE PAGINATION TEXT"),
               ],
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: SingleChildScrollView(
-                child: (provider.allStoresList == null || provider.allCategoriesList == null)
-                    ? shimmerShopWidget(context)
-                    : shopBodyWidget(context),
-              ),
-            ),
-          );
-        }),
+            );
+          }),
+        ),
       ),
     );
   }
 
   Widget shopBodyWidget(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: buildStatsCard('Total Shops',
-                  storeProvider.allStoresList?.length ?? 0, Colors.orange),
-            ),
-            padding12,
-            Expanded(
-              child: buildStatsCard(
-                  'Active', storeProvider.activeStoresLength, Colors.green),
-            ),
-            padding12,
-            Expanded(
-              child: buildStatsCard(
-                  'InActive', storeProvider.inActiveStoresLength, Colors.red),
-            ),
-          ],
-        ),
-        const SizedBox(height: 10),
+    return Align(
+      alignment: Alignment.topLeft,
+      child: Wrap(
+        spacing: 16,
+        runSpacing: 16,
+        alignment: WrapAlignment.start,
+        runAlignment: WrapAlignment.start,
+        children: List.generate(storeProvider.allStoresList!.length, (index) {
+          StoreModel store = storeProvider.allStoresList![index];
+          if(searchController.text.isEmpty || store.name.contains(searchController.text.trim())){
+            return ShopCardWidget(storeModel: store);
+          }else{
+            return SizedBox();
+          }
 
-        /// Search Bar & add shop button
-
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Expanded(
-              child: CustomTextField(
-                width: MediaQuery.of(context).size.width,
-                title: '',
-                controller: searchController,
-                obscureText: false,
-                textInputAction: TextInputAction.search,
-                keyboardType: TextInputType.text,
-                hintText: 'Search Shops by name',
-                suffixIcon: SizedBox(
-                  height: 24,
-                  width: 24,
-                  child: Center(
-                    child: SvgPicture.asset(Assets.iconsSearchnormal1),
-                  ),
-                ),
-                onChanged: (val){
-                  setState(() {});
-                }
-              ),
-            ),
-            padding12,
-            InkWell(
-              onTap: () {
-                showAddShopDialog(context);
-              },
-              child: Align(
-                alignment: Alignment.topRight,
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    color: AppColors.primaryColor,
-                  ),
-                  child: Text(
-                    'Add New Shop',
-                    style: getSemiBoldStyle(
-                      color: AppColors.whiteColor,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-        padding30,
-        // Scrollable Data Table
-        Align(
-          alignment: Alignment.topLeft,
-          child: Wrap(
-            spacing: 16,
-            runSpacing: 16,
-            alignment: WrapAlignment.start,
-            runAlignment: WrapAlignment.start,
-            children: List.generate(storeProvider.allStoresList!.length, (index) {
-              StoreModel store = storeProvider.allStoresList![index];
-              if(searchController.text.isEmpty || store.name.contains(searchController.text.trim())){
-                return ShopCardWidget(storeModel: store);
-              }else{
-                return SizedBox();
-              }
-
-            }),
-          ),
-        ),
-      ],
+        }),
+      ),
     );
+  }
+
+  Row shopSearchField(BuildContext context) {
+    return Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Expanded(
+            child: CustomTextField(
+              width: MediaQuery.of(context).size.width,
+              title: '',
+              controller: searchController,
+              obscureText: false,
+              textInputAction: TextInputAction.search,
+              keyboardType: TextInputType.text,
+              hintText: 'Search Shops by name',
+              suffixIcon: SizedBox(
+                height: 24,
+                width: 24,
+                child: Center(
+                  child: SvgPicture.asset(Assets.iconsSearchnormal1),
+                ),
+              ),
+              onChanged: (val){
+                setState(() {});
+              }
+            ),
+          ),
+          padding12,
+          InkWell(
+            onTap: () {
+              showAddShopDialog(context);
+            },
+            child: Align(
+              alignment: Alignment.topRight,
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  color: AppColors.primaryColor,
+                ),
+                child: Text(
+                  'Add New Shop',
+                  style: getSemiBoldStyle(
+                    color: AppColors.whiteColor,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+  }
+
+  Row shopeStatsWidget() {
+    return Row(
+        children: [
+          Expanded(
+            child: buildStatsCard('Total Shops',
+                storeProvider.allStoresList?.length ?? 0, Colors.orange),
+          ),
+          padding12,
+          Expanded(
+            child: buildStatsCard(
+                'Active', storeProvider.activeStoresLength, Colors.green),
+          ),
+          padding12,
+          Expanded(
+            child: buildStatsCard(
+                'InActive', storeProvider.inActiveStoresLength, Colors.red),
+          ),
+        ],
+      );
   }
 
   Widget shimmerShopWidget(BuildContext context) {
@@ -200,7 +209,6 @@ class _ShopsScreenState extends State<ShopsScreen> {
           const SizedBox(height: 10),
 
           /// Search Bar & add shop button
-
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [

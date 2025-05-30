@@ -6,6 +6,7 @@ class APIConstants {
   static String adminLogin = baseUrl + "api";
 
   // store constants
+  static String addStore = baseUrl + "api/store";
   static String getAllStores = baseUrl + "api/stores";
   static String updateStoreStatus = baseUrl + "api/update/store/status/";
 
