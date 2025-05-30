@@ -1,20 +1,21 @@
 import 'package:chotu_admin/model/shop_model.dart';
 import 'package:chotu_admin/providers/store_provider.dart';
-import 'package:chotu_admin/screens/shops/shops_product_screen.dart';
+import 'package:chotu_admin/screens/shops/shop_products/shops_product_screen.dart';
 import 'package:chotu_admin/screens/shops/widgets/addNewShopDialogBox.dart';
 import 'package:chotu_admin/utils/app_Paddings.dart';
 import 'package:chotu_admin/utils/app_colors.dart';
 import 'package:chotu_admin/utils/app_text_widgets.dart';
 import 'package:chotu_admin/widgets/custom_Button.dart';
 import 'package:chotu_admin/widgets/custom_TextField.dart';
+import 'package:chotu_admin/widgets/pagination_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
-
 import '../../generated/assets.dart';
-import 'widgets/shop_screen_widgets.dart';
+import 'widgets/shop_screen_card_widgets.dart';
+
 
 
 class ShopsScreen extends StatefulWidget {
@@ -45,9 +46,9 @@ class _ShopsScreenState extends State<ShopsScreen> {
           padding: const EdgeInsets.all(16.0),
           child: Consumer<StoreProvider>(builder: (context, provider, child) {
             storeProvider = provider;
-            if(provider.allStoresList != null ){
-              provider.activeStoresLength = provider.allStoresList!.where((store)=>store.status == 1).toList().length;
-              provider.inActiveStoresLength = provider.allStoresList!.where((store)=>store.status == 0).toList().length;
+            if(provider.pageViseStoresMap![provider.storePagination?.currentPage] != null ){
+              provider.activeStoresLength = provider.pageViseStoresMap![provider.storePagination?.currentPage]!.where((store)=>store.status == 1).toList().length;
+              provider.inActiveStoresLength = provider.pageViseStoresMap![provider.storePagination?.currentPage]!.where((store)=>store.status == 0).toList().length;
             }
             return Column(
               children: [
@@ -74,13 +75,28 @@ class _ShopsScreenState extends State<ShopsScreen> {
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: SingleChildScrollView(
-                      child: (provider.allStoresList == null || provider.allCategoriesList == null)
+                      child: (provider.pageViseStoresMap![provider.storePagination?.currentPage] == null || provider.allCategoriesList == null)
                           ? shimmerShopWidget(context)
                           : shopBodyWidget(context),
                     ),
                   ),
                 ),
-                Text("HERE IS THE PAGINATION TEXT"),
+                if(storeProvider.storePagination != null)...[
+                  SizedBox(
+                    height: 10,
+                  ),
+                  PaginationButton(
+                    pagination: provider.storePagination!,
+                    onPrevious: () {
+                      // handle going to previous page
+                      Provider.of<StoreProvider>(context,listen: false).getAllStores(page: provider.storePagination!.currentPage-1);
+                    },
+                    onNext: () {
+                      Provider.of<StoreProvider>(context,listen: false).getAllStores(page: provider.storePagination!.currentPage+1);
+                      // handle going to next page
+                    },
+                  ),
+                ],
               ],
             );
           }),
@@ -97,14 +113,15 @@ class _ShopsScreenState extends State<ShopsScreen> {
         runSpacing: 16,
         alignment: WrapAlignment.start,
         runAlignment: WrapAlignment.start,
-        children: List.generate(storeProvider.allStoresList!.length, (index) {
-          StoreModel store = storeProvider.allStoresList![index];
-          if(searchController.text.isEmpty || store.name.contains(searchController.text.trim())){
+        children: List.generate(storeProvider.pageViseStoresMap![storeProvider.storePagination?.currentPage]!.length, (index) {
+          StoreModel store = storeProvider.pageViseStoresMap![storeProvider.storePagination?.currentPage]![index];
+          if(searchController.text.isEmpty || store.name.toString().toLowerCase().contains(searchController.text.trim().toLowerCase())){
             return ShopCardWidget(storeModel: store);
           }else{
-            return SizedBox();
+            return SizedBox(
+              width: double.infinity,
+            );
           }
-
         }),
       ),
     );
@@ -167,7 +184,7 @@ class _ShopsScreenState extends State<ShopsScreen> {
         children: [
           Expanded(
             child: buildStatsCard('Total Shops',
-                storeProvider.allStoresList?.length ?? 0, Colors.orange),
+                storeProvider.pageViseStoresMap![storeProvider.storePagination?.currentPage]?.length ?? 0, Colors.orange),
           ),
           padding12,
           Expanded(

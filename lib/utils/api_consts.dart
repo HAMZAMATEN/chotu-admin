@@ -26,6 +26,11 @@ class APIConstants {
   static String updateRiderStatus = baseUrl + "api/update/rider/status/";
   static String removeRider = baseUrl + "api/remove/rider/";
 
+  // Products Constants
+  static String getAllProducts = baseUrl + "api/get/all/products";
+  static String getProductByStoreId = baseUrl + "api/get/products/by/store/";
+
+
 
 
 }

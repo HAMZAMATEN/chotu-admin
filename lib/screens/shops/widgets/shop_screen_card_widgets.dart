@@ -1,7 +1,7 @@
 import 'package:chotu_admin/model/category_model.dart';
 import 'package:chotu_admin/model/shop_model.dart';
 import 'package:chotu_admin/providers/store_provider.dart';
-import 'package:chotu_admin/screens/shops/shops_product_screen.dart';
+import 'package:chotu_admin/screens/shops/shop_products/shops_product_screen.dart';
 import 'package:chotu_admin/screens/shops/widgets/addNewShopDialogBox.dart';
 import 'package:chotu_admin/utils/app_Colors.dart';
 import 'package:chotu_admin/utils/app_Paddings.dart';
@@ -47,7 +47,9 @@ class _ShopCardWidgetState extends State<ShopCardWidget> {
           child: InkWell(
             onTap: () {
               Navigator.push(context, MaterialPageRoute(builder: (_) {
-                return ShopProductsScreen();
+                return ShopProductsScreen(
+                  storeModel: widget.storeModel,
+                );
               }));
             },
             child: Container(
@@ -64,7 +66,7 @@ class _ShopCardWidgetState extends State<ShopCardWidget> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Container(
-                    height: 70,
+                    height: 60,
                     decoration: BoxDecoration(
                       image: DecorationImage(
                         image: CachedNetworkImageProvider(
@@ -177,9 +179,9 @@ Widget buildShimmerShopCardWidget(BuildContext context) {
     widthFactor: 1 / 3.16, // Takes 1/3 of the parent width
     child: InkWell(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (_) {
-          return ShopProductsScreen();
-        }));
+        // Navigator.push(context, MaterialPageRoute(builder: (_) {
+        //   return ShopProductsScreen();
+        // }));
       },
       child: Container(
         width: double.infinity,
