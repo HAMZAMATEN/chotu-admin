@@ -1,3 +1,5 @@
+import 'pagination_model.dart';
+
 class StoreModel {
   int? id;
   String name;
@@ -8,6 +10,7 @@ class StoreModel {
   String latitude;
   String longitude;
   int status;
+
 
   StoreModel({
     this.id,

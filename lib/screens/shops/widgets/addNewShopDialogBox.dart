@@ -89,8 +89,14 @@ class _AddShopDialogState extends State<AddShopDialog> {
                         borderRadius: BorderRadius.circular(50),
                         child: provider.storeImageMap == null
                             ? Center(
-                                child: SvgPicture.asset(
-                                  Assets.iconsMageUsersFill,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    SvgPicture.asset(
+                                      Assets.iconsMageUsersFill,
+                                    ),
+                                    Text('jpg,png or jpeg',style: getLightStyle(color: Colors.black54,fontSize: 14),)
+                                  ],
                                 ),
                               )
                             : Image.memory(
@@ -156,6 +162,8 @@ class _AddShopDialogState extends State<AddShopDialog> {
                           child: provider.allCategoriesList == null
                               ? Text("No Categories Found")
                               : DropdownButton(
+                              padding: EdgeInsets.symmetric(horizontal: 10),
+                                  borderRadius: BorderRadius.circular(25),
                                   hint: Text("Select"),
                                   items: provider.allCategoriesList!
                                       .map((e) => DropdownMenuItem(
@@ -198,9 +206,16 @@ class _AddShopDialogState extends State<AddShopDialog> {
                           borderRadius: BorderRadius.circular(12),
                           child: provider.storeCoverImageMap == null
                               ? Center(
-                                  child: Icon(
-                                    Icons.image,
-                                    color: AppColors.textFieldBorderColor,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.image,
+                                        color: AppColors.textFieldBorderColor,
+                                        size: 35,
+                                      ),
+                                      Text('jpg,png or jpeg',style: getLightStyle(color: Colors.black54,fontSize: 14),)
+                                    ],
                                   ),
                                 )
                               : Image.memory(
@@ -233,7 +248,7 @@ class _AddShopDialogState extends State<AddShopDialog> {
                         keyboardType: TextInputType.phone,
                         hintText: '',
                         validator: (val) {
-                          if (val == null || val.isEmpty) {
+                          if (provider.selectedAddress.isEmpty || provider.selectedAddress == "") {
                             return "Please enter shop address";
                           }
                           return null;
@@ -387,7 +402,7 @@ class _AddShopDialogState extends State<AddShopDialog> {
                         Map<String,String> body = {
                           'name': _shopNameController.text,
                           'category_id': provider.categoryId.toString(),
-                          'address': provider.locationSearchController.text,
+                          'address': provider.selectedAddress,
                           'latitude': provider.latitudeController.text,
                           'longitude': provider.longitudeController.text,
                         };
@@ -478,9 +493,10 @@ class _GoogleMapPickerState extends State<GoogleMapPicker> {
           Marker(
             markerId: MarkerId("current"),
             position: _currentLatLng!,
-            infoWindow: InfoWindow(title: "Current Location"),
+            // infoWindow: InfoWindow(title: "Current Location"),
           ),
         );
+        Provider.of<StoreProvider>(context, listen: false).selectedAddress = "Karachi Sindh Pakistan";
         Provider.of<StoreProvider>(context, listen: false).latitudeController.text = _currentLatLng!.latitude.toString();
         Provider.of<StoreProvider>(context, listen: false).longitudeController.text = _currentLatLng!.longitude.toString();
       });
@@ -523,12 +539,12 @@ class _GoogleMapPickerState extends State<GoogleMapPicker> {
                   //     Provider.of<StoreProvider>(context, listen: false).longitudeController.text = latLng.longitude.toString();
                   //   });
                   //   print("Selected lat: ${latLng.latitude}, long: ${latLng.longitude}");
-                    Marker marker = Marker(
-                      markerId: MarkerId("selected"),
-                      position: latLng,
-                      infoWindow: InfoWindow(title: "Selected Location"),
-                    );
-                    provider.addMarker(marker);
+                  //   Marker marker = Marker(
+                  //     markerId: MarkerId("selected"),
+                  //     position: latLng,
+                  //     infoWindow: InfoWindow(title: "Selected Location"),
+                  //   );
+                  //   provider.addMarker(marker);
                   },
                   myLocationEnabled: true,
                   myLocationButtonEnabled: true,

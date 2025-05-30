@@ -1,7 +1,7 @@
 import 'package:chotu_admin/model/category_model.dart';
 import 'package:chotu_admin/model/shop_model.dart';
 import 'package:chotu_admin/providers/store_provider.dart';
-import 'package:chotu_admin/screens/shops/shops_product_screen.dart';
+import 'package:chotu_admin/screens/shops/shop_products/shops_product_screen.dart';
 import 'package:chotu_admin/screens/shops/widgets/addNewShopDialogBox.dart';
 import 'package:chotu_admin/utils/app_Colors.dart';
 import 'package:chotu_admin/utils/app_Paddings.dart';
@@ -42,119 +42,130 @@ class _ShopCardWidgetState extends State<ShopCardWidget> {
 
       return FractionallySizedBox(
         widthFactor: 1 / 3.16, // Takes 1/3 of the parent width
-        child: InkWell(
-          onTap: () {
-            Navigator.push(context, MaterialPageRoute(builder: (_) {
-              return ShopProductsScreen();
-            }));
-          },
-          child: Container(
-            width: double.infinity,
-            decoration: BoxDecoration(color: Colors.white, boxShadow: [
-              BoxShadow(
-                  offset: const Offset(0, 0),
-                  blurRadius: 7,
-                  spreadRadius: 0,
-                  color: Colors.black.withOpacity(.25)),
-            ]),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  height: 51,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: CachedNetworkImageProvider(
-                        '${widget.storeModel.cImg}',
-                        cacheKey: '${widget.storeModel.cImg}',
-                        cacheManager: CacheManager(
-                          Config(
-                            '${widget.storeModel.cImg}',
-                            stalePeriod: Duration(days: 5),
+        child: Tooltip(
+          message: "Tap to view products of this shop",
+          child: InkWell(
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) {
+                return ShopProductsScreen(
+                  storeModel: widget.storeModel,
+                );
+              }));
+            },
+            child: Container(
+              width: double.infinity,
+              decoration: BoxDecoration(color: Colors.white, boxShadow: [
+                BoxShadow(
+                    offset: const Offset(0, 0),
+                    blurRadius: 7,
+                    spreadRadius: 0,
+                    color: Colors.black.withOpacity(.25)),
+              ]),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    height: 60,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: CachedNetworkImageProvider(
+                          '${widget.storeModel.cImg}',
+                          cacheKey: '${widget.storeModel.cImg}',
+                          cacheManager: CacheManager(
+                            Config(
+                              '${widget.storeModel.cImg}',
+                              stalePeriod: Duration(days: 5),
+                            ),
+                          ),
+                          errorListener: (error){
+                            print("ERROR WHILE LOADING IMAGE URL : ${widget.storeModel.cImg} & error : ${error}");
+                          }
+                        ), // Using NetworkImage directly
+                        fit: BoxFit.cover,
+                      ),
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.topRight,
+                        colors: [
+                          Color(0xff45CF8D),
+                          Color(0xff046938),
+                        ],
+                      ),
+                    ),
+                    // child: Center(
+                    //     child: Text(
+                    //   '${widget.storeModel.name} - ${widget.storeModel.id}',
+                    //   style: getExtraBoldStyle(color: Colors.white, fontSize: 18),
+                    // )),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10.0, vertical: 14),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Center(
+                            child: Text(
+                              '${widget.storeModel.name} - ${widget.storeModel.id}',
+                              style: getExtraBoldStyle(color: Colors.black, fontSize: 18),
+                            )),
+                        SizedBox(height: 5,),
+                        Row(
+                          children: [
+                            Text(
+                              'Shop Details',
+                              style: getMediumStyle(
+                                  color: AppColors.textColor, fontSize: 16),
+                            ),
+                            Spacer(),
+                            SizedBox()
+                          ],
+                        ),
+                        padding16,
+                        buildRow(
+                            title: 'Category',
+                            description: '${storeCatModel?.name ?? 'Unknown'}'),
+                        // buildRow(title: 'Total Products', description: '${widget.storeModel}'),
+                        // buildRow(title: 'Total Orders ', description: '10'),
+                        // buildRow(title: 'Delivered Orders', description: '5'),
+                        buildRow(
+                            title: 'Shop Location',
+                            description: '${widget.storeModel.address}'),
+                        padding16,
+                        const Divider(
+                          color: Color(0xffAFA9A9),
+                        ),
+                        InkWell(
+                          splashColor: Colors.greenAccent,
+                          onTap: () async {
+                            await showConfirmDialog(context, widget.storeModel.status, () async{
+                              ShowToastDialog.showLoader('Please Wait');
+                              await provider.updateStoreStatus(widget.storeModel);
+                            });
+                          },
+                          child: Tooltip(
+                            preferBelow: true,
+                            margin: EdgeInsets.only(left: 20),
+                            message: "Update store status",
+                            child: buildRow(
+                              title: 'Shop Status',
+                              description:
+                                  '${widget.storeModel.status == 1 ? 'Active' : 'InActive'}',
+                              style: getBoldStyle(
+                                color: Colors.black,
+                                fontSize: 16,
+                              ).copyWith(
+                                  decoration: TextDecoration.underline,
+                                  decorationColor: Colors.blue),
+                            ),
                           ),
                         ),
-                        errorListener: (error){
-                          print("ERROR WHILE LOADING IMAGE URL : ${widget.storeModel.cImg} & error : ${error}");
-                        }
-                      ), // Using NetworkImage directly
-                      fit: BoxFit.cover,
-                    ),
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.topRight,
-                      colors: [
-                        Color(0xff45CF8D),
-                        Color(0xff046938),
                       ],
                     ),
                   ),
-                  child: Center(
-                      child: Text(
-                    '${widget.storeModel.name} - ${widget.storeModel.id}',
-                    style: getMediumStyle(color: Colors.white, fontSize: 16),
-                  )),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 10.0, vertical: 14),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            'Shop Details',
-                            style: getMediumStyle(
-                                color: AppColors.textColor, fontSize: 16),
-                          ),
-                          Spacer(),
-                          SizedBox()
-                        ],
-                      ),
-                      padding16,
-                      buildRow(
-                          title: 'Category',
-                          description: '${storeCatModel?.name ?? 'Unknown'}'),
-                      // buildRow(title: 'Total Products', description: '${widget.storeModel}'),
-                      // buildRow(title: 'Total Orders ', description: '10'),
-                      // buildRow(title: 'Delivered Orders', description: '5'),
-                      buildRow(
-                          title: 'Shop Location',
-                          description: '${widget.storeModel.address}'),
-                      padding16,
-                      const Divider(
-                        color: Color(0xffAFA9A9),
-                      ),
-                      InkWell(
-                        splashColor: Colors.greenAccent,
-                        onTap: () async {
-                          await showConfirmDialog(context, widget.storeModel.status, () async{
-                            ShowToastDialog.showLoader('Please Wait');
-                            await provider.updateStoreStatus(widget.storeModel);
-                          });
-                        },
-                        child: Tooltip(
-                          preferBelow: true,
-                          margin: EdgeInsets.only(left: 20),
-                          message: "Update store status",
-                          child: buildRow(
-                            title: 'Shop Status',
-                            description:
-                                '${widget.storeModel.status == 1 ? 'Active' : 'InActive'}',
-                            style: getBoldStyle(
-                              color: Colors.black,
-                              fontSize: 16,
-                            ).copyWith(
-                                decoration: TextDecoration.underline,
-                                decorationColor: Colors.blue),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -168,9 +179,9 @@ Widget buildShimmerShopCardWidget(BuildContext context) {
     widthFactor: 1 / 3.16, // Takes 1/3 of the parent width
     child: InkWell(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (_) {
-          return ShopProductsScreen();
-        }));
+        // Navigator.push(context, MaterialPageRoute(builder: (_) {
+        //   return ShopProductsScreen();
+        // }));
       },
       child: Container(
         width: double.infinity,

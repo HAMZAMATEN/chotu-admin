@@ -22,6 +22,7 @@ import 'package:chotu_admin/providers/landing_page_provider.dart';
 import 'package:chotu_admin/providers/side_bar_provider.dart';
 import 'package:chotu_admin/screens/sidebar/side_bar_screen.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
+import 'providers/store_product_provider.dart';
 import 'providers/store_provider.dart';
 import 'screens/session/login_view.dart';
 
@@ -117,6 +118,9 @@ class _MyAppState extends State<MyApp> {
         ),
         ChangeNotifierProvider(
           create: (_) => StoreProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => StoreProductProvider(),
         ),
       ],
       child: GetMaterialApp(

@@ -1,3 +1,6 @@
+import 'package:chotu_admin/model/product_model.dart';
+import 'package:chotu_admin/model/shop_model.dart';
+import 'package:chotu_admin/providers/store_product_provider.dart';
 import 'package:chotu_admin/screens/shops/widgets/addNewShopDialogBox.dart';
 import 'package:chotu_admin/screens/shops/widgets/addShopProductDialogBox.dart';
 import 'package:chotu_admin/utils/app_Colors.dart';
@@ -8,10 +11,13 @@ import 'package:chotu_admin/widgets/custom_TextField.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
-import '../../generated/assets.dart';
+import '../../../generated/assets.dart';
 
 class ShopProductsScreen extends StatefulWidget {
+  StoreModel storeModel;
+  ShopProductsScreen({required this.storeModel});
   @override
   State<ShopProductsScreen> createState() => _ShopProductsScreenState();
 }
@@ -19,6 +25,13 @@ class ShopProductsScreen extends StatefulWidget {
 class _ShopProductsScreenState extends State<ShopProductsScreen> {
   TextEditingController startDateController = TextEditingController();
   TextEditingController endDateController = TextEditingController();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Provider.of<StoreProductProvider>(context,listen: false).getStoreProducts(widget.storeModel.id!);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +55,6 @@ class _ShopProductsScreenState extends State<ShopProductsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-
                   /// back icon
                   Row(
                     children: [
@@ -57,7 +69,7 @@ class _ShopProductsScreenState extends State<ShopProductsScreen> {
                       padding20,
                       Expanded(
                         child: Text(
-                          'Shop Name',
+                          '${widget.storeModel.name}',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
 

@@ -6,6 +6,7 @@ class APIConstants {
   static String adminLogin = baseUrl + "api";
 
   // store constants
+  static String addStore = baseUrl + "api/store";
   static String getAllStores = baseUrl + "api/stores";
   static String updateStoreStatus = baseUrl + "api/update/store/status/";
 
@@ -24,6 +25,11 @@ class APIConstants {
   static String getAllRiders = baseUrl + "api/all/riders";
   static String updateRiderStatus = baseUrl + "api/update/rider/status/";
   static String removeRider = baseUrl + "api/remove/rider/";
+
+  // Products Constants
+  static String getAllProducts = baseUrl + "api/get/all/products";
+  static String getProductByStoreId = baseUrl + "api/get/products/by/store/";
+
 
 
 
