@@ -8,16 +8,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
-// import 'package:geocoding/geocoding.dart';
 import 'package:provider/provider.dart';
 
 import '../../../generated/assets.dart';
 import '../../../widgets/custom_TextField.dart';
 import 'dart:async';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-// import 'package:geolocator/geolocator.dart';
-// import 'package:geolocator/geolocator.dart';
-// import 'package:geolocator_android/geolocator_android.dart';
 import 'package:geolocator_web/geolocator_web.dart';
 
 class AddShopDialog extends StatefulWidget {

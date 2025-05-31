@@ -32,146 +32,145 @@ class _ShopProductsScreenState extends State<ShopProductsScreen> {
     super.initState();
     Provider.of<StoreProductProvider>(context,listen: false).getStoreProducts(widget.storeModel.id!);
   }
-
+  List<ProductModel>? storeProducts;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.bgColor,
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(color: Colors.white, boxShadow: [
-            BoxShadow(
-              offset: const Offset(0, 0),
-              color: Colors.black.withOpacity(.1),
-              blurRadius: 2,
-              spreadRadius: 0,
-            )
-          ]),
-          child: Padding(
+      body: Consumer<StoreProductProvider>(
+        builder: (context,provider,child) {
+
+          return Padding(
             padding: const EdgeInsets.all(16.0),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  /// back icon
-                  Row(
+            child: Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(color: Colors.white, boxShadow: [
+                BoxShadow(
+                  offset: const Offset(0, 0),
+                  color: Colors.black.withOpacity(.1),
+                  blurRadius: 2,
+                  spreadRadius: 0,
+                )
+              ]),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      InkWell(
-                          overlayColor: WidgetStatePropertyAll<Color>(Colors.transparent),
-                          onTap: (){
-                            Navigator.pop(context);
-                          },
-                          child: Align(
-                              alignment: Alignment.topLeft,
-                              child: Icon(Icons.arrow_back_ios))),
-                      padding20,
-                      Expanded(
-                        child: Text(
-                          '${widget.storeModel.name}',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-
-                          style: getBoldStyle(
-                            color: Colors.black,
-                            fontSize: 16,
-
-                          ),
-                        ),
-                      ),
-
-
-                    ],
-                  ),
-                  padding30,
-                  /// Status Summary Cards
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _buildStatsCard('Total Products', 5, Colors.orange),
-                      ),
-                      padding12,
-                      Expanded(
-                        child: _buildStatsCard('Active', 4, Colors.green),
-                      ),
-                      padding12,
-                      Expanded(
-                        child: _buildStatsCard('DeActive', 1, Colors.red),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-
-                  /// Search Bar & add shop button
-
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Expanded(
-                        child: CustomTextField(
-                          width: MediaQuery.of(context).size.width,
-                          title: '',
-                          controller: TextEditingController(),
-                          obscureText: false,
-                          textInputAction: TextInputAction.search,
-                          keyboardType: TextInputType.text,
-                          hintText: 'Search Product by name',
-                          suffixIcon: SizedBox(
-                            height: 24,
-                            width: 24,
-                            child: Center(
-                              child: SvgPicture.asset(Assets.iconsSearchnormal1),
-                            ),
-                          ),
-                        ),
-                      ),
-                      padding12,
-                      InkWell(
-                        onTap: () {
-                          showAddShopProductDialog(context);
-                        },
-                        child: Align(
-                          alignment: Alignment.topRight,
-                          child: Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
-                              color: AppColors.primaryColor,
-                            ),
+                      /// back icon
+                      Row(
+                        children: [
+                          InkWell(
+                              overlayColor: WidgetStatePropertyAll<Color>(Colors.transparent),
+                              onTap: (){
+                                Navigator.pop(context);
+                              },
+                              child: Align(
+                                  alignment: Alignment.topLeft,
+                                  child: Icon(Icons.arrow_back_ios))),
+                          padding20,
+                          Expanded(
                             child: Text(
-                              'Add New Product',
-                              style: getSemiBoldStyle(
-                                color: AppColors.whiteColor,
+                              '${widget.storeModel.name}',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+
+                              style: getBoldStyle(
+                                color: Colors.black,
                                 fontSize: 16,
                               ),
                             ),
                           ),
+                        ],
+                      ),
+                      padding30,
+                      /// Status Summary Cards
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildStatsCard('Total Products', 5, Colors.orange),
+                          ),
+                          padding12,
+                          Expanded(
+                            child: _buildStatsCard('Active', 4, Colors.green),
+                          ),
+                          padding12,
+                          Expanded(
+                            child: _buildStatsCard('DeActive', 1, Colors.red),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+
+                      /// Search Bar & add shop button
+
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Expanded(
+                            child: CustomTextField(
+                              width: MediaQuery.of(context).size.width,
+                              title: '',
+                              controller: TextEditingController(),
+                              obscureText: false,
+                              textInputAction: TextInputAction.search,
+                              keyboardType: TextInputType.text,
+                              hintText: 'Search Product by name',
+                              suffixIcon: SizedBox(
+                                height: 24,
+                                width: 24,
+                                child: Center(
+                                  child: SvgPicture.asset(Assets.iconsSearchnormal1),
+                                ),
+                              ),
+                            ),
+                          ),
+                          padding12,
+                          InkWell(
+                            onTap: () {
+                              showAddShopProductDialog(context);
+                            },
+                            child: Align(
+                              alignment: Alignment.topRight,
+                              child: Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8),
+                                  color: AppColors.primaryColor,
+                                ),
+                                child: Text(
+                                  'Add New Product',
+                                  style: getSemiBoldStyle(
+                                    color: AppColors.whiteColor,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      padding30,
+                      Align(
+                        alignment: Alignment.topLeft,
+                        child: Wrap(
+                          spacing: 16,
+                          runSpacing: 16,
+                          alignment: WrapAlignment.start,
+                          runAlignment: WrapAlignment.start,
+                          children: List.generate(10, (index) {
+                            return _buildProductCard(context);
+                          }),
                         ),
                       ),
                     ],
                   ),
-                  padding30,
-
-
-
-
-                  // Scrollable Data Table
-
-                  Wrap(
-                    // alignment: WrapAlignment.center,
-                    // crossAxisAlignment: WrapCrossAlignment.center,
-                    spacing: 16,
-                    runSpacing: 16,
-                    children: List.generate(10, (index) {
-                      return _buildProductCard(context);
-                    }),
-                  ),
-                ],
+                ),
               ),
             ),
-          ),
-        ),
+          );
+        }
       ),
     );
   }
