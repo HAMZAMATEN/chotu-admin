@@ -51,3 +51,32 @@ class PaginationButton extends StatelessWidget {
     );
   }
 }
+
+
+
+class PaginationMoreButton extends StatelessWidget {
+  final PaginationModel pagination;
+  final VoidCallback? onNext;
+
+  const PaginationMoreButton({
+    Key? key,
+    required this.pagination,
+    this.onNext,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final bool isFirstPage = pagination.currentPage <= 1;
+    final bool isLastPage = pagination.currentPage >= pagination.lastPage;
+
+    return ElevatedButton(
+      onPressed: isLastPage ? null : onNext,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: isLastPage ? Colors.grey : AppColors.primaryColor,
+      ),
+      child:  Text('More Results',
+        style:  getMediumStyle(color: Colors.white, fontSize: 16),
+      ),
+    );
+  }
+}

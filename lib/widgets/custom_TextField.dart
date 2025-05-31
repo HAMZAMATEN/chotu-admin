@@ -13,6 +13,7 @@ Widget CustomTextField(
     String? Function(String?)? validator,
     Widget? prefixIcon,
     void Function(String)? onChanged,
+    void Function(String)? onFieldSubmitted,
     Widget? suffixIcon,
     int? minLines,
     int? maxLines,
@@ -41,6 +42,7 @@ Widget CustomTextField(
         child: TextFormField(
           focusNode: focusNode,
           onChanged: onChanged,
+          onFieldSubmitted: onFieldSubmitted,
           obscuringCharacter: '*',
           minLines: obscureText ? 1 : minLines,
           maxLines: obscureText ? 1 : maxLines,

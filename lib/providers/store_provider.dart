@@ -325,4 +325,57 @@ class StoreProvider extends ChangeNotifier {
     _suggestions = [];
     notifyListeners();
   }
+
+
+  /// searching function
+  List<StoreModel>? searchedStoresList;
+  bool isSearching = false;
+  PaginationModel? searchPagination;
+
+  Future<void> searchStore(String input,{int? page = 1}) async{
+    try{
+      print("input is");
+      print(input);
+      updateIsSearchingValue(true);
+      if(page == 1){
+        searchedStoresList = [];
+      }
+      http.Response response = await apiServicesProvider
+          .getRequestResponse('${APIConstants.searchStore}${input}?page=${page}');
+
+      print("RESPONSE CODE FOR searchStore ${response.statusCode}");
+      print("RESPONSE IS ${jsonDecode(response.body)}");
+
+      if(response.statusCode == 200) {
+        searchPagination = PaginationModel.fromJson(jsonDecode(response.body)['pagination']);
+        List<StoreModel> tempStoresList = [];
+        List<dynamic> dataList = (jsonDecode(response.body))['data'];
+        dataList.forEach((shopData) {
+          StoreModel store = StoreModel.fromJson(shopData);
+          tempStoresList.add(store);
+        });
+        searchedStoresList = searchedStoresList! + tempStoresList;
+      }else{
+        print("No Stores Found");
+        print("Error while searching store: ${response.statusCode}");
+        searchedStoresList = [];
+      }
+      notifyListeners();
+    }catch(e){
+      print("EXCEPTION WHILE SEARCHING STORE ${e}");
+      searchedStoresList = [];
+      notifyListeners();
+    }
+  }
+
+  updateIsSearchingValue(bool val){
+    isSearching = val;
+    notifyListeners();
+  }
+
+  resetSearchStoreList(){
+    searchedStoresList = null ;
+    notifyListeners();
+  }
+
 }
