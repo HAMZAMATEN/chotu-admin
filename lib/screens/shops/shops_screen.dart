@@ -16,8 +16,6 @@ import 'package:shimmer/shimmer.dart';
 import '../../generated/assets.dart';
 import 'widgets/shop_screen_card_widgets.dart';
 
-
-
 class ShopsScreen extends StatefulWidget {
   @override
   State<ShopsScreen> createState() => _ShopsScreenState();
@@ -28,13 +26,12 @@ class _ShopsScreenState extends State<ShopsScreen> {
 
   late StoreProvider storeProvider;
 
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    Provider.of<StoreProvider>(context,listen: false).getAllStores();
-    Provider.of<StoreProvider>(context,listen: false).getAllCategories();
+    Provider.of<StoreProvider>(context, listen: false).getAllStores();
+    Provider.of<StoreProvider>(context, listen: false).getAllCategories();
   }
 
   @override
@@ -46,9 +43,19 @@ class _ShopsScreenState extends State<ShopsScreen> {
           padding: const EdgeInsets.all(16.0),
           child: Consumer<StoreProvider>(builder: (context, provider, child) {
             storeProvider = provider;
-            if(provider.pageViseStoresMap![provider.storePagination?.currentPage] != null ){
-              provider.activeStoresLength = provider.pageViseStoresMap![provider.storePagination?.currentPage]!.where((store)=>store.status == 1).toList().length;
-              provider.inActiveStoresLength = provider.pageViseStoresMap![provider.storePagination?.currentPage]!.where((store)=>store.status == 0).toList().length;
+            if (provider.pageViseStoresMap![
+                    provider.storePagination?.currentPage] !=
+                null) {
+              provider.activeStoresLength = provider
+                  .pageViseStoresMap![provider.storePagination?.currentPage]!
+                  .where((store) => store.status == 1)
+                  .toList()
+                  .length;
+              provider.inActiveStoresLength = provider
+                  .pageViseStoresMap![provider.storePagination?.currentPage]!
+                  .where((store) => store.status == 0)
+                  .toList()
+                  .length;
             }
             return Column(
               children: [
@@ -75,13 +82,16 @@ class _ShopsScreenState extends State<ShopsScreen> {
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: SingleChildScrollView(
-                      child: (provider.pageViseStoresMap![provider.storePagination?.currentPage] == null || provider.allCategoriesList == null)
+                      child: (provider.pageViseStoresMap![
+                                      provider.storePagination?.currentPage] ==
+                                  null ||
+                              provider.allCategoriesList == null)
                           ? shimmerShopWidget(context)
                           : shopBodyWidget(context),
                     ),
                   ),
                 ),
-                if(storeProvider.storePagination != null)...[
+                if (storeProvider.storePagination != null) ...[
                   SizedBox(
                     height: 10,
                   ),
@@ -89,10 +99,14 @@ class _ShopsScreenState extends State<ShopsScreen> {
                     pagination: provider.storePagination!,
                     onPrevious: () {
                       // handle going to previous page
-                      Provider.of<StoreProvider>(context,listen: false).getAllStores(page: provider.storePagination!.currentPage-1);
+                      Provider.of<StoreProvider>(context, listen: false)
+                          .getAllStores(
+                              page: provider.storePagination!.currentPage - 1);
                     },
                     onNext: () {
-                      Provider.of<StoreProvider>(context,listen: false).getAllStores(page: provider.storePagination!.currentPage+1);
+                      Provider.of<StoreProvider>(context, listen: false)
+                          .getAllStores(
+                              page: provider.storePagination!.currentPage + 1);
                       // handle going to next page
                     },
                   ),
@@ -113,26 +127,36 @@ class _ShopsScreenState extends State<ShopsScreen> {
         runSpacing: 16,
         alignment: WrapAlignment.start,
         runAlignment: WrapAlignment.start,
-        children: List.generate(storeProvider.pageViseStoresMap![storeProvider.storePagination?.currentPage]!.length, (index) {
-          StoreModel store = storeProvider.pageViseStoresMap![storeProvider.storePagination?.currentPage]![index];
-          if(searchController.text.isEmpty || store.name.toString().toLowerCase().contains(searchController.text.trim().toLowerCase())){
-            return ShopCardWidget(storeModel: store);
-          }else{
-            return SizedBox(
-              width: double.infinity,
-            );
-          }
-        }),
+        children: List.generate(
+          storeProvider
+              .pageViseStoresMap![storeProvider.storePagination?.currentPage]!
+              .length,
+          (index) {
+            StoreModel store = storeProvider.pageViseStoresMap![
+                storeProvider.storePagination?.currentPage]![index];
+            if (searchController.text.isEmpty ||
+                store.name
+                    .toString()
+                    .toLowerCase()
+                    .contains(searchController.text.trim().toLowerCase())) {
+              return ShopCardWidget(storeModel: store);
+            } else {
+              return SizedBox(
+                width: double.infinity,
+              );
+            }
+          },
+        ),
       ),
     );
   }
 
   Row shopSearchField(BuildContext context) {
     return Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Expanded(
-            child: CustomTextField(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Expanded(
+          child: CustomTextField(
               width: MediaQuery.of(context).size.width,
               title: '',
               controller: searchController,
@@ -147,57 +171,62 @@ class _ShopsScreenState extends State<ShopsScreen> {
                   child: SvgPicture.asset(Assets.iconsSearchnormal1),
                 ),
               ),
-              onChanged: (val){
+              onChanged: (val) {
                 setState(() {});
-              }
-            ),
-          ),
-          padding12,
-          InkWell(
-            onTap: () {
-              showAddShopDialog(context);
-            },
-            child: Align(
-              alignment: Alignment.topRight,
-              child: Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  color: AppColors.primaryColor,
-                ),
-                child: Text(
-                  'Add New Shop',
-                  style: getSemiBoldStyle(
-                    color: AppColors.whiteColor,
-                    fontSize: 16,
-                  ),
+              }),
+        ),
+        padding12,
+        InkWell(
+          onTap: () {
+            showAddShopDialog(context);
+          },
+          child: Align(
+            alignment: Alignment.topRight,
+            child: Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                color: AppColors.primaryColor,
+              ),
+              child: Text(
+                'Add New Shop',
+                style: getSemiBoldStyle(
+                  color: AppColors.whiteColor,
+                  fontSize: 16,
                 ),
               ),
             ),
           ),
-        ],
-      );
+        ),
+      ],
+    );
   }
 
   Row shopeStatsWidget() {
     return Row(
-        children: [
-          Expanded(
-            child: buildStatsCard('Total Shops',
-                storeProvider.pageViseStoresMap![storeProvider.storePagination?.currentPage]?.length ?? 0, Colors.orange),
-          ),
-          padding12,
-          Expanded(
-            child: buildStatsCard(
-                'Active', storeProvider.activeStoresLength, Colors.green),
-          ),
-          padding12,
-          Expanded(
-            child: buildStatsCard(
-                'InActive', storeProvider.inActiveStoresLength, Colors.red),
-          ),
-        ],
-      );
+      children: [
+        Expanded(
+          child: buildStatsCard(
+              'Total Shops',
+              storeProvider
+                      .pageViseStoresMap![
+                          storeProvider.storePagination?.currentPage]
+                      ?.length ??
+                  0,
+              Colors.orange),
+        ),
+        padding12,
+        Expanded(
+          child: buildStatsCard(
+              'Active', storeProvider.activeStoresLength, Colors.green),
+        ),
+        padding12,
+        Expanded(
+          child: buildStatsCard(
+              'InActive', storeProvider.inActiveStoresLength, Colors.red),
+        ),
+      ],
+    );
   }
 
   Widget shimmerShopWidget(BuildContext context) {
