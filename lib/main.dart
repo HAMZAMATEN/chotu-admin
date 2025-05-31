@@ -1,6 +1,7 @@
 import 'package:chotu_admin/firebase_options.dart';
 import 'package:chotu_admin/providers/api_services_provider.dart';
 import 'package:chotu_admin/providers/categories_provider.dart';
+import 'package:chotu_admin/providers/orders_provider.dart';
 
 import 'package:chotu_admin/providers/session_provider.dart';
 import 'package:chotu_admin/providers/users_provider.dart';
@@ -92,7 +93,8 @@ class _MyAppState extends State<MyApp> {
         ),
         ChangeNotifierProvider(
           create: (_) => DashboardProvider(),
-        ), ChangeNotifierProvider(
+        ),
+         ChangeNotifierProvider(
           create: (_) => CategoriesProvider(),
         ),
         ChangeNotifierProvider(
@@ -118,6 +120,9 @@ class _MyAppState extends State<MyApp> {
         ),
         ChangeNotifierProvider(
           create: (_) => StoreProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => OrdersProvider(),
         ),
         ChangeNotifierProvider(
           create: (_) => StoreProductProvider(),

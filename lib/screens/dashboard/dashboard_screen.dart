@@ -16,83 +16,87 @@ import '../../utils/fonts_manager.dart';
 import '../../widgets/custom_Button.dart';
 import '../users/widgets/ShowUserPopupDialog.dart';
 
-class DashboardScreen extends StatelessWidget {
+class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
 
   @override
+  State<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends State<DashboardScreen> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    Provider.of<DashboardProvider>(context, listen: false)
+        .getDashboardAnalytics();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: 30,
-          vertical: 5,
-        ),
-        child: Column(
-          children: [
-            padding30,
-            _buildStatsSection(),
-            padding20,
-            // Row(
-            //   crossAxisAlignment: CrossAxisAlignment.start,
-            //   children: [
-            //     Expanded(child: _buildAddPropertyTypesSection()),
-            //     padding30,
-            //     Expanded(child: _buildAddEventTypesSection()),
-            //   ],
-            // ),
-            padding20,
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(child: _buildRecentlyJoinedUsersSection()),
-                padding30,
-                Expanded(child: _buildSocialLinksSection()),
-              ],
-            ),
-            padding20,
-          ],
-        ),
-      ),
+    return Consumer<DashboardProvider>(
+      builder: (context, provider, child) {
+        return provider.dashboardAnalyticsModel == null
+            ? Center(child: CircularProgressIndicator())
+            : SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 30,
+                    vertical: 5,
+                  ),
+                  child: Column(
+                    children: [
+                      padding30,
+                      _buildStatsSection(provider),
+                      padding20,
+                      padding20,
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Expanded(child: _buildRecentlyJoinedUsersSection()),
+                          // padding30,
+                          Expanded(child: _buildSocialLinksSection()),
+                        ],
+                      ),
+                      padding20,
+                    ],
+                  ),
+                ),
+              );
+      },
     );
   }
 
-
-
-
-
   /// build stats section
-  Widget _buildStatsSection() {
+  Widget _buildStatsSection(DashboardProvider provider) {
+    var statData = provider.dashboardAnalyticsModel!.data;
     return Column(
       children: [
         Row(
           children: [
             Expanded(
               child: _buildTopCard(
-                  iconPath: Icons.monetization_on,
-
-                  title: 'Revenue',
-                  amount: '166,580',
-                  increase: '5%'),
+                iconPath: Icons.monetization_on,
+                title: 'Revenue',
+                amount: statData?.totalRevenue.toString() ?? "0",
+              ),
             ),
             padding20,
             Expanded(
               child: _buildTopCard(
-                  iconPath: Icons.reorder,
-
-                  title: 'Total Orders',
-                  amount: '430',
-                  increase: '2%'),
+                iconPath: Icons.reorder,
+                title: 'Total Orders',
+                amount: statData?.totalOrders.toString() ?? "0",
+              ),
             ),
- padding20,
+            padding20,
             Expanded(
               child: _buildTopCard(
-                  iconPath: Icons.cancel,
-
-                  title: 'Cancel Orders',
-                  amount: '430',
-                  increase: '2%'),
+                iconPath: Icons.cancel,
+                title: 'Cancel Orders',
+                amount: statData?.cancelOrders.toString() ?? "0",
+              ),
             ),
-
           ],
         ),
         padding10,
@@ -100,68 +104,55 @@ class DashboardScreen extends StatelessWidget {
           children: [
             Expanded(
               child: _buildTopCard(
-                  iconPath: Icons.shopify_sharp,
-
-                  title: 'Total Shops',
-                  amount: '10',
-                  increase: '2%'),
+                iconPath: Icons.shopify_sharp,
+                title: 'Total Shops',
+                amount: statData?.totalShops.toString() ?? "0",
+              ),
             ),
             padding20,
             Expanded(
               child: _buildTopCard(
-                  iconPath: Icons.verified_user,
-
-                  title: 'Total Rides',
-                  amount: '51,580',
-                  increase: '4%'),
+                iconPath: Icons.verified_user,
+                title: 'Total Rides',
+                amount: statData?.totalRides.toString() ?? "0",
+              ),
             ),
-
             padding20,
             Expanded(
               child: _buildTopCard(
                 iconPath: Icons.supervised_user_circle,
-                  title: 'Total Users',
-                  amount: '51,580',
-                  increase: '4%'),
+                title: 'Total Users',
+                amount: statData?.totalUsers.toString() ?? "0",
+              ),
             ),
-
-
           ],
         ),
-        padding10,
-        Row(
-          children: [
-
-
-
-            Expanded(
-              child: _buildPieChart("Revenue & Shop's Info", {
-                Color(0xffFF4D4D): 'Revenue', // Give to Rent
-                Colors.green: "Total Shop's", // Want to Sell
-              }),
-            ),
-            padding20,
-
-
-            Expanded(
-              child: _buildPieChart("Total Rider's & User's Info", {
-                Color(0xffFF4D4D): "Rider's", // Give to Rent
-                Colors.green: "User's", // Want to Sell
-              }),
-            ),padding20,
-
-
-            Expanded(
-              child: _buildPieChart("Order's Info", {
-                Colors.blue: "Total Order's",
-                Colors.green: "Delivered Order's",
-                Color(0xffFF4D4D): "Cancel Order's",
-              }),
-            ),
-          ],
-        )
-
-
+        // padding10,
+        // Row(
+        //   children: [
+        //     Expanded(
+        //       child: _buildPieChart("Revenue & Shop's Info", {
+        //         Color(0xffFF4D4D): 'Revenue', // Give to Rent
+        //         Colors.green: "Total Shop's", // Want to Sell
+        //       }),
+        //     ),
+        //     padding20,
+        //     Expanded(
+        //       child: _buildPieChart("Total Rider's & User's Info", {
+        //         Color(0xffFF4D4D): "Rider's", // Give to Rent
+        //         Colors.green: "User's", // Want to Sell
+        //       }),
+        //     ),
+        //     padding20,
+        //     Expanded(
+        //       child: _buildPieChart("Order's Info", {
+        //         Colors.blue: "Total Order's",
+        //         Colors.green: "Delivered Order's",
+        //         Color(0xffFF4D4D): "Cancel Order's",
+        //       }),
+        //     ),
+        //   ],
+        // )
       ],
     );
   }
@@ -170,7 +161,6 @@ class DashboardScreen extends StatelessWidget {
     required IconData iconPath,
     required String title,
     required String amount,
-    required String increase,
   }) {
     return Container(
       padding: EdgeInsets.all(20),
@@ -186,8 +176,10 @@ class DashboardScreen extends StatelessWidget {
               Container(
                 height: 24,
                 width: 24,
-                child: Center(child: Icon(iconPath,
-                color: Colors.green,
+                child: Center(
+                    child: Icon(
+                  iconPath,
+                  color: Colors.green,
                 )),
               ),
               padding5,
@@ -205,114 +197,41 @@ class DashboardScreen extends StatelessWidget {
             '$amount',
             style: getMediumStyle(color: Color(0xff1f1f1f), fontSize: 32),
           ),
-          padding10,
-          Row(
-            children: [
-              Container(
-                height: 24,
-                width: 24,
-                child: Center(
-                  child: SvgPicture.asset(
-                    Assets.iconsTrendup,
-                    color: Colors.green,
-                  ),
-                ),
-              ),
-              Text(
-                increase,
-                style: getMediumStyle(
-                  color:Colors.green,
-                  fontSize: 16,
-                ),
-              ),
-              Text(
-                ' in the last 1 month',
-                style: getRegularStyle(
-                  color: Color(0xffABABAB),
-                  fontSize: 16,
-                ),
-              ),
-            ],
-          ),
         ],
       ),
     );
   }
 
- /// build recently joined users section
+  /// build recently joined users section
   Widget _buildRecentlyJoinedUsersSection() {
-    return Consumer<DashboardProvider>(
-      builder: (context, provider, child) {
-        return Container(
-          padding: EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: Color(
-                0xffD9D9D9,
-              ),
-            ),
+    return Container(
+      padding: EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Color(
+            0xffD9D9D9,
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
             children: [
-              Row(
-                children: [
-                  Text(
-                    'Recently Joined Users',
-                    style:
-                        getMediumStyle(color: Color(0xff1f1f1f), fontSize: 20),
-                  ),
-                  Spacer(),
-                  SizedBox(),
-                  // Container(
-                  //   height: 40,
-                  //   padding: const EdgeInsets.symmetric(horizontal: 10),
-                  //   decoration: BoxDecoration(
-                  //     borderRadius: BorderRadius.circular(8),
-                  //     color: Color(0xffFAFAFA),
-                  //     border: Border.all(
-                  //       color: Color(0xffdddddd),
-                  //       width: 1,
-                  //     ),
-                  //   ),
-                  //   child: DropdownButtonHideUnderline(
-                  //     child: DropdownButton<String>(
-                  //       icon: null,
-                  //       value: provider.selectedStatus,
-                  //       dropdownColor: Colors.white,
-                  //       isExpanded: false,
-                  //       style: getMediumStyle(
-                  //         fontSize: 14,
-                  //         color: Color(0xff8F8F8F),
-                  //       ),
-                  //       items: provider.statuses.map((status) {
-                  //         return DropdownMenuItem<String>(
-                  //           value: status,
-                  //           child: Text(
-                  //             status,
-                  //             style: getMediumStyle(
-                  //                 color: Colors.black, fontSize: 14),
-                  //           ),
-                  //         );
-                  //       }).toList(),
-                  //       onChanged: (newValue) {
-                  //         if (newValue != null) {
-                  //           provider.setSelectedStatus(newValue);
-                  //         }
-                  //       },
-                  //     ),
-                  //   ),
-                  // ),
-                ],
+              Text(
+                'Recently Joined Users',
+                style: getMediumStyle(color: Color(0xff1f1f1f), fontSize: 20),
               ),
-              padding20,
-              UserTable(),
+              Spacer(),
+              SizedBox(),
             ],
           ),
-        );
-      },
+          padding20,
+          UserTable(),
+        ],
+      ),
     );
   }
 
@@ -337,7 +256,6 @@ class DashboardScreen extends StatelessWidget {
             style: getMediumStyle(color: Color(0xff1f1f1f), fontSize: 20),
           ),
           padding20,
-
           CustomTextField(
               title: 'Delivery Charges',
               controller: TextEditingController(
@@ -349,15 +267,12 @@ class DashboardScreen extends StatelessWidget {
               suffixIcon: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Icon(
-                  Icons.monetization_on_outlined
-                  ,
-                  color:                     Colors.green,
-
+                  Icons.monetization_on_outlined,
+                  color: Colors.green,
                   size: 20,
                 ),
               ),
               hintText: ''),
-
           padding20,
           CustomTextField(
               title: 'Link of the app at play store',
@@ -371,8 +286,7 @@ class DashboardScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
                   'copy link',
-                  style: getMediumStyle(color:                     Colors.green,
-                      fontSize: 14),
+                  style: getMediumStyle(color: Colors.green, fontSize: 14),
                 ),
               ),
               hintText: ''),
@@ -383,8 +297,7 @@ class DashboardScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
                   'copy link',
-                  style: getMediumStyle(color:                    Colors.green,
-                      fontSize: 14),
+                  style: getMediumStyle(color: Colors.green, fontSize: 14),
                 ),
               ),
               controller: TextEditingController(
@@ -426,6 +339,7 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 }
+
 /// build pie chart
 Widget _buildPieChart(String title, Map<Color, String> data) {
   return Container(
@@ -453,14 +367,14 @@ Widget _buildPieChart(String title, Map<Color, String> data) {
                   sections: data.entries
                       .map(
                         (entry) => PieChartSectionData(
-                      color: entry.key,
-                      titleStyle: TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  )
+                          color: entry.key,
+                          titleStyle: TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      )
                       .toList(),
                   sectionsSpace: 4,
                   centerSpaceRadius: 30,
@@ -478,14 +392,14 @@ Widget _buildPieChart(String title, Map<Color, String> data) {
                       Container(
                         height: 27,
                         width: 27,
-                        decoration: BoxDecoration(
-                            shape: BoxShape.circle, color: e.key),
+                        decoration:
+                            BoxDecoration(shape: BoxShape.circle, color: e.key),
                       ),
                       padding5,
                       Text(
                         e.value,
-                        style: getRegularStyle(
-                            color: Colors.black, fontSize: 12),
+                        style:
+                            getRegularStyle(color: Colors.black, fontSize: 12),
                       ),
                     ],
                   ),
@@ -498,8 +412,6 @@ Widget _buildPieChart(String title, Map<Color, String> data) {
     ),
   );
 }
-
-
 
 class UserTable extends StatelessWidget {
   const UserTable({Key? key}) : super(key: key);

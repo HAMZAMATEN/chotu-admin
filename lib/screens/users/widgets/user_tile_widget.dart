@@ -11,11 +11,12 @@ import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../../utils/app_colors.dart';
-
+import '../../../widgets/ShowConformationAlert.dart';
 
 class UserListTile extends StatefulWidget {
   UserModel userModel;
-   UserListTile({super.key,required this.userModel});
+
+  UserListTile({super.key, required this.userModel});
 
   @override
   State<UserListTile> createState() => _UserListTileState();
@@ -31,9 +32,9 @@ class _UserListTileState extends State<UserListTile> {
         Expanded(
           flex: 1,
           child: Text(
-            widget.userModel.name,
+            widget.userModel.name ?? "",
             style:
-            getRegularStyle(color: const Color(0xff1F1F1F), fontSize: 16),
+                getRegularStyle(color: const Color(0xff1F1F1F), fontSize: 16),
           ),
         ),
         padding15,
@@ -46,16 +47,18 @@ class _UserListTileState extends State<UserListTile> {
             children: [
               Text(
                 textAlign: TextAlign.start,
-                widget.userModel.email,
-                style:
-                getRegularStyle(color: const Color(0xff1F1F1F), fontSize: 16),
+                widget.userModel.email ?? "",
+                style: getRegularStyle(
+                    color: const Color(0xff1F1F1F), fontSize: 16),
               ),
-              SizedBox(height: 4,),
+              SizedBox(
+                height: 4,
+              ),
               Text(
                 textAlign: TextAlign.start,
-                widget.userModel.mobileNo,
-                style:
-                getRegularStyle(color: const Color(0xff1F1F1F), fontSize: 16),
+                widget.userModel.mobileNo ?? "",
+                style: getRegularStyle(
+                    color: const Color(0xff1F1F1F), fontSize: 16),
               ),
             ],
           ),
@@ -63,76 +66,91 @@ class _UserListTileState extends State<UserListTile> {
         padding15,
         Expanded(
           child: Center(
-            child: Consumer<UsersProvider>(
-              builder: (context,provider, child) {
-                return Container(
-                  height: 40,
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    color: provider.getStatusColor(widget.userModel.status),
-                  ),
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton<String>(
-                      icon: null,
-                      value: provider.statuses[widget.userModel.status],
-                      dropdownColor: Colors.white,
-                      isExpanded: false,
-                      style: getMediumStyle(
-                        fontSize: 14,
-                        color: provider.getTextColor(widget.userModel.status),
-                      ),
-                      items: provider.statuses.map((status) {
-                        return DropdownMenuItem<String>(
-                          value: status,
-                          child: Row(
-                            children: [
-                              // Circle Indicator
-                              Container(
-                                height: 10,
-                                width: 10,
-                                margin: const EdgeInsets.only(right: 10),
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: provider.getStatusIndicatorColor(status),
-                                ),
-                              ),
-                              // Status Text
-                              Text(
-                                status,
-                                style: getMediumStyle(
-                                    color: Colors.black, fontSize: 14),
-                              ),
-                            ],
-                          ),
-                        );
-                      }).toList(),
-                      onChanged: (newValue) async{
-                        if (newValue != null) {
-                          print("NEW CHANGED VALUE IS ${newValue}");
-                          if((newValue == "Approved" && widget.userModel.status == 1) ||
-                              (newValue == "Blocked" && widget.userModel.status == 0)
-                          ){
-                            // do nothing if the status are already set
-                          }else{
-                            ShowToastDialog.showLoader("Please wait");
-                            await provider.updateUserStatus(widget.userModel);
-                          }
-
-                        }
-                      },
+            child: Consumer<UsersProvider>(builder: (context, provider, child) {
+              return Container(
+                height: 40,
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  color: provider.getStatusColor(widget.userModel.status ?? 0),
+                ),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    icon: null,
+                    value: provider.statuses[widget.userModel.status ?? 0],
+                    dropdownColor: Colors.white,
+                    isExpanded: false,
+                    style: getMediumStyle(
+                      fontSize: 14,
+                      color:
+                          provider.getTextColor(widget.userModel.status ?? 0),
                     ),
+                    items: provider.statuses.map((status) {
+                      return DropdownMenuItem<String>(
+                        value: status,
+                        child: Row(
+                          children: [
+                            // Circle Indicator
+                            Container(
+                              height: 10,
+                              width: 10,
+                              margin: const EdgeInsets.only(right: 10),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: provider.getStatusIndicatorColor(status),
+                              ),
+                            ),
+                            // Status Text
+                            Text(
+                              status,
+                              style: getMediumStyle(
+                                  color: Colors.black, fontSize: 14),
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (newValue) async {
+                      print("old val ::: ${widget.userModel.status}");
+
+                      String oldVal =
+                          widget.userModel.status == 1 ? "Approved" : "Blocked";
+                      String newVal =
+                      newValue == 1 ? "Approved" : "Blocked";
+                      if (oldVal != newVal) {
+                        showCustomConfirmationDialog(
+                            context: context,
+                            message:
+                                "Do you really want to change status\nfrom $oldVal to $newVal?",
+                            onConfirm: () async {
+                              if (newValue != null) {
+                                print("NEW CHANGED VALUE IS ${newValue}");
+                                if ((newValue == "Approved" &&
+                                        widget.userModel.status == 1) ||
+                                    (newValue == "Blocked" &&
+                                        widget.userModel.status == 0)) {
+                                  // do nothing if the status are already set
+                                } else {
+                                  ShowToastDialog.showLoader("Please wait");
+                                  await provider
+                                      .updateUserStatus(widget.userModel);
+                                }
+                              }
+                            },
+                            confirmText: "Yes, change it!");
+                      }
+                    },
                   ),
-                );
-              }
-            ),
+                ),
+              );
+            }),
           ),
         ),
         padding15,
         Expanded(
           child: InkWell(
             onTap: () {
-              showUserProfileDialog(widget.userModel,context);
+              showUserProfileDialog(widget.userModel, context);
             },
             child: Center(
               child: Container(
@@ -158,9 +176,6 @@ class _UserListTileState extends State<UserListTile> {
   }
 }
 
-
-
-
 Widget shimmerUserTile(Map<String, dynamic> user, UsersProvider provider,
     int index, BuildContext context) {
   return Shimmer.fromColors(
@@ -175,7 +190,7 @@ Widget shimmerUserTile(Map<String, dynamic> user, UsersProvider provider,
           child: Text(
             user["name"]!,
             style:
-            getRegularStyle(color: const Color(0xff1F1F1F), fontSize: 16),
+                getRegularStyle(color: const Color(0xff1F1F1F), fontSize: 16),
           ),
         ),
         padding15,
@@ -184,7 +199,7 @@ Widget shimmerUserTile(Map<String, dynamic> user, UsersProvider provider,
           child: Text(
             user["info"]!,
             style:
-            getRegularStyle(color: const Color(0xff1F1F1F), fontSize: 16),
+                getRegularStyle(color: const Color(0xff1F1F1F), fontSize: 16),
           ),
         ),
         padding15,
@@ -219,7 +234,8 @@ Widget shimmerUserTile(Map<String, dynamic> user, UsersProvider provider,
                             margin: const EdgeInsets.only(right: 10),
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: provider.getStatusIndicatorColor("Approved"),
+                              color:
+                                  provider.getStatusIndicatorColor("Approved"),
                             ),
                           ),
                           // Status Text

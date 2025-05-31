@@ -28,6 +28,7 @@ class Assets {
   static const String iconsDiscount = 'assets/icons/discount.svg';
   static const String iconsDocFile = 'assets/icons/doc_file.svg';
   static const String iconsDropBox = 'assets/icons/drop_box.svg';
+  static const String iconsDropdown = 'assets/icons/Dropdown.svg';
   static const String iconsExcelFile = 'assets/icons/excel_file.svg';
   static const String iconsFigmaFile = 'assets/icons/Figma_file.svg';
   static const String iconsFolder = 'assets/icons/folder.svg';
@@ -57,6 +58,8 @@ class Assets {
   static const String iconsProduct2 = 'assets/icons/Product2.svg';
   static const String iconsProduct3 = 'assets/icons/Product3.svg';
   static const String iconsProduct4 = 'assets/icons/Product4.svg';
+  static const String iconsRadioFalse = 'assets/icons/Radio-false.svg';
+  static const String iconsRadioTrue = 'assets/icons/radio-true.svg';
   static const String iconsRevenue = 'assets/icons/revenue.png';
   static const String iconsSAQFIRemovebg = 'assets/icons/SAQFI-removebg.svg';
   static const String iconsSearch = 'assets/icons/Search.svg';

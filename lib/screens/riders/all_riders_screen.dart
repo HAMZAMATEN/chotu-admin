@@ -45,7 +45,7 @@ class _AllRidersScreenState extends State<AllRidersScreen> {
                 children: [
                   Expanded(
                     child: CustomTextField(
-                      onChanged: (val){
+                      onChanged: (val) {
                         provider.searchRiders(val);
                       },
                       width: MediaQuery.of(context).size.width,
@@ -94,35 +94,55 @@ class _AllRidersScreenState extends State<AllRidersScreen> {
               ),
               padding30,
               Expanded(
-                child: SingleChildScrollView(
-                  child: Container(
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: Color(0xffF1F1F1),
-                          width: 1,
-                        )),
-                    child: Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-                      child: UserTable(),
-                    ),
-                  ),
-                ),
+                child: provider.searchController.text.isNotEmpty &&
+                        (provider.filterRidersList == null ||
+                            provider.filterRidersList!.isEmpty)
+                    ? Center(
+                        child: Text(
+                          "No riders found!!!",
+                          style: getBoldStyle(
+                              color: AppColors.textColor, fontSize: 22),
+                        ),
+                      )
+                    : provider.searchController.text.isEmpty &&
+                            provider.riders.isEmpty
+                        ? Center(
+                            child: Text(
+                              "No riders found!!!",
+                              style: getBoldStyle(
+                                  color: AppColors.textColor, fontSize: 22),
+                            ),
+                          )
+                        : SingleChildScrollView(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: Color(0xffF1F1F1),
+                                    width: 1,
+                                  )),
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 30, vertical: 20),
+                                child: UserTable(),
+                              ),
+                            ),
+                          ),
               ),
               padding20,
-              PaginationWidget(
-                currentPage: provider.currentPage,
-                lastPage: provider.pagination == null
-                    ? 1
-                    : provider.pagination!.lastPage ?? 1,
-                onPageSelected: (int selectedPage) {
-                  // fetch data for selectedPage
-                  print("Go to page $selectedPage");
-                  provider.getAllRiders(selectedPage);
-                },
-              ),
+              if (provider.searchController.text.isEmpty)
+                PaginationWidget(
+                  currentPage: provider.currentPage,
+                  lastPage: provider.pagination == null
+                      ? 1
+                      : provider.pagination!.lastPage ?? 1,
+                  onPageSelected: (int selectedPage) {
+                    // fetch data for selectedPage
+                    print("Go to page $selectedPage");
+                    provider.getAllRiders(selectedPage);
+                  },
+                ),
               padding20,
             ],
           ),
@@ -195,7 +215,168 @@ class UserTable extends StatelessWidget {
 
             padding3,
             // User Rows
-            if (provider.allRidersList == null) ...[
+
+            if (provider.searchController.text.isNotEmpty)
+              if (provider.searchLoading) ...[
+                ListView.separated(
+                  padding: EdgeInsets.zero,
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: provider.riders.length,
+                  separatorBuilder: (context, index) => const Divider(
+                    color: Color(0xffF1F1F1),
+                    thickness: 1,
+                  ),
+                  itemBuilder: (context, index) {
+                    final user = provider.riders[index];
+                    return Padding(
+                      padding: EdgeInsets.only(top: 6),
+                      child: shimmerRiderTile(user, provider, index, context),
+                    );
+                  },
+                ),
+              ] else ...[
+                ListView.separated(
+                  padding: EdgeInsets.zero,
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: provider.filterRidersList!.length,
+                  separatorBuilder: (context, index) => const Divider(
+                    color: Color(0xffF1F1F1),
+                    thickness: 1,
+                  ),
+                  itemBuilder: (context, index) {
+                    final rider = provider.filterRidersList![index];
+                    return Padding(
+                      padding: EdgeInsets.only(top: 6),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            flex: 1,
+                            child: Text(
+                              rider.name.toString(),
+                              style: getRegularStyle(
+                                  color: const Color(0xff1F1F1F), fontSize: 16),
+                            ),
+                          ),
+                          padding15,
+                          Expanded(
+                            flex: 3,
+                            child: Text(
+                              rider.fullAddress.toString(),
+                              style: getRegularStyle(
+                                  color: const Color(0xff1F1F1F), fontSize: 16),
+                            ),
+                          ),
+                          padding15,
+                          Expanded(
+                            child: Center(
+                              child: Container(
+                                height: 40,
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 10),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8),
+                                  color: provider.getStatusColor(rider.status!),
+                                ),
+                                child: DropdownButtonHideUnderline(
+                                  child: DropdownButton<String>(
+                                    icon: null,
+                                    value: provider.statuses[rider.status!],
+                                    dropdownColor: Colors.white,
+                                    isExpanded: false,
+                                    style: getMediumStyle(
+                                      fontSize: 14,
+                                      color:
+                                          provider.getTextColor(rider.status!),
+                                    ),
+                                    items: provider.statuses.map((status) {
+                                      return DropdownMenuItem<String>(
+                                        value: status,
+                                        child: Row(
+                                          children: [
+                                            // Circle Indicator
+                                            Container(
+                                              height: 10,
+                                              width: 10,
+                                              margin: const EdgeInsets.only(
+                                                  right: 10),
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                color: provider
+                                                    .getStatusIndicatorColor(
+                                                        status),
+                                              ),
+                                            ),
+                                            // Status Text
+                                            Text(
+                                              status,
+                                              style: getMediumStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 14),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    }).toList(),
+                                    onChanged: (newValue) async {
+                                      if (newValue != null) {
+                                        print(
+                                            "NEW CHANGED VALUE IS ${newValue}");
+                                        if ((newValue == "Approved" &&
+                                                rider.status == 1) ||
+                                            (newValue == "Blocked" &&
+                                                rider.status == 0)) {
+                                          // do nothing if the status are already set
+                                        } else {
+                                          ShowToastDialog.showLoader(
+                                              "Please wait");
+                                          await provider
+                                              .updateRiderStatus(rider);
+                                        }
+                                      }
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          padding15,
+                          Expanded(
+                            child: InkWell(
+                              onTap: () {
+                                showRealtorProfileDialog(context, rider);
+                              },
+                              child: Center(
+                                child: Container(
+                                  height: 40,
+                                  width: 80,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8),
+                                    color:
+                                        AppColors.primaryColor.withOpacity(.7),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      'See More',
+                                      style: getMediumStyle(
+                                          color: AppColors.whiteColor,
+                                          fontSize: 12),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ]
+            else if (provider.allRidersList == null) ...[
               ListView.separated(
                 padding: EdgeInsets.zero,
                 shrinkWrap: true,

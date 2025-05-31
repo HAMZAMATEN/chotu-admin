@@ -6,7 +6,6 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import '../main.dart';
-import '../model/user_model.dart';
 import '../utils/api_consts.dart';
 import '../utils/app_constants.dart';
 import '../utils/functions.dart';
@@ -522,25 +521,46 @@ class RidersProvider with ChangeNotifier {
 
   var searchController = TextEditingController();
 
-  void searchRiders(val) {
-    if (allRidersList != null) {
-      allRidersList = filterRidersList;
-      allRidersList = List.from(allRidersList!
-          .where((e) =>
-              e.name
-                  .toString()
-                  .toLowerCase()
-                  .contains(val.toString().toLowerCase()) ||
-              e.email
-                  .toString()
-                  .toLowerCase()
-                  .contains(val.toString().toLowerCase()) ||
-              e.mobileNo.toString().contains(val) ||
-              e.nic.toString().contains(val))
-          .toList());
+  bool searchLoading = false;
 
-      print('length:::${allRidersList!.length}');
-      notifyListeners();
+  void setSearchLoading(val) {
+    searchLoading = val;
+    notifyListeners();
+  }
+
+  Future<void> searchRiders(String val) async {
+    if (val.isNotEmpty) {
+      setSearchLoading(true);
+      try {
+        http.Response response = await apiServicesProvider
+            .getRequestResponse("${APIConstants.searchRiders}?name=$val");
+
+        print("RESPONSE CODE FOR searchRiders ${response.statusCode}");
+        if (response.statusCode == 200) {
+          List<Rider> tempRidersList = [];
+
+          List<dynamic> dataList = (jsonDecode(response.body))['data'];
+
+          dataList.forEach((shopData) {
+            Rider user = Rider.fromJson(shopData);
+            tempRidersList.add(user);
+          });
+          filterRidersList?.clear();
+
+          filterRidersList = tempRidersList;
+          notifyListeners();
+          setSearchLoading(false);
+        } else {
+          setSearchLoading(false);
+        }
+      } catch (e) {
+        print('Exception while searchRiders: $e');
+        AppFunctions.showToastMessage(
+            message: "Exception while searchRiders: $e");
+        setSearchLoading(false);
+      }
+    } else {
+      getAllRiders(_currentPage);
     }
   }
 }

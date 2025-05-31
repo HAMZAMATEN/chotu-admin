@@ -52,7 +52,7 @@ void showUserProfileDialog(UserModel user, BuildContext context) {
                       borderRadius: BorderRadius.circular(
                         50,
                       ),
-                      child: CacheImageWidget(imageUrl: user.profileImage),
+                      child: CacheImageWidget(imageUrl: user.profileImage??""),
                     ),
                   ),
                   padding5,
