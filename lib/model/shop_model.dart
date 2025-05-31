@@ -1,5 +1,3 @@
-import 'pagination_model.dart';
-
 class StoreModel {
   int? id;
   String name;
@@ -10,7 +8,6 @@ class StoreModel {
   String latitude;
   String longitude;
   int status;
-
 
   StoreModel({
     this.id,
@@ -24,17 +21,17 @@ class StoreModel {
     required this.status,
   });
 
-  static fromJson(Map<String, dynamic> json) {
+  factory StoreModel.fromJson(Map<String, dynamic> json) {
     return StoreModel(
       id: json['id'],
-      name: json['name'],
-      fImg: json['f_img'],
-      cImg: json['c_img'],
-      categoryId: json['category_id'],
-      address: json['address'],
-      latitude: json['latitude'],
-      longitude: json['longitude'],
-      status: json['status'],
+      name: json['name'] ?? '',
+      fImg: json['f_img'] ?? '',
+      cImg: json['c_img'] ?? '',
+      categoryId: json['category_id'] ?? 0,
+      address: json['address'] ?? '',
+      latitude: json['latitude'] ?? '',
+      longitude: json['longitude'] ?? '',
+      status: json['status'] ?? 0,
     );
   }
 
@@ -50,5 +47,10 @@ class StoreModel {
       'longitude': longitude,
       'status': status,
     };
+  }
+
+  /// ✅ This returns a List<StoreModel> from a List<dynamic>
+  static List<StoreModel> listFromJson(List<dynamic> data) {
+    return data.map((item) => StoreModel.fromJson(item as Map<String, dynamic>)).toList();
   }
 }

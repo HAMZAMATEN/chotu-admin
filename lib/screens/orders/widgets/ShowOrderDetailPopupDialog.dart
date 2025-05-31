@@ -1,149 +1,136 @@
-import 'package:chotu_admin/screens/riders/ShiftDetailScreen.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:provider/provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chotu_admin/generated/assets.dart';
-import 'package:chotu_admin/providers/side_bar_provider.dart';
-import 'package:chotu_admin/screens/riders/review_screen.dart';
 import 'package:chotu_admin/utils/app_Colors.dart';
-import 'package:chotu_admin/utils/app_Paddings.dart';
-import 'package:chotu_admin/utils/app_text_widgets.dart';
-import 'package:chotu_admin/widgets/custom_Button.dart';
+import 'package:flutter/material.dart';
 
-void showOrderDetailDialog(BuildContext context) {
+import '../../../model/all_orders_model.dart';
+import '../../../utils/app_text_widgets.dart';
+
+void showOrderDetails(BuildContext context, Order order) {
   showDialog(
     context: context,
-    barrierDismissible: true, // Allows closing the dialog by tapping outside
     builder: (context) {
+      final store = order.stores?.first;
+      final products = order.products ?? [];
+
       return Dialog(
-        backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: SizedBox(
-          width: 370,
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Close button
-                  Align(
-                    alignment: Alignment.topLeft,
-                    child: IconButton(
-                      icon: SizedBox(
-                          height: 34,
-                          width: 34,
-                          child: Center(child: Image.asset(Assets.iconsCross))),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                  ),
-                  /// app logo
-                  Container(
-                    height: 100,
-                    width: 100,
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: AppColors.textFieldBorderColor,
+        insetPadding: const EdgeInsets.all(20),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Container(
+          width: 600,
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Store Info
+              if (store != null) ...[
+                Row(
+                  children: [
+                    Container(
+                      height: 30,
+                      width: 30,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
                       ),
-                      borderRadius: BorderRadius.circular(
-                        50,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(15),
+                        child: CachedNetworkImage(
+                          imageUrl: '${store.fImg}',
+                          errorListener: (e) {},
+                          errorWidget: (c, i, b) {
+                            return Image.asset(Assets.imagesAppLogo);
+                          },
+                        ),
                       ),
                     ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(
-                        50,
-                      ),
-                      child: const Image(
-                          image: AssetImage(
-                        Assets.imagesAppLogo, // Replace with user's image URL
-                      )),
-                    ),
-                  ),
-                  padding5,
-                  padding20,
-                  /// Order Information
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Color(0xffFDFDFD),
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
-                            blurRadius: 4,
-                            spreadRadius: 0,
-                            offset: Offset(0, 4)),
-                      ],
-                      border: Border.all(
-                        width: 1,
-                        color: Colors.white,
-                      ),
-                    ),
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
+                    const SizedBox(width: 12),
+                    Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Order Information',
-                          style: getBoldStyle(color: Colors.black, fontSize: 20),
-                        ),
-                        padding10,
-                        buildInfoRow("Orders No", "57"),
-                        buildInfoRow("User Name", "User"),
-                        buildInfoRow("Orders Assigned To", "Rider"),
-                        buildInfoRow("Order Status", "Pending"),
-                        buildInfoRow("Total Price", "13000 PKR"),
-                        buildInfoRow("Order Date", "10/2/23"),
-
-                        padding15,
+                        Text(store?.name ?? "",
+                            style: getBoldStyle(
+                                fontSize: 18, color: AppColors.textColor)),
+                        Text(store.address ?? '',
+                            style: getRegularStyle(
+                                fontSize: 14, color: AppColors.textColor)),
                       ],
                     ),
-                  ),
-                  padding10,
-                  // User Joining Date
-                  padding15,
-                  // Action Buttons
+                  ],
+                ),
+                const Divider(height: 30),
+              ],
 
-                  CustomButton(
-                    height: 50,
-                    width: double.infinity,
-                    btnColor: AppColors.primaryColor,
-                    btnText: 'Pending',
-                    btnTextColor: Colors.white,
-                    onPress: () {},
-                  ),
-
-                  const SizedBox(height: 8),
-                ],
+              // Product List
+              ListView.builder(
+                shrinkWrap: true,
+                itemCount: products.length,
+                itemBuilder: (context, index) {
+                  final item = products[index];
+                  final product = item.product;
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: Row(
+                      children: [
+                        Container(
+                          height: 60,
+                          width: 60,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: CachedNetworkImage(
+                              imageUrl: '${product?.img ?? ""}',
+                              errorListener: (e) {},
+                              errorWidget: (c, i, b) {
+                                return Image.asset(Assets.imagesAppLogo);
+                              },
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(product?.name ?? "",
+                                  style: getBoldStyle(
+                                      fontSize: 16,
+                                      color: AppColors.textColor)),
+                              Text(
+                                  '${product?.unitValue ?? 0} ${product?.unit ?? ""}'),
+                              Text(
+                                'Qty: ${item.quantity} x Rs. ${double.parse(product?.discountPrice ?? "0")}',
+                                style: getRegularStyle(
+                                    fontSize: 14, color: AppColors.textColor),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Text(
+                          'Rs. ${double.parse(product?.discountPrice ?? "0") * (item?.quantity ?? 0)}',
+                          style: getBoldStyle(
+                              fontSize: 14, color: AppColors.textColor),
+                        )
+                      ],
+                    ),
+                  );
+                },
               ),
-            ),
+
+              const Divider(height: 30),
+
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Close'),
+                ),
+              )
+            ],
           ),
         ),
       );
     },
-  );
-}
-
-Widget buildInfoRow(String title, String value) {
-  return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 4),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          title,
-          style: getRegularStyle(fontSize: 14, color: Color(0xff7D7F88)),
-        ),
-        Text(
-          value,
-          style: getMediumStyle(
-            color: Colors.black,
-            fontSize: 14,
-          ),
-        ),
-      ],
-    ),
   );
 }
