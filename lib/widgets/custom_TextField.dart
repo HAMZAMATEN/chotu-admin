@@ -61,9 +61,8 @@ Widget CustomTextField(
             prefixIcon: prefixIcon,
             suffixIcon: suffixIcon,
             hintText: hintText,
-            hintStyle: isBoldHint
-                ? getSemiBoldStyle(color: Color(0xffB0B4BE), fontSize: 13)
-                : getLightStyle(color: AppColors.textFieldHintColor),
+            hintStyle:  getMediumStyle(color: Color(0xffB0B4BE), fontSize: 13)
+                ,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(borderRadius!),
               borderSide: BorderSide(color: borderColor, width: 1),

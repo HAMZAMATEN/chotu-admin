@@ -13,11 +13,12 @@ import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../../utils/app_colors.dart';
-
+import '../../../widgets/ShowConformationAlert.dart';
 
 class CategoryListTile extends StatefulWidget {
   CategoryModel categoryModel;
-   CategoryListTile({super.key,required this.categoryModel});
+
+  CategoryListTile({super.key, required this.categoryModel});
 
   @override
   State<CategoryListTile> createState() => _CategoryListTileState();
@@ -35,131 +36,155 @@ class _CategoryListTileState extends State<CategoryListTile> {
           child: Text(
             widget.categoryModel.id.toString(),
             style:
-            getRegularStyle(color: const Color(0xff1F1F1F), fontSize: 16),
+                getRegularStyle(color: const Color(0xff1F1F1F), fontSize: 16),
           ),
         ),
         padding15,
         Expanded(
           flex: 2,
           child: Text(
-            widget.categoryModel.name,
+            widget.categoryModel?.name??"",
             style:
-            getRegularStyle(color: const Color(0xff1F1F1F), fontSize: 16),
+                getRegularStyle(color: const Color(0xff1F1F1F), fontSize: 16),
           ),
         ),
-
         padding15,
         Expanded(
           flex: 2,
           child: Center(
             child: Consumer<CategoriesProvider>(
-              builder: (context,provider, child) {
-                return Container(
-                  height: 40,
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    color: provider.getStatusColor(widget.categoryModel.status),
-                  ),
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton<String>(
-                      icon: null,
-                      value: provider.statuses[widget.categoryModel.status],
-                      dropdownColor: Colors.white,
-                      isExpanded: false,
-                      style: getMediumStyle(
-                        fontSize: 14,
-                        color: provider.getTextColor(widget.categoryModel.status),
-                      ),
-                      items: provider.statuses.map((status) {
-                        return DropdownMenuItem<String>(
-                          value: status,
-                          child: Row(
-                            children: [
-                              // Circle Indicator
-                              Container(
-                                height: 10,
-                                width: 10,
-                                margin: const EdgeInsets.only(right: 10),
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: provider.getStatusIndicatorColor(status),
-                                ),
+                builder: (context, provider, child) {
+              return Container(
+                height: 40,
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  color: provider.getStatusColor(widget.categoryModel?.status??0),
+                ),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    icon: null,
+                    value: provider.statuses[widget.categoryModel?.status??0],
+                    dropdownColor: Colors.white,
+                    isExpanded: false,
+                    style: getMediumStyle(
+                      fontSize: 14,
+                      color: provider.getTextColor(widget.categoryModel?.status??0),
+                    ),
+                    items: provider.statuses.map((status) {
+                      return DropdownMenuItem<String>(
+                        value: status,
+                        child: Row(
+                          children: [
+                            // Circle Indicator
+                            Container(
+                              height: 10,
+                              width: 10,
+                              margin: const EdgeInsets.only(right: 10),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: provider.getStatusIndicatorColor(status),
                               ),
-                              // Status Text
-                              Text(
-                                status,
-                                style: getMediumStyle(
-                                    color: Colors.black, fontSize: 14),
-                              ),
-                            ],
-                          ),
-                        );
-                      }).toList(),
-                      onChanged: (newValue) async{
-                        if (newValue != null) {
-                          print("NEW CHANGED VALUE IS ${newValue}");
-                          if((newValue == "Approved" && widget.categoryModel.status == 1) ||
-                              (newValue == "Blocked" && widget.categoryModel.status == 0)
-                          ){
-                            // do nothing if the status are already set
-                          }else{
-                            ShowToastDialog.showLoader("Please wait");
-                            await provider.updateCategoryStatus(widget.categoryModel);
-                          }
+                            ),
+                            // Status Text
+                            Text(
+                              status,
+                              style: getMediumStyle(
+                                  color: Colors.black, fontSize: 14),
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (newValue) async {
+                      if (newValue != null) {
+                        print("old val ::: ${widget.categoryModel.status}");
+                        print("new val ::: ${newValue}");
 
+                        String oldVal = widget.categoryModel.status == 1
+                            ? "Approved"
+                            : "Blocked";
+
+                        print("old:::$oldVal");
+                        print("new:::$newValue");
+
+                        if (oldVal != newValue) {
+                          showCustomConfirmationDialog(
+                              context: context,
+                              message:
+                                  "Do you really want to change status\nfrom $oldVal to $newValue?",
+                              onConfirm: () async {
+                                if (newValue != null) {
+                                  print("NEW CHANGED VALUE IS ${newValue}");
+                                  if ((newValue == "Approved" &&
+                                          widget.categoryModel.status == 1) ||
+                                      (newValue == "Blocked" &&
+                                          widget.categoryModel.status == 0)) {
+                                    // do nothing if the status are already set
+                                  } else {
+                                    ShowToastDialog.showLoader("Please wait");
+
+                                    await provider.updateCategoryStatus(
+                                        widget.categoryModel);
+                                  }
+                                }
+                              },
+                              confirmText: "Yes, change it!");
                         }
-                      },
+                      }
+                    },
+                  ),
+                ),
+              );
+            }),
+          ),
+        ),
+        padding15,
+        Expanded(
+          flex: 2,
+          child: Center(
+            child: Consumer<CategoriesProvider>(
+              builder: (context, provider, child) {
+                return InkWell(
+                  overlayColor: WidgetStatePropertyAll(Colors.transparent),
+                  onTap: () async {
+                    showCustomConfirmationDialog(
+                        context: context,
+                        message: "Do you really want to delete this category?",
+                        onConfirm: () async {
+                          await provider.deleteCategory(widget.categoryModel);
+                        },
+                        confirmText: "Yes, delete it!");
+                  },
+                  child: Container(
+                    height: 40,
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      color: Colors.red.withOpacity(0.4),
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Delete',
+                        style: getMediumStyle(
+                          color: AppColors.textColor,
+                          fontSize: 16,
+                        ),
+                      ),
                     ),
                   ),
                 );
-              }
-            ),
-          ),
-        ),
-        padding15,
-        Expanded(
-          flex: 2,
-          child: Center(
-            child: Consumer<CategoriesProvider>(
-              builder: (context,provider, child){
-                return
-
-                  InkWell(
-                    overlayColor: WidgetStatePropertyAll(Colors.transparent),
-                    onTap: ()async{
-                      await provider.deleteCategory(widget.categoryModel);
-
-
-                    },
-                    child: Container(
-                      height: 40,
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        color: Colors.red.withOpacity(0.4),
-                      ),
-                      child: Center(
-                        child: Text('Delete'),
-                      ),
-                    ),
-                  )
-                  ;
               },
             ),
           ),
         ),
-
       ],
     );
   }
 }
 
-
-
-
-Widget shimmerCategoryTile(Map<String, dynamic> category, CategoriesProvider provider,
-    int index, BuildContext context) {
+Widget shimmerCategoryTile(Map<String, dynamic> category,
+    CategoriesProvider provider, int index, BuildContext context) {
   return Shimmer.fromColors(
     baseColor: AppColors.baseColor,
     highlightColor: AppColors.highlightColor,
@@ -172,7 +197,7 @@ Widget shimmerCategoryTile(Map<String, dynamic> category, CategoriesProvider pro
           child: Text(
             category["index"]!.toString(),
             style:
-            getRegularStyle(color: const Color(0xff1F1F1F), fontSize: 16),
+                getRegularStyle(color: const Color(0xff1F1F1F), fontSize: 16),
           ),
         ),
         padding15,
@@ -181,7 +206,7 @@ Widget shimmerCategoryTile(Map<String, dynamic> category, CategoriesProvider pro
           child: Text(
             category["name"]!,
             style:
-            getRegularStyle(color: const Color(0xff1F1F1F), fontSize: 16),
+                getRegularStyle(color: const Color(0xff1F1F1F), fontSize: 16),
           ),
         ),
         padding15,
@@ -217,7 +242,8 @@ Widget shimmerCategoryTile(Map<String, dynamic> category, CategoriesProvider pro
                             margin: const EdgeInsets.only(right: 10),
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: provider.getStatusIndicatorColor("Approved"),
+                              color:
+                                  provider.getStatusIndicatorColor("Approved"),
                             ),
                           ),
                           // Status Text
@@ -257,7 +283,6 @@ Widget shimmerCategoryTile(Map<String, dynamic> category, CategoriesProvider pro
             ),
           ),
         ),
-
       ],
     ),
   );

@@ -33,6 +33,7 @@ class Order {
     required this.stores,
     required this.status,
     required this.createdAt,
+    required this.billingDetails,
   });
 
   final int? id;
@@ -41,6 +42,7 @@ class Order {
   final List<StoreElement> stores;
   final String? status;
   final DateTime? createdAt;
+  final BillingDetails? billingDetails;
 
   factory Order.fromJson(Map<String, dynamic> json){
     return Order(
@@ -50,6 +52,7 @@ class Order {
       stores: json["stores"] == null ? [] : List<StoreElement>.from(json["stores"]!.map((x) => StoreElement.fromJson(x))),
       status: json["status"],
       createdAt: DateTime.tryParse(json["created_at"] ?? ""),
+      billingDetails: json["billing_details"] == null ? null : BillingDetails.fromJson(json["billing_details"]),
     );
   }
 
@@ -60,6 +63,42 @@ class Order {
     "stores": stores.map((x) => x?.toJson()).toList(),
     "status": status,
     "created_at": createdAt?.toIso8601String(),
+    "billing_details": billingDetails?.toJson(),
+  };
+
+}
+
+class BillingDetails {
+  BillingDetails({
+    required this.subtotal,
+    required this.tax,
+    required this.deliveryFee,
+    required this.total,
+    required this.currency,
+  });
+
+  final int? subtotal;
+  final double? tax;
+  final int? deliveryFee;
+  final double? total;
+  final String? currency;
+
+  factory BillingDetails.fromJson(Map<String, dynamic> json){
+    return BillingDetails(
+      subtotal: json["subtotal"],
+      tax: json["tax"],
+      deliveryFee: json["delivery_fee"],
+      total: json["total"],
+      currency: json["currency"],
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    "subtotal": subtotal,
+    "tax": tax,
+    "delivery_fee": deliveryFee,
+    "total": total,
+    "currency": currency,
   };
 
 }
