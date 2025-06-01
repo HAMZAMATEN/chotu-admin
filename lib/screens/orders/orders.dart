@@ -34,7 +34,8 @@ class _OrderDashboardState extends State<OrderDashboard> {
     // TODO: implement initState
     Provider.of<OrdersProvider>(context, listen: false).getOrderAnalytics();
     Provider.of<OrdersProvider>(context, listen: false).getAllStores();
-    Provider.of<OrdersProvider>(context, listen: false).getAllOrders(1);
+    Provider.of<OrdersProvider>(context, listen: false).getAllOrders(
+        storeId: "", storeName: "", startDate: "", endDate: "", page: 1);
     super.initState();
   }
 
@@ -58,15 +59,86 @@ class _OrderDashboardState extends State<OrderDashboard> {
               ]),
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: provider.ordersAnalyticsModel == null ||
-                        provider.allStoresList == null ||
-                        provider.allOrdersList == null
-                    ? SingleChildScrollView(child: shimmerOrdersWidget(context))
-                    : Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          /// Header Row with Date Range and Branch Selector
-                          Row(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    /// Header Row with Date Range and Branch Selector
+
+                    provider.allStoresList == null
+                        ? Row(
+                            children: [
+                              Expanded(
+                                child: Shimmer.fromColors(
+                                  baseColor: Colors.grey[300]!,
+                                  highlightColor: Colors.grey[200]!,
+                                  child: Container(
+                                    height: 46,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(8),
+                                      color: AppColors.whiteColor,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              padding12,
+                              Expanded(
+                                child: Shimmer.fromColors(
+                                  baseColor: Colors.grey[300]!,
+                                  highlightColor: Colors.grey[200]!,
+                                  child: Container(
+                                    height: 46,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(8),
+                                      color: AppColors.whiteColor,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Shimmer.fromColors(
+                                  baseColor: Colors.grey[300]!,
+                                  highlightColor: Colors.grey[200]!,
+                                  child: Container(
+                                    height: 46,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(8),
+                                      color: AppColors.whiteColor,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              padding12,
+                              Expanded(
+                                child: Shimmer.fromColors(
+                                  baseColor: Colors.grey[300]!,
+                                  highlightColor: Colors.grey[200]!,
+                                  child: Container(
+                                    height: 46,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(8),
+                                      color: AppColors.whiteColor,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              padding12,
+                              Expanded(
+                                child: Shimmer.fromColors(
+                                  baseColor: Colors.grey[300]!,
+                                  highlightColor: Colors.grey[200]!,
+                                  child: Container(
+                                    height: 46,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(8),
+                                      color: AppColors.whiteColor,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          )
+                        : Row(
                             children: [
                               Expanded(
                                 child: Container(
@@ -335,7 +407,9 @@ class _OrderDashboardState extends State<OrderDashboard> {
                               padding12,
                               Expanded(
                                 child: TextButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    provider.resetFilters();
+                                  },
                                   child: Text(
                                     'Clear Data',
                                     style: getRegularStyle(
@@ -346,62 +420,163 @@ class _OrderDashboardState extends State<OrderDashboard> {
                               padding12,
                               Expanded(
                                 child: CustomButton(
-                                    height: 48,
-                                    width: double.infinity,
-                                    btnColor: AppColors.btnColor,
-                                    btnText: 'Show Data',
-                                    btnTextColor: AppColors.btnTextColor,
-                                    onPress: () {}),
+                                  height: 48,
+                                  width: double.infinity,
+                                  btnColor: AppColors.btnColor,
+                                  btnText: 'Show Data',
+                                  btnTextColor: AppColors.btnTextColor,
+                                  onPress: () {
+                                    String storeId =
+                                        provider.selectedStore == null ||
+                                                provider.selectedStore == "0"
+                                            ? ""
+                                            : provider.selectedStore.toString();
+
+                                    String storeName = () {
+                                      if (provider.selectedStore == "0" ||
+                                          provider.selectedStore == null) {
+                                        return "All Shops";
+                                      }
+                                      final selectedStore = provider
+                                          .allStoresList!
+                                          .firstWhere(
+                                            (e) =>
+                                                e.id.toString() ==
+                                                provider.selectedStore,
+                                            orElse: () =>
+                                                provider.allStoresList!.first,
+                                          )
+                                          .name;
+                                      return selectedStore;
+                                    }();
+
+                                    print("id:::$storeId");
+                                    print("name:::$storeName");
+
+                                    provider.getAllOrders(
+                                        storeId: storeId,
+                                        storeName: storeName,
+                                        startDate: provider.formattedStartDate,
+                                        endDate: provider.formattedEndDate,
+                                        page: 1);
+                                  },
+                                ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 16),
+                    const SizedBox(height: 16),
 
-                          /// Status Summary Cards
-                          _orderStats(provider),
+                    /// Status Summary Cards
 
-                          /// Search Bar
-
-                          Row(
+                    provider.ordersAnalyticsModel == null
+                        ? Row(
                             children: [
                               Expanded(
-                                child: CustomTextField(
-                                  width: MediaQuery.of(context).size.width,
-                                  title: '',
-                                  controller: TextEditingController(),
-                                  obscureText: false,
-                                  textInputAction: TextInputAction.search,
-                                  keyboardType: TextInputType.text,
-                                  hintText: 'Search Shops by name',
-                                  suffixIcon: SizedBox(
-                                    height: 24,
-                                    width: 24,
-                                    child: Center(
-                                      child: SvgPicture.asset(
-                                          Assets.iconsSearchnormal1),
+                                child: Shimmer.fromColors(
+                                  baseColor: Colors.grey[300]!,
+                                  highlightColor: Colors.grey[200]!,
+                                  child: Container(
+                                    height: 46,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(8),
+                                      color: AppColors.whiteColor,
                                     ),
                                   ),
                                 ),
-                              )
-                            ],
-                          ),
-
-                          const SizedBox(height: 16),
-
-                          // Scrollable Data Table
-
-                          Expanded(
-                            child: provider.allOrdersList!.isEmpty
-                                ? Center(
-                                    child: Text(
-                                      "No orders available yet!!",
-                                      style: getBoldStyle(
-                                        color: AppColors.textColor,
-                                        fontSize: 22,
-                                      ),
+                              ),
+                              padding12,
+                              Expanded(
+                                child: Shimmer.fromColors(
+                                  baseColor: Colors.grey[300]!,
+                                  highlightColor: Colors.grey[200]!,
+                                  child: Container(
+                                    height: 46,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(8),
+                                      color: AppColors.whiteColor,
                                     ),
-                                  )
-                                : SingleChildScrollView(
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Shimmer.fromColors(
+                                  baseColor: Colors.grey[300]!,
+                                  highlightColor: Colors.grey[200]!,
+                                  child: Container(
+                                    height: 46,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(8),
+                                      color: AppColors.whiteColor,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              padding12,
+                              Expanded(
+                                child: Shimmer.fromColors(
+                                  baseColor: Colors.grey[300]!,
+                                  highlightColor: Colors.grey[200]!,
+                                  child: Container(
+                                    height: 46,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(8),
+                                      color: AppColors.whiteColor,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          )
+                        : _orderStats(provider),
+
+                    /// Search Bar
+
+                    Row(
+                      children: [
+                        Expanded(
+                          child: CustomTextField(
+                            width: MediaQuery.of(context).size.width,
+                            title: '',
+                            controller: TextEditingController(),
+                            obscureText: false,
+                            textInputAction: TextInputAction.search,
+                            keyboardType: TextInputType.text,
+                            hintText: 'Search Shops by name',
+                            suffixIcon: SizedBox(
+                              height: 24,
+                              width: 24,
+                              child: Center(
+                                child:
+                                    SvgPicture.asset(Assets.iconsSearchnormal1),
+                              ),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // Scrollable Data Table
+
+                    Expanded(
+                      child: provider.allOrdersList == null
+                          ? SingleChildScrollView(
+                              child: shimmerOrdersWidget(context))
+                          : provider.allOrdersList!.isEmpty
+                              ? Center(
+                                  child: Text(
+                                    "No orders available yet!!",
+                                    style: getBoldStyle(
+                                      color: AppColors.textColor,
+                                      fontSize: 22,
+                                    ),
+                                  ),
+                                )
+                              : SingleChildScrollView(
+                                  child: Align(
+                                    alignment: Alignment.topLeft,
                                     child: Wrap(
                                       // alignment: WrapAlignment.center,
                                       // crossAxisAlignment: WrapCrossAlignment.center,
@@ -409,26 +584,33 @@ class _OrderDashboardState extends State<OrderDashboard> {
                                       runSpacing: 16,
                                       children:
                                           provider.allOrdersList!.map((order) {
-                                        return _buildOrderCard(context, order);
+                                        return _buildOrderCard(
+                                            context, order, provider);
                                       }).toList(),
                                     ),
                                   ),
-                          ),
+                                ),
+                    ),
 
-                          padding20,
-                          PaginationWidget(
-                            currentPage: provider.currentPage,
-                            lastPage: provider.pagination == null
-                                ? 1
-                                : provider.pagination!.lastPage ?? 1,
-                            onPageSelected: (int selectedPage) {
-                              // fetch data for selectedPage
-                              print("Go to page $selectedPage");
-                              provider.getAllOrders(selectedPage);
-                            },
-                          ),
-                        ],
-                      ),
+                    padding20,
+                    PaginationWidget(
+                      currentPage: provider.currentPage,
+                      lastPage: provider.pagination == null
+                          ? 1
+                          : provider.pagination!.lastPage ?? 1,
+                      onPageSelected: (int selectedPage) {
+                        // fetch data for selectedPage
+                        print("Go to page $selectedPage");
+                        provider.getAllOrders(
+                            storeId: "",
+                            storeName: "",
+                            startDate: "",
+                            endDate: "",
+                            page: 1);
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -464,7 +646,8 @@ class _OrderDashboardState extends State<OrderDashboard> {
     );
   }
 
-  Widget _buildOrderCard(BuildContext context, Order order) {
+  Widget _buildOrderCard(
+      BuildContext context, Order order, OrdersProvider provider) {
     return FractionallySizedBox(
       widthFactor: 1 / 3.16,
       child: Padding(
@@ -530,8 +713,9 @@ class _OrderDashboardState extends State<OrderDashboard> {
                           description: order?.stores.length.toString() ?? "0"),
                       _buildRow(
                           title: 'Products',
-                          description:
-                              order?.products.length.toString() ?? "0"),
+                          description: provider
+                              .getTotalProductsPurchased(order?.stores ?? [])
+                              .toString()),
                       _buildRow(
                           title: 'Delivery Date', description: '20 Feb 2025'),
                       _buildRow(
@@ -645,68 +829,6 @@ class _OrderDashboardState extends State<OrderDashboard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          /// Status Summary Cards
-          Row(
-            children: [
-              Expanded(
-                child: buildStatsCard('Total Shops', 5, Colors.orange),
-              ),
-              padding12,
-              Expanded(
-                child: buildStatsCard('Active', 4, Colors.green),
-              ),
-              padding12,
-              Expanded(
-                child: buildStatsCard('DeActive', 1, Colors.red),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-
-          /// Search Bar & add shop button
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Expanded(
-                child: CustomTextField(
-                  width: MediaQuery.of(context).size.width,
-                  title: '',
-                  controller: TextEditingController(),
-                  obscureText: false,
-                  textInputAction: TextInputAction.search,
-                  keyboardType: TextInputType.text,
-                  hintText: 'Search Shops by name',
-                  suffixIcon: SizedBox(
-                    height: 24,
-                    width: 24,
-                    child: Center(
-                      child: SvgPicture.asset(Assets.iconsSearchnormal1),
-                    ),
-                  ),
-                ),
-              ),
-              padding12,
-              Align(
-                alignment: Alignment.topRight,
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    color: AppColors.primaryColor,
-                  ),
-                  child: Text(
-                    'Add New Shop',
-                    style: getSemiBoldStyle(
-                      color: AppColors.whiteColor,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          padding30,
-          // Scrollable Data Table
           Wrap(
             spacing: 16,
             runSpacing: 16,

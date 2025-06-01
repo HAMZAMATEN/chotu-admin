@@ -12,6 +12,7 @@ import 'package:chotu_admin/widgets/custom_TextField.dart';
 import '../../generated/assets.dart';
 import '../../utils/app_text_widgets.dart';
 import '../../utils/toast_dialogue.dart';
+import '../../widgets/ShowConformationAlert.dart';
 import 'widgets/ShowRiderPopupDialog.dart';
 
 class AllRidersScreen extends StatefulWidget {
@@ -480,18 +481,39 @@ class UserTable extends StatelessWidget {
                                     );
                                   }).toList(),
                                   onChanged: (newValue) async {
-                                    if (newValue != null) {
-                                      print("NEW CHANGED VALUE IS ${newValue}");
-                                      if ((newValue == "Approved" &&
-                                              rider.status == 1) ||
-                                          (newValue == "Blocked" &&
-                                              rider.status == 0)) {
-                                        // do nothing if the status are already set
-                                      } else {
-                                        ShowToastDialog.showLoader(
-                                            "Please wait");
-                                        await provider.updateRiderStatus(rider);
-                                      }
+                                    print("old val ::: ${rider.status}");
+                                    print("new val ::: ${newValue}");
+
+                                    String oldVal = rider.status == 1
+                                        ? "Approved"
+                                        : "Blocked";
+
+                                    print("old:::$oldVal");
+                                    print("new:::$newValue");
+
+                                    if (oldVal != newValue) {
+                                      showCustomConfirmationDialog(
+                                          context: context,
+                                          message:
+                                              "Do you really want to change status\nfrom $oldVal to $newValue?",
+                                          onConfirm: () async {
+                                            if (newValue != null) {
+                                              print(
+                                                  "NEW CHANGED VALUE IS ${newValue}");
+                                              if ((newValue == "Approved" &&
+                                                      rider.status == 1) ||
+                                                  (newValue == "Blocked" &&
+                                                      rider.status == 0)) {
+                                                // do nothing if the status are already set
+                                              } else {
+                                                ShowToastDialog.showLoader(
+                                                    "Please wait");
+                                                await provider
+                                                    .updateRiderStatus(rider);
+                                              }
+                                            }
+                                          },
+                                          confirmText: "Yes, change it!");
                                     }
                                   },
                                 ),

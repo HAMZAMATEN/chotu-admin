@@ -30,7 +30,6 @@ class Order {
     required this.id,
     required this.user,
     required this.rider,
-    required this.products,
     required this.stores,
     required this.status,
     required this.createdAt,
@@ -39,8 +38,7 @@ class Order {
   final int? id;
   final Rider? user;
   final Rider? rider;
-  final List<ProductElement> products;
-  final List<Store> stores;
+  final List<StoreElement> stores;
   final String? status;
   final DateTime? createdAt;
 
@@ -49,8 +47,7 @@ class Order {
       id: json["id"],
       user: json["user"] == null ? null : Rider.fromJson(json["user"]),
       rider: json["rider"] == null ? null : Rider.fromJson(json["rider"]),
-      products: json["products"] == null ? [] : List<ProductElement>.from(json["products"]!.map((x) => ProductElement.fromJson(x))),
-      stores: json["stores"] == null ? [] : List<Store>.from(json["stores"]!.map((x) => Store.fromJson(x))),
+      stores: json["stores"] == null ? [] : List<StoreElement>.from(json["stores"]!.map((x) => StoreElement.fromJson(x))),
       status: json["status"],
       createdAt: DateTime.tryParse(json["created_at"] ?? ""),
     );
@@ -60,108 +57,9 @@ class Order {
     "id": id,
     "user": user?.toJson(),
     "rider": rider?.toJson(),
-    "products": products.map((x) => x?.toJson()).toList(),
     "stores": stores.map((x) => x?.toJson()).toList(),
     "status": status,
     "created_at": createdAt?.toIso8601String(),
-  };
-
-}
-
-class ProductElement {
-  ProductElement({
-    required this.product,
-    required this.quantity,
-  });
-
-  final ProductProduct? product;
-  final int? quantity;
-
-  factory ProductElement.fromJson(Map<String, dynamic> json){
-    return ProductElement(
-      product: json["product"] == null ? null : ProductProduct.fromJson(json["product"]),
-      quantity: json["quantity"],
-    );
-  }
-
-  Map<String, dynamic> toJson() => {
-    "product": product?.toJson(),
-    "quantity": quantity,
-  };
-
-}
-
-class ProductProduct {
-  ProductProduct({
-    required this.id,
-    required this.name,
-    required this.categoryId,
-    required this.brand,
-    required this.price,
-    required this.discountPrice,
-    required this.unit,
-    required this.unitValue,
-    required this.description,
-    required this.storeId,
-    required this.img,
-    required this.status,
-    required this.isSponsored,
-    required this.createdAt,
-    required this.updatedAt,
-  });
-
-  final int? id;
-  final String? name;
-  final String? categoryId;
-  final String? brand;
-  final String? price;
-  final String? discountPrice;
-  final String? unit;
-  final String? unitValue;
-  final String? description;
-  final String? storeId;
-  final String? img;
-  final int? status;
-  final int? isSponsored;
-  final DateTime? createdAt;
-  final DateTime? updatedAt;
-
-  factory ProductProduct.fromJson(Map<String, dynamic> json){
-    return ProductProduct(
-      id: json["id"],
-      name: json["name"],
-      categoryId: json["category_id"],
-      brand: json["brand"],
-      price: json["price"],
-      discountPrice: json["discount_price"],
-      unit: json["unit"],
-      unitValue: json["unit_value"],
-      description: json["description"],
-      storeId: json["store_id"],
-      img: json["img"],
-      status: json["status"],
-      isSponsored: json["is_sponsored"],
-      createdAt: DateTime.tryParse(json["created_at"] ?? ""),
-      updatedAt: DateTime.tryParse(json["updated_at"] ?? ""),
-    );
-  }
-
-  Map<String, dynamic> toJson() => {
-    "id": id,
-    "name": name,
-    "category_id": categoryId,
-    "brand": brand,
-    "price": price,
-    "discount_price": discountPrice,
-    "unit": unit,
-    "unit_value": unitValue,
-    "description": description,
-    "store_id": storeId,
-    "img": img,
-    "status": status,
-    "is_sponsored": isSponsored,
-    "created_at": createdAt?.toIso8601String(),
-    "updated_at": updatedAt?.toIso8601String(),
   };
 
 }
@@ -265,8 +163,129 @@ class Rider {
 
 }
 
-class Store {
-  Store({
+class StoreElement {
+  StoreElement({
+    required this.store,
+    required this.products,
+  });
+
+  final StoreStore? store;
+  final List<ProductElement> products;
+
+  factory StoreElement.fromJson(Map<String, dynamic> json){
+    return StoreElement(
+      store: json["store"] == null ? null : StoreStore.fromJson(json["store"]),
+      products: json["products"] == null ? [] : List<ProductElement>.from(json["products"]!.map((x) => ProductElement.fromJson(x))),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    "store": store?.toJson(),
+    "products": products.map((x) => x?.toJson()).toList(),
+  };
+
+}
+
+class ProductElement {
+  ProductElement({
+    required this.product,
+    required this.quantity,
+  });
+
+  final ProductProduct? product;
+  final int? quantity;
+
+  factory ProductElement.fromJson(Map<String, dynamic> json){
+    return ProductElement(
+      product: json["product"] == null ? null : ProductProduct.fromJson(json["product"]),
+      quantity: json["quantity"],
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    "product": product?.toJson(),
+    "quantity": quantity,
+  };
+
+}
+
+class ProductProduct {
+  ProductProduct({
+    required this.id,
+    required this.name,
+    required this.categoryId,
+    required this.brand,
+    required this.price,
+    required this.discountPrice,
+    required this.unit,
+    required this.unitValue,
+    required this.description,
+    required this.storeId,
+    required this.img,
+    required this.status,
+    required this.isSponsored,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  final int? id;
+  final String? name;
+  final String? categoryId;
+  final String? brand;
+  final String? price;
+  final String? discountPrice;
+  final String? unit;
+  final String? unitValue;
+  final String? description;
+  final String? storeId;
+  final String? img;
+  final int? status;
+  final int? isSponsored;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
+
+  factory ProductProduct.fromJson(Map<String, dynamic> json){
+    return ProductProduct(
+      id: json["id"],
+      name: json["name"],
+      categoryId: json["category_id"],
+      brand: json["brand"],
+      price: json["price"],
+      discountPrice: json["discount_price"],
+      unit: json["unit"],
+      unitValue: json["unit_value"],
+      description: json["description"],
+      storeId: json["store_id"],
+      img: json["img"],
+      status: json["status"],
+      isSponsored: json["is_sponsored"],
+      createdAt: DateTime.tryParse(json["created_at"] ?? ""),
+      updatedAt: DateTime.tryParse(json["updated_at"] ?? ""),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "name": name,
+    "category_id": categoryId,
+    "brand": brand,
+    "price": price,
+    "discount_price": discountPrice,
+    "unit": unit,
+    "unit_value": unitValue,
+    "description": description,
+    "store_id": storeId,
+    "img": img,
+    "status": status,
+    "is_sponsored": isSponsored,
+    "created_at": createdAt?.toIso8601String(),
+    "updated_at": updatedAt?.toIso8601String(),
+  };
+
+}
+
+class StoreStore {
+  StoreStore({
     required this.id,
     required this.name,
     required this.fImg,
@@ -292,8 +311,8 @@ class Store {
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
-  factory Store.fromJson(Map<String, dynamic> json){
-    return Store(
+  factory StoreStore.fromJson(Map<String, dynamic> json){
+    return StoreStore(
       id: json["id"],
       name: json["name"],
       fImg: json["f_img"],
