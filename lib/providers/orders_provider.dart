@@ -46,7 +46,7 @@ class OrdersProvider extends ChangeNotifier {
 
   int get currentPage => _currentPage;
 
-  void setCurrentPage(val) {
+  void setCurrentPage(int val) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _currentPage = val;
 
@@ -162,16 +162,23 @@ class OrdersProvider extends ChangeNotifier {
 
   Pagination? pagination;
 
-  Future<void> getAllOrders(int page) async {
+  Future<void> getAllOrders({
+    required String storeId,
+    required String storeName,
+    required String startDate,
+    required String endDate,
+    required int page,
+  }) async {
     setCurrentPage(page);
     allOrdersList = null;
     filterOrdersList = null;
     searchController.clear();
     try {
-      http.Response response = await apiServicesProvider
-          .getRequestResponse("${APIConstants.getAllOrders}?page=$page");
+      http.Response response = await apiServicesProvider.getRequestResponse(
+          "${APIConstants.getAllOrders}?store_id=$storeId&store_name=$storeName&start_date=$startDate&end_date=$endDate&page=$page");
 
-      print("RESPONSE CODE FOR getAllOrders ${response.statusCode} AND BODY${jsonDecode(response.body)}");
+      print(
+          "RESPONSE CODE FOR getAllOrders ${response.statusCode} AND BODY${jsonDecode(response.body)}");
       if (response.statusCode == 200) {
         AllOrdersModel allOrdersModel =
             AllOrdersModel.fromJson(jsonDecode(response.body));
@@ -181,7 +188,7 @@ class OrdersProvider extends ChangeNotifier {
 
         pagination = allOrdersModel.pagination;
 
-        setCurrentPage(pagination!.currentPage ?? 1);
+        setCurrentPage(int.parse(pagination?.currentPage.toString() ?? "1"));
 
         dataList.forEach((shopData) {
           Order order = Order.fromJson(shopData);
@@ -196,5 +203,28 @@ class OrdersProvider extends ChangeNotifier {
       AppFunctions.showToastMessage(
           message: "Exception while getAllOrders: $e");
     }
+  }
+
+  int getTotalProductsPurchased(List<StoreElement> stores) {
+    int total = 0;
+
+    for (final storeItem in stores) {
+      for (final productItem in storeItem.products) {
+        total += productItem.quantity ?? 0;
+      }
+    }
+
+    return total;
+  }
+
+  void resetFilters() {
+    _startDate = null;
+    _endDate = null;
+    selectedStore = '';
+
+    notifyListeners();
+
+    getAllOrders(
+        storeId: "", storeName: "", startDate: "", endDate: "", page: 1);
   }
 }

@@ -115,13 +115,12 @@ class _UserListTileState extends State<UserListTile> {
 
                       String oldVal =
                           widget.userModel.status == 1 ? "Approved" : "Blocked";
-                      String newVal =
-                      newValue == 1 ? "Approved" : "Blocked";
-                      if (oldVal != newVal) {
+
+                      if (oldVal != newValue) {
                         showCustomConfirmationDialog(
                             context: context,
                             message:
-                                "Do you really want to change status\nfrom $oldVal to $newVal?",
+                                "Do you really want to change status\nfrom $oldVal to $newValue?",
                             onConfirm: () async {
                               if (newValue != null) {
                                 print("NEW CHANGED VALUE IS ${newValue}");

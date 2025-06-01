@@ -28,29 +28,26 @@ class AllOrdersModel {
 class Order {
   Order({
     required this.id,
-    required this.riderId,
-    required this.userId,
-    required this.products,
+    required this.user,
+    required this.rider,
     required this.stores,
     required this.status,
     required this.createdAt,
   });
 
   final int? id;
-  final int? riderId;
-  final int? userId;
-  final List<ProductElement> products;
-  final List<Store> stores;
+  final Rider? user;
+  final Rider? rider;
+  final List<StoreElement> stores;
   final String? status;
   final DateTime? createdAt;
 
   factory Order.fromJson(Map<String, dynamic> json){
     return Order(
       id: json["id"],
-      riderId: json["rider_id"],
-      userId: json["user_id"],
-      products: json["products"] == null ? [] : List<ProductElement>.from(json["products"]!.map((x) => ProductElement.fromJson(x))),
-      stores: json["stores"] == null ? [] : List<Store>.from(json["stores"]!.map((x) => Store.fromJson(x))),
+      user: json["user"] == null ? null : Rider.fromJson(json["user"]),
+      rider: json["rider"] == null ? null : Rider.fromJson(json["rider"]),
+      stores: json["stores"] == null ? [] : List<StoreElement>.from(json["stores"]!.map((x) => StoreElement.fromJson(x))),
       status: json["status"],
       createdAt: DateTime.tryParse(json["created_at"] ?? ""),
     );
@@ -58,12 +55,133 @@ class Order {
 
   Map<String, dynamic> toJson() => {
     "id": id,
-    "rider_id": riderId,
-    "user_id": userId,
-    "products": products.map((x) => x?.toJson()).toList(),
+    "user": user?.toJson(),
+    "rider": rider?.toJson(),
     "stores": stores.map((x) => x?.toJson()).toList(),
     "status": status,
     "created_at": createdAt?.toIso8601String(),
+  };
+
+}
+
+class Rider {
+  Rider({
+    required this.id,
+    required this.name,
+    required this.email,
+    required this.role,
+    required this.status,
+    required this.profileImage,
+    required this.city,
+    required this.mobileNo,
+    required this.hideUnhide,
+    required this.fullAddress,
+    required this.location,
+    required this.flatSocity,
+    required this.flatHouseNo,
+    required this.floor,
+    required this.lat,
+    required this.lng,
+    required this.nic,
+    required this.gId,
+    required this.wallet,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  final int? id;
+  final String? name;
+  final String? email;
+  final int? role;
+  final int? status;
+  final String? profileImage;
+  final String? city;
+  final String? mobileNo;
+  final int? hideUnhide;
+  final String? fullAddress;
+  final String? location;
+  final String? flatSocity;
+  final String? flatHouseNo;
+  final String? floor;
+  final String? lat;
+  final String? lng;
+  final String? nic;
+  final dynamic gId;
+  final String? wallet;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
+
+  factory Rider.fromJson(Map<String, dynamic> json){
+    return Rider(
+      id: json["id"],
+      name: json["name"],
+      email: json["email"],
+      role: json["role"],
+      status: json["status"],
+      profileImage: json["profile_image"],
+      city: json["city"],
+      mobileNo: json["mobile_no"],
+      hideUnhide: json["hide_unhide"],
+      fullAddress: json["full_address"],
+      location: json["location"],
+      flatSocity: json["flat_socity"],
+      flatHouseNo: json["flat_house_no"],
+      floor: json["floor"],
+      lat: json["lat"],
+      lng: json["lng"],
+      nic: json["nic"],
+      gId: json["g_id"],
+      wallet: json["wallet"],
+      createdAt: DateTime.tryParse(json["created_at"] ?? ""),
+      updatedAt: DateTime.tryParse(json["updated_at"] ?? ""),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "name": name,
+    "email": email,
+    "role": role,
+    "status": status,
+    "profile_image": profileImage,
+    "city": city,
+    "mobile_no": mobileNo,
+    "hide_unhide": hideUnhide,
+    "full_address": fullAddress,
+    "location": location,
+    "flat_socity": flatSocity,
+    "flat_house_no": flatHouseNo,
+    "floor": floor,
+    "lat": lat,
+    "lng": lng,
+    "nic": nic,
+    "g_id": gId,
+    "wallet": wallet,
+    "created_at": createdAt?.toIso8601String(),
+    "updated_at": updatedAt?.toIso8601String(),
+  };
+
+}
+
+class StoreElement {
+  StoreElement({
+    required this.store,
+    required this.products,
+  });
+
+  final StoreStore? store;
+  final List<ProductElement> products;
+
+  factory StoreElement.fromJson(Map<String, dynamic> json){
+    return StoreElement(
+      store: json["store"] == null ? null : StoreStore.fromJson(json["store"]),
+      products: json["products"] == null ? [] : List<ProductElement>.from(json["products"]!.map((x) => ProductElement.fromJson(x))),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    "store": store?.toJson(),
+    "products": products.map((x) => x?.toJson()).toList(),
   };
 
 }
@@ -166,8 +284,8 @@ class ProductProduct {
 
 }
 
-class Store {
-  Store({
+class StoreStore {
+  StoreStore({
     required this.id,
     required this.name,
     required this.fImg,
@@ -193,8 +311,8 @@ class Store {
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
-  factory Store.fromJson(Map<String, dynamic> json){
-    return Store(
+  factory StoreStore.fromJson(Map<String, dynamic> json){
+    return StoreStore(
       id: json["id"],
       name: json["name"],
       fImg: json["f_img"],
@@ -235,7 +353,7 @@ class Pagination {
 
   final int? total;
   final int? perPage;
-  final int? currentPage;
+  final String? currentPage;
   final int? lastPage;
 
   factory Pagination.fromJson(Map<String, dynamic> json){
