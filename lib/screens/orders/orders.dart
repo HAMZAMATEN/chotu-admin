@@ -19,6 +19,7 @@ import 'package:shimmer/shimmer.dart';
 
 import '../../generated/assets.dart';
 import '../../utils/fonts_manager.dart';
+import '../../widgets/pagination_widget.dart';
 import '../shops/widgets/shop_screen_card_widgets.dart';
 import 'orderDetailScreen.dart';
 
@@ -57,351 +58,340 @@ class _OrderDashboardState extends State<OrderDashboard> {
               ]),
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: SingleChildScrollView(
-                  child: provider.ordersAnalyticsModel == null ||
-                          provider.allStoresList == null ||
-                          provider.allOrdersList == null
-                      ? shimmerOrdersWidget(context)
-                      : Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            /// Header Row with Date Range and Branch Selector
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Container(
-                                    height: 46,
-                                    child: PopupMenuButton<String>(
-                                      color: Colors.white,
-                                      shadowColor: const Color(0xff1F61E0)
-                                          .withOpacity(.3),
-                                      elevation: 20,
-                                      padding: EdgeInsets.zero,
-                                      position: PopupMenuPosition.under,
-                                      shape: RoundedRectangleBorder(
+                child: provider.ordersAnalyticsModel == null ||
+                        provider.allStoresList == null ||
+                        provider.allOrdersList == null
+                    ? SingleChildScrollView(child: shimmerOrdersWidget(context))
+                    : Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          /// Header Row with Date Range and Branch Selector
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  height: 46,
+                                  child: PopupMenuButton<String>(
+                                    color: Colors.white,
+                                    shadowColor:
+                                        const Color(0xff1F61E0).withOpacity(.3),
+                                    elevation: 20,
+                                    padding: EdgeInsets.zero,
+                                    position: PopupMenuPosition.under,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    onSelected: (value) {
+                                      final store = provider.allStoresList!
+                                          .firstWhere((e) => e.name == value,
+                                              orElse: () => provider
+                                                  .allStoresList!.first);
+                                      provider.setSelectedStore(
+                                          store.id.toString());
+                                    },
+                                    itemBuilder: provider.allStoresList ==
+                                                null ||
+                                            provider.allStoresList!.isEmpty
+                                        ? (context) => []
+                                        : (context) {
+                                            return provider.allStoresList!
+                                                .map((store) {
+                                              return PopupMenuItem<String>(
+                                                height: 0,
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 12,
+                                                        vertical: 12),
+                                                value: store.name,
+                                                textStyle: getRegularStyle(
+                                                  color: AppColors.textColor,
+                                                  fontSize: MyFonts.size16,
+                                                ),
+                                                child: Row(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.center,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                  children: [
+                                                    provider.selectedStore ==
+                                                            store.id.toString()
+                                                        ? SvgPicture.asset(
+                                                            Assets
+                                                                .iconsRadioTrue)
+                                                        : SvgPicture.asset(Assets
+                                                            .iconsRadioFalse),
+                                                    const SizedBox(width: 8),
+                                                    Text(
+                                                      store.name,
+                                                      style: getRegularStyle(
+                                                        color:
+                                                            AppColors.textColor,
+                                                        fontSize:
+                                                            MyFonts.size16,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              );
+                                            }).toList();
+                                          },
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 4),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.whiteColor,
+                                        border: Border.all(
+                                          color: AppColors.borderColor,
+                                        ),
                                         borderRadius: BorderRadius.circular(8),
                                       ),
-                                      onSelected: (value) {
-                                        final store = provider.allStoresList!
-                                            .firstWhere((e) => e.name == value,
-                                                orElse: () => provider
-                                                    .allStoresList!.first);
-                                        provider.setSelectedStore(
-                                            store.id.toString());
-                                      },
-                                      itemBuilder: provider.allStoresList ==
-                                                  null ||
-                                              provider.allStoresList!.isEmpty
-                                          ? (context) => []
-                                          : (context) {
-                                              return provider.allStoresList!
-                                                  .map((store) {
-                                                return PopupMenuItem<String>(
-                                                  height: 0,
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
-                                                      horizontal: 12,
-                                                      vertical: 12),
-                                                  value: store.name,
-                                                  textStyle: getRegularStyle(
-                                                    color: AppColors.textColor,
-                                                    fontSize: MyFonts.size16,
-                                                  ),
-                                                  child: Row(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .center,
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.start,
-                                                    children: [
-                                                      provider.selectedStore ==
-                                                              store.id
-                                                                  .toString()
-                                                          ? SvgPicture.asset(
-                                                              Assets
-                                                                  .iconsRadioTrue)
-                                                          : SvgPicture.asset(Assets
-                                                              .iconsRadioFalse),
-                                                      const SizedBox(width: 8),
-                                                      Text(
-                                                        store.name,
-                                                        style: getRegularStyle(
-                                                          color: AppColors
-                                                              .textColor,
-                                                          fontSize:
-                                                              MyFonts.size16,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                );
-                                              }).toList();
-                                            },
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 8, vertical: 4),
-                                        decoration: BoxDecoration(
-                                          color: AppColors.whiteColor,
-                                          border: Border.all(
-                                            color: AppColors.borderColor,
-                                          ),
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                        ),
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Text(
-                                              () {
-                                                if (provider.selectedStore ==
-                                                        "0" ||
-                                                    provider.selectedStore ==
-                                                        null) {
-                                                  return "All Shops";
-                                                }
-                                                final selectedStore =
-                                                    provider.allStoresList!
-                                                        .firstWhere(
-                                                          (e) =>
-                                                              e.id.toString() ==
-                                                              provider
-                                                                  .selectedStore,
-                                                          orElse: () => provider
-                                                              .allStoresList!
-                                                              .first,
-                                                        )
-                                                        .name;
-                                                return selectedStore;
-                                              }(),
-                                              style: getRegularStyle(
-                                                color: AppColors.textColor,
-                                                fontSize: MyFonts.size16,
-                                              ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            () {
+                                              if (provider.selectedStore ==
+                                                      "0" ||
+                                                  provider.selectedStore ==
+                                                      null) {
+                                                return "All Shops";
+                                              }
+                                              final selectedStore = provider
+                                                  .allStoresList!
+                                                  .firstWhere(
+                                                    (e) =>
+                                                        e.id.toString() ==
+                                                        provider.selectedStore,
+                                                    orElse: () => provider
+                                                        .allStoresList!.first,
+                                                  )
+                                                  .name;
+                                              return selectedStore;
+                                            }(),
+                                            style: getRegularStyle(
+                                              color: AppColors.textColor,
+                                              fontSize: MyFonts.size16,
                                             ),
-                                            const Spacer(),
-                                            SvgPicture.asset(
-                                                Assets.iconsDropdown),
-                                          ],
-                                        ),
+                                          ),
+                                          const Spacer(),
+                                          SvgPicture.asset(
+                                              Assets.iconsDropdown),
+                                        ],
                                       ),
                                     ),
                                   ),
                                 ),
-                                padding12,
-                                Expanded(
-                                  child: InkWell(
-                                    onTap: () async {
-                                      DateTime? selectedDate =
-                                          await showDatePicker(
-                                        context: context,
-                                        firstDate: DateTime(1900),
-                                        lastDate: DateTime(2100),
-                                        initialDate: provider.startDate ??
-                                            DateTime.now(),
-                                        initialDatePickerMode:
-                                            DatePickerMode.day,
-                                        initialEntryMode:
-                                            DatePickerEntryMode.calendarOnly,
-                                      );
-                                      if (selectedDate != null) {
-                                        provider.setStartDate(selectedDate);
-                                      }
-                                    },
-                                    child: AbsorbPointer(
-                                      child: TextFormField(
-                                        style: getRegularStyle(
-                                            color: AppColors.textColor),
-                                        controller: TextEditingController(
-                                            text: provider.formattedStartDate),
-                                        decoration: InputDecoration(
-                                          label: Text('Start Date',
-                                              style: getRegularStyle(
-                                                  color: AppColors.textColor)),
-                                          suffixIcon:
-                                              const Icon(Icons.calendar_month),
-                                          hintText: 'dd-mm-yyyy',
-                                          enabled: false,
-                                          filled: true,
-                                          fillColor: Colors.white,
-                                          border: const OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                              color: Color.fromRGBO(
-                                                  231, 234, 243, 1),
-                                              width: .6,
-                                            ),
-                                          ),
-                                          enabledBorder:
-                                              const OutlineInputBorder(
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(8)),
-                                            borderSide: BorderSide(
-                                              color: Color.fromRGBO(
-                                                  231, 234, 243, 1),
-                                              width: .6,
-                                            ),
-                                          ),
-                                          focusedBorder:
-                                              const OutlineInputBorder(
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(8)),
-                                            borderSide: BorderSide(
-                                              color: Color.fromRGBO(
-                                                  231, 234, 243, 1),
-                                              width: .6,
-                                            ),
-                                          ),
-                                          disabledBorder:
-                                              const OutlineInputBorder(
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(8)),
-                                            borderSide: BorderSide(
-                                              color: Color.fromRGBO(
-                                                  231, 234, 243, 1),
-                                              width: .6,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: InkWell(
-                                    onTap: () async {
-                                      DateTime? selectedDate =
-                                          await showDatePicker(
-                                        context: context,
-                                        firstDate: DateTime(1900),
-                                        lastDate: DateTime(2100),
-                                        initialDate:
-                                            provider.endDate ?? DateTime.now(),
-                                        initialDatePickerMode:
-                                            DatePickerMode.day,
-                                        initialEntryMode:
-                                            DatePickerEntryMode.calendarOnly,
-                                      );
-                                      if (selectedDate != null) {
-                                        provider.setEndDate(selectedDate);
-                                      }
-                                    },
-                                    child: AbsorbPointer(
-                                      child: TextFormField(
-                                        style: getRegularStyle(
-                                            color: AppColors.textColor),
-                                        controller: TextEditingController(
-                                            text: provider.formattedEndDate),
-                                        decoration: InputDecoration(
-                                          label: Text('End Date',
-                                              style: getRegularStyle(
-                                                  color: AppColors.textColor)),
-                                          suffixIcon:
-                                              const Icon(Icons.calendar_month),
-                                          hintText: 'dd-mm-yyyy',
-                                          enabled: false,
-                                          filled: true,
-                                          fillColor: Colors.white,
-                                          border: const OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                              color: Color.fromRGBO(
-                                                  231, 234, 243, 1),
-                                              width: .6,
-                                            ),
-                                          ),
-                                          enabledBorder:
-                                              const OutlineInputBorder(
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(8)),
-                                            borderSide: BorderSide(
-                                              color: Color.fromRGBO(
-                                                  231, 234, 243, 1),
-                                              width: .6,
-                                            ),
-                                          ),
-                                          focusedBorder:
-                                              const OutlineInputBorder(
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(8)),
-                                            borderSide: BorderSide(
-                                              color: Color.fromRGBO(
-                                                  231, 234, 243, 1),
-                                              width: .6,
-                                            ),
-                                          ),
-                                          disabledBorder:
-                                              const OutlineInputBorder(
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(8)),
-                                            borderSide: BorderSide(
-                                              color: Color.fromRGBO(
-                                                  231, 234, 243, 1),
-                                              width: .6,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                padding12,
-                                Expanded(
-                                  child: TextButton(
-                                    onPressed: () {},
-                                    child: Text(
-                                      'Clear Data',
+                              ),
+                              padding12,
+                              Expanded(
+                                child: InkWell(
+                                  onTap: () async {
+                                    DateTime? selectedDate =
+                                        await showDatePicker(
+                                      context: context,
+                                      firstDate: DateTime(1900),
+                                      lastDate: DateTime(2100),
+                                      initialDate:
+                                          provider.startDate ?? DateTime.now(),
+                                      initialDatePickerMode: DatePickerMode.day,
+                                      initialEntryMode:
+                                          DatePickerEntryMode.calendarOnly,
+                                    );
+                                    if (selectedDate != null) {
+                                      provider.setStartDate(selectedDate);
+                                    }
+                                  },
+                                  child: AbsorbPointer(
+                                    child: TextFormField(
                                       style: getRegularStyle(
                                           color: AppColors.textColor),
-                                    ),
-                                  ),
-                                ),
-                                padding12,
-                                Expanded(
-                                  child: CustomButton(
-                                      height: 48,
-                                      width: double.infinity,
-                                      btnColor: AppColors.btnColor,
-                                      btnText: 'Show Data',
-                                      btnTextColor: AppColors.btnTextColor,
-                                      onPress: () {}),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 16),
-
-                            /// Status Summary Cards
-                            _orderStats(provider),
-
-                            /// Search Bar
-
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: CustomTextField(
-                                    width: MediaQuery.of(context).size.width,
-                                    title: '',
-                                    controller: TextEditingController(),
-                                    obscureText: false,
-                                    textInputAction: TextInputAction.search,
-                                    keyboardType: TextInputType.text,
-                                    hintText: 'Search Shops by name',
-                                    suffixIcon: SizedBox(
-                                      height: 24,
-                                      width: 24,
-                                      child: Center(
-                                        child: SvgPicture.asset(
-                                            Assets.iconsSearchnormal1),
+                                      controller: TextEditingController(
+                                          text: provider.formattedStartDate),
+                                      decoration: InputDecoration(
+                                        label: Text('Start Date',
+                                            style: getRegularStyle(
+                                                color: AppColors.textColor)),
+                                        suffixIcon:
+                                            const Icon(Icons.calendar_month),
+                                        hintText: 'dd-mm-yyyy',
+                                        enabled: false,
+                                        filled: true,
+                                        fillColor: Colors.white,
+                                        border: const OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: Color.fromRGBO(
+                                                231, 234, 243, 1),
+                                            width: .6,
+                                          ),
+                                        ),
+                                        enabledBorder: const OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(8)),
+                                          borderSide: BorderSide(
+                                            color: Color.fromRGBO(
+                                                231, 234, 243, 1),
+                                            width: .6,
+                                          ),
+                                        ),
+                                        focusedBorder: const OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(8)),
+                                          borderSide: BorderSide(
+                                            color: Color.fromRGBO(
+                                                231, 234, 243, 1),
+                                            width: .6,
+                                          ),
+                                        ),
+                                        disabledBorder:
+                                            const OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(8)),
+                                          borderSide: BorderSide(
+                                            color: Color.fromRGBO(
+                                                231, 234, 243, 1),
+                                            width: .6,
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   ),
-                                )
-                              ],
-                            ),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: InkWell(
+                                  onTap: () async {
+                                    DateTime? selectedDate =
+                                        await showDatePicker(
+                                      context: context,
+                                      firstDate: DateTime(1900),
+                                      lastDate: DateTime(2100),
+                                      initialDate:
+                                          provider.endDate ?? DateTime.now(),
+                                      initialDatePickerMode: DatePickerMode.day,
+                                      initialEntryMode:
+                                          DatePickerEntryMode.calendarOnly,
+                                    );
+                                    if (selectedDate != null) {
+                                      provider.setEndDate(selectedDate);
+                                    }
+                                  },
+                                  child: AbsorbPointer(
+                                    child: TextFormField(
+                                      style: getRegularStyle(
+                                          color: AppColors.textColor),
+                                      controller: TextEditingController(
+                                          text: provider.formattedEndDate),
+                                      decoration: InputDecoration(
+                                        label: Text('End Date',
+                                            style: getRegularStyle(
+                                                color: AppColors.textColor)),
+                                        suffixIcon:
+                                            const Icon(Icons.calendar_month),
+                                        hintText: 'dd-mm-yyyy',
+                                        enabled: false,
+                                        filled: true,
+                                        fillColor: Colors.white,
+                                        border: const OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: Color.fromRGBO(
+                                                231, 234, 243, 1),
+                                            width: .6,
+                                          ),
+                                        ),
+                                        enabledBorder: const OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(8)),
+                                          borderSide: BorderSide(
+                                            color: Color.fromRGBO(
+                                                231, 234, 243, 1),
+                                            width: .6,
+                                          ),
+                                        ),
+                                        focusedBorder: const OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(8)),
+                                          borderSide: BorderSide(
+                                            color: Color.fromRGBO(
+                                                231, 234, 243, 1),
+                                            width: .6,
+                                          ),
+                                        ),
+                                        disabledBorder:
+                                            const OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(8)),
+                                          borderSide: BorderSide(
+                                            color: Color.fromRGBO(
+                                                231, 234, 243, 1),
+                                            width: .6,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              padding12,
+                              Expanded(
+                                child: TextButton(
+                                  onPressed: () {},
+                                  child: Text(
+                                    'Clear Data',
+                                    style: getRegularStyle(
+                                        color: AppColors.textColor),
+                                  ),
+                                ),
+                              ),
+                              padding12,
+                              Expanded(
+                                child: CustomButton(
+                                    height: 48,
+                                    width: double.infinity,
+                                    btnColor: AppColors.btnColor,
+                                    btnText: 'Show Data',
+                                    btnTextColor: AppColors.btnTextColor,
+                                    onPress: () {}),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
 
-                            const SizedBox(height: 16),
+                          /// Status Summary Cards
+                          _orderStats(provider),
 
-                            // Scrollable Data Table
+                          /// Search Bar
 
-                            provider.allOrdersList!.isEmpty
+                          Row(
+                            children: [
+                              Expanded(
+                                child: CustomTextField(
+                                  width: MediaQuery.of(context).size.width,
+                                  title: '',
+                                  controller: TextEditingController(),
+                                  obscureText: false,
+                                  textInputAction: TextInputAction.search,
+                                  keyboardType: TextInputType.text,
+                                  hintText: 'Search Shops by name',
+                                  suffixIcon: SizedBox(
+                                    height: 24,
+                                    width: 24,
+                                    child: Center(
+                                      child: SvgPicture.asset(
+                                          Assets.iconsSearchnormal1),
+                                    ),
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+
+                          const SizedBox(height: 16),
+
+                          // Scrollable Data Table
+
+                          Expanded(
+                            child: provider.allOrdersList!.isEmpty
                                 ? Center(
                                     child: Text(
                                       "No orders available yet!!",
@@ -411,19 +401,34 @@ class _OrderDashboardState extends State<OrderDashboard> {
                                       ),
                                     ),
                                   )
-                                : Wrap(
-                                    // alignment: WrapAlignment.center,
-                                    // crossAxisAlignment: WrapCrossAlignment.center,
-                                    spacing: 16,
-                                    runSpacing: 16,
-                                    children:
-                                        provider.allOrdersList!.map((order) {
-                                      return _buildOrderCard(context, order);
-                                    }).toList(),
+                                : SingleChildScrollView(
+                                    child: Wrap(
+                                      // alignment: WrapAlignment.center,
+                                      // crossAxisAlignment: WrapCrossAlignment.center,
+                                      spacing: 16,
+                                      runSpacing: 16,
+                                      children:
+                                          provider.allOrdersList!.map((order) {
+                                        return _buildOrderCard(context, order);
+                                      }).toList(),
+                                    ),
                                   ),
-                          ],
-                        ),
-                ),
+                          ),
+
+                          padding20,
+                          PaginationWidget(
+                            currentPage: provider.currentPage,
+                            lastPage: provider.pagination == null
+                                ? 1
+                                : provider.pagination!.lastPage ?? 1,
+                            onPageSelected: (int selectedPage) {
+                              // fetch data for selectedPage
+                              print("Go to page $selectedPage");
+                              provider.getAllOrders(selectedPage);
+                            },
+                          ),
+                        ],
+                      ),
               ),
             ),
           ),
@@ -529,8 +534,12 @@ class _OrderDashboardState extends State<OrderDashboard> {
                               order?.products.length.toString() ?? "0"),
                       _buildRow(
                           title: 'Delivery Date', description: '20 Feb 2025'),
-                      _buildRow(title: 'Customer', description: 'Customer 1'),
-                      _buildRow(title: 'Rider', description: 'Rider 1'),
+                      _buildRow(
+                          title: 'Customer',
+                          description: order?.user?.name ?? ""),
+                      _buildRow(
+                          title: 'Rider',
+                          description: order?.rider?.name ?? ""),
                       padding16,
                       const Divider(
                         color: Color(0xffAFA9A9),
