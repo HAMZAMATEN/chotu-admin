@@ -16,7 +16,7 @@ class StoreProductProvider extends ChangeNotifier {
 
   //< storeID <pageNo,List<ProductModel>>>
   Map<int,Map<int,List<ProductModel>>> storeProductsMap = {};
-  PaginationModel? storePagination;
+  PaginationModel? storeProductPagination;
 
   Future<void> getStoreProducts(int storeId,{int? page = 1}) async{
     try{
@@ -26,31 +26,38 @@ class StoreProductProvider extends ChangeNotifier {
       print("RESPONSE CODE FOR getStoreProducts ${response.statusCode}");
 
       if(response.statusCode == 200){
-        storePagination = PaginationModel.fromJson(jsonDecode(response.body)['pagination']);
+        storeProductPagination = PaginationModel.fromJson(jsonDecode(response.body)['pagination']);
         List<ProductModel> tempProdList = [];
 
         List<dynamic> dataList = (jsonDecode(response.body))['data'];
+
         dataList.forEach((prodData) {
+          print(prodData);
           ProductModel product = ProductModel.fromJson(prodData);
           tempProdList.add(product);
+
         });
         if(storeProductsMap[storeId] == null){
           storeProductsMap[storeId] = {};
         }
-        storeProductsMap[storeId]![storePagination!.currentPage] = tempProdList;
-        print("LENGTH OF PRODUCT ${storeProductsMap[storeId]![storePagination!.currentPage]!.length}");
+        storeProductsMap[storeId]![storeProductPagination!.currentPage] = tempProdList;
+        print("LENGTH OF PRODUCT ${storeProductsMap[storeId]![storeProductPagination!.currentPage]!.length}");
       }else{
         print("No Products Found");
         print("Error while getting store products: ${response.statusCode}");
         if(storeProductsMap[storeId] == null){
-          storeProductsMap[storeId] = {};
+          storeProductsMap[storeId] = {1:[]};
+          storeProductPagination = PaginationModel(
+              currentPage: 1, lastPage: 1, perPage: 12, total: 0);
         }
       }
       notifyListeners();
     }catch(e){
       print("Exception while getting store products $e");
       if(storeProductsMap[storeId] == null){
-        storeProductsMap[storeId] = {};
+        storeProductsMap[storeId] = {1:[]};
+        storeProductPagination = PaginationModel(
+            currentPage: 1, lastPage: 1, perPage: 12, total: 0);
       }
       notifyListeners();
     }
