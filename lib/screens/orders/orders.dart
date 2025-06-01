@@ -175,7 +175,7 @@ class _OrderDashboardState extends State<OrderDashboard> {
                                                         horizontal: 12,
                                                         vertical: 12),
                                                 value: store.name,
-                                                textStyle: getRegularStyle(
+                                                textStyle: getMediumStyle(
                                                   color: AppColors.textColor,
                                                   fontSize: MyFonts.size16,
                                                 ),
@@ -195,7 +195,7 @@ class _OrderDashboardState extends State<OrderDashboard> {
                                                     const SizedBox(width: 8),
                                                     Text(
                                                       store.name,
-                                                      style: getRegularStyle(
+                                                      style: getMediumStyle(
                                                         color:
                                                             AppColors.textColor,
                                                         fontSize:
@@ -240,7 +240,7 @@ class _OrderDashboardState extends State<OrderDashboard> {
                                                   .name;
                                               return selectedStore;
                                             }(),
-                                            style: getRegularStyle(
+                                            style: getMediumStyle(
                                               color: AppColors.textColor,
                                               fontSize: MyFonts.size16,
                                             ),
@@ -275,13 +275,13 @@ class _OrderDashboardState extends State<OrderDashboard> {
                                   },
                                   child: AbsorbPointer(
                                     child: TextFormField(
-                                      style: getRegularStyle(
+                                      style: getMediumStyle(
                                           color: AppColors.textColor),
                                       controller: TextEditingController(
                                           text: provider.formattedStartDate),
                                       decoration: InputDecoration(
                                         label: Text('Start Date',
-                                            style: getRegularStyle(
+                                            style: getMediumStyle(
                                                 color: AppColors.textColor)),
                                         suffixIcon:
                                             const Icon(Icons.calendar_month),
@@ -350,13 +350,13 @@ class _OrderDashboardState extends State<OrderDashboard> {
                                   },
                                   child: AbsorbPointer(
                                     child: TextFormField(
-                                      style: getRegularStyle(
+                                      style: getMediumStyle(
                                           color: AppColors.textColor),
                                       controller: TextEditingController(
                                           text: provider.formattedEndDate),
                                       decoration: InputDecoration(
                                         label: Text('End Date',
-                                            style: getRegularStyle(
+                                            style: getMediumStyle(
                                                 color: AppColors.textColor)),
                                         suffixIcon:
                                             const Icon(Icons.calendar_month),
@@ -542,7 +542,7 @@ class _OrderDashboardState extends State<OrderDashboard> {
                             obscureText: false,
                             textInputAction: TextInputAction.search,
                             keyboardType: TextInputType.text,
-                            hintText: 'Search Shops by name',
+                            hintText: 'Search orders by name and id',
                             suffixIcon: SizedBox(
                               height: 24,
                               width: 24,
@@ -728,7 +728,7 @@ class _OrderDashboardState extends State<OrderDashboard> {
                       const Divider(
                         color: Color(0xffAFA9A9),
                       ),
-                      _buildRow(title: 'Total Billing', description: 'Rs. 394'),
+                      _buildRow(title: 'Total Billing', description: '${order.billingDetails?.currency ?? "PKR"} ${order.billingDetails?.total ?? "0"}'),
                     ],
                   ),
                 ),
