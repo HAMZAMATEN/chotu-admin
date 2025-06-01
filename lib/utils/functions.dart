@@ -8,8 +8,30 @@ import 'package:intl/intl.dart';
 import 'package:chotu_admin/utils/app_colors.dart';
 import 'package:chotu_admin/utils/app_text_widgets.dart';
 import 'package:image_picker_for_web/image_picker_for_web.dart' as pk;
+import 'dart:html' as html;
+
 
 class AppFunctions {
+
+  static openImageInNewTab(String imageUrl) {
+    try{
+      html.window.open(imageUrl, '_blank');
+    }catch(e){
+      print("EXCEPTION WHILE OPENING LINK TO NEW TAB ${e}");
+    }
+  }
+
+  static openGoogleMapsAtCoordinates(String latitude, String longitude) {
+    try{
+      final url = 'https://www.google.com/maps?q=$latitude,$longitude';
+      html.window.open(url, '_blank');
+    }catch(e){
+      print("EXCEPTION WHILE LatLand Coordinates in NEW TAB ${e}");
+    }
+
+  }
+
+
   static showSnackBar(BuildContext context, String message) {
     var snackBar = SnackBar(
       duration: const Duration(milliseconds: 800),

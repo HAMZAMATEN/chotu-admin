@@ -8,6 +8,7 @@ import 'package:chotu_admin/screens/shops/widgets/shop_screen_card_widgets.dart'
 import 'package:chotu_admin/utils/app_Colors.dart';
 import 'package:chotu_admin/utils/app_Paddings.dart';
 import 'package:chotu_admin/utils/app_text_widgets.dart';
+import 'package:chotu_admin/utils/functions.dart';
 import 'package:chotu_admin/widgets/custom_Button.dart';
 import 'package:chotu_admin/widgets/custom_TextField.dart';
 import 'package:chotu_admin/widgets/pagination_button.dart';
@@ -180,7 +181,7 @@ class _ShopProductsScreenState extends State<ShopProductsScreen> {
           ] else ...[
             Container(
                 width: double.infinity,
-                height: 400,
+                height: 200,
                 child: Center(
                   child: Text(
                     "No Products Found",
@@ -581,41 +582,86 @@ class _ShopProductsScreenState extends State<ShopProductsScreen> {
 
 class StoreCard extends StatelessWidget {
   final StoreModel store;
+  final VoidCallback? onEdit; // Optional callback for edit action
 
-  const StoreCard({Key? key, required this.store}) : super(key: key);
+  const StoreCard({
+    Key? key,
+    required this.store,
+    this.onEdit,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 4,
+      elevation: 1,
       margin: const EdgeInsets.all(12),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Cover Image
-          ClipRRect(
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-            child: CachedNetworkImage(
-              imageUrl: store.cImg,
-              fit: BoxFit.cover,
-              height: 150,
-              width: double.infinity,
-              errorListener: (e) {},
-              errorWidget: (ctx,o,s) {
-                return Container(
-                  height: 150,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-                      border: Border.all(
-                          color: Colors.black12
-                      )
+          // Cover Image with Edit Button
+          Stack(
+            children: [
+              InkWell(
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(12)),
+                onTap: () {
+                  AppFunctions.openImageInNewTab(store.cImg);
+                },
+                child: ClipRRect(
+                  borderRadius:
+                      const BorderRadius.vertical(top: Radius.circular(12)),
+                  child: CachedNetworkImage(
+                    imageUrl: store.cImg,
+                    fit: BoxFit.cover,
+                    height: 150,
+                    width: double.infinity,
+                    errorListener: (e) {},
+                    errorWidget: (ctx, o, s) {
+                      return Container(
+                        height: 150,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          borderRadius: const BorderRadius.vertical(
+                              top: Radius.circular(12)),
+                          border: Border.all(color: Colors.black12),
+                        ),
+                        child: Icon(
+                          Icons.image_not_supported_outlined,
+                          color: AppColors.primaryColor,
+                        ),
+                      );
+                    },
                   ),
-                  child: Icon(Icons.image_not_supported_outlined,color: AppColors.primaryColor,),
-                );
-              },
-            ),
+                ),
+              ),
+
+              // Edit Button (top-right)
+              Positioned(
+                top: 8,
+                right: 8,
+                child: InkWell(
+                  onTap: onEdit,
+                  borderRadius: BorderRadius.circular(20),
+                  child: Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 4,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Icon(Icons.edit,
+                        color: AppColors.primaryColor, size: 18),
+                  ),
+                ),
+              ),
+            ],
           ),
 
           const SizedBox(height: 10),
@@ -625,33 +671,40 @@ class StoreCard extends StatelessWidget {
             padding: const EdgeInsets.all(12),
             child: Row(
               children: [
-                // Front Image (thumbnail)
-                ClipRRect(
+                // Front Image
+                InkWell(
                   borderRadius: BorderRadius.circular(8),
-                  child: CachedNetworkImage(
-                    imageUrl: store.fImg,
-                    height: 150,
-                    fit: BoxFit.cover,
-                    width: 150,
-                    errorListener: (e) {},
-                    errorWidget: (ctx,o,s) {
-                      return Container(
-                        height: 150,
-                        width: 150,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: Colors.black12
-                          )
-                        ),
-                        child: Icon(Icons.image_not_supported_outlined,color: AppColors.primaryColor,),
-                      );
-                    },
+                  onTap: () {
+                    AppFunctions.openImageInNewTab(store.fImg);
+                  },
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: CachedNetworkImage(
+                      imageUrl: store.fImg,
+                      height: 150,
+                      width: 150,
+                      fit: BoxFit.cover,
+                      errorListener: (e) {},
+                      errorWidget: (ctx, o, s) {
+                        return Container(
+                          height: 150,
+                          width: 150,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.black12),
+                          ),
+                          child: Icon(
+                            Icons.image_not_supported_outlined,
+                            color: AppColors.primaryColor,
+                          ),
+                        );
+                      },
+                    ),
                   ),
                 ),
                 const SizedBox(width: 12),
 
-                // Store Name and Address
+                // Name, Address, Status
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -669,21 +722,37 @@ class StoreCard extends StatelessWidget {
                           Text(
                             store.address,
                             style: const TextStyle(color: Colors.grey),
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          SizedBox(
-                            width: 5,
-                          ),
-                          Icon(
-                            Icons.location_on_outlined,
-                            color: AppColors.primaryColor,
-                            size: 15,
+                          const SizedBox(width: 5),
+                          InkWell(
+                            onTap: () {
+                              AppFunctions.openGoogleMapsAtCoordinates(
+                                  store.latitude, store.longitude);
+                            },
+                            child: Icon(
+                              Icons.location_on_outlined,
+                              color: AppColors.primaryColor,
+                              size: 20,
+                            ),
                           ),
                         ],
                       ),
                       const SizedBox(height: 4),
-                      Text(
-                        "Status ${store.status == 1 ? "Active" : "InActive"}",
-                        style: const TextStyle(color: Colors.grey),
+                      RichText(
+                        text: TextSpan(children: [
+                          TextSpan(
+                              text: 'Status: ',
+                              style: getRegularStyle(color: Colors.grey)),
+                          TextSpan(
+                            text:
+                                "${store.status == 1 ? "Active" : "Inactive"}",
+                            style: getMediumStyle(
+                                color: (store.status) == 1
+                                    ? AppColors.primaryColor
+                                    : Colors.red),
+                          ),
+                        ]),
                       ),
                     ],
                   ),

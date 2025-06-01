@@ -17,6 +17,8 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
+import '../../../widgets/ShowConformationAlert.dart';
+
 class ShopCardWidget extends StatefulWidget {
   StoreModel storeModel;
 
@@ -137,10 +139,17 @@ class _ShopCardWidgetState extends State<ShopCardWidget> {
                       InkWell(
                         splashColor: Colors.greenAccent,
                         onTap: () async {
-                          await showConfirmDialog(context, widget.storeModel.status, () async{
-                            ShowToastDialog.showLoader('Please Wait');
-                            await provider.updateStoreStatus(widget.storeModel);
-                          });
+                          // await showConfirmDialog(context, widget.storeModel.status, () async{
+                          //   ShowToastDialog.showLoader('Please Wait');
+                          //   await provider.updateStoreStatus(widget.storeModel);
+                          // });
+                          await showCustomConfirmationDialog(context: context,
+                            message: "Are you sure you want to update the store's status to ${widget.storeModel.status == 0 ? 'Active' : 'InActive'}",
+                            onConfirm: () async{
+                              ShowToastDialog.showLoader('Please Wait');
+                              await provider.updateStoreStatus(widget.storeModel);
+                            },
+                          );
                         },
                         child: Tooltip(
                           preferBelow: true,
