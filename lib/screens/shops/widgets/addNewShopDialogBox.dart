@@ -163,7 +163,7 @@ class _AddShopDialogState extends State<AddShopDialog> {
                                   hint: Text("Select"),
                                   items: provider.allCategoriesList!
                                       .map((e) => DropdownMenuItem(
-                                            child: Text(e.name),
+                                            child: Text(e.name??""),
                                             value: e.name,
                                           ))
                                       .toList()

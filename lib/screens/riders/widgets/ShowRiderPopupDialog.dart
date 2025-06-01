@@ -194,6 +194,10 @@ void showRealtorProfileDialog(BuildContext context, Rider rider) {
                             );
                           },
                           confirmText: "Yes, remove it!");
+
+
+
+
                     },
                   ),
                 ],
