@@ -504,7 +504,6 @@ class UserTable extends StatelessWidget {
                                                       rider.status == 1) ||
                                                   (newValue == "Blocked" &&
                                                       rider.status == 0)) {
-                                                // do nothing if the status are already set
                                               } else {
                                                 ShowToastDialog.showLoader(
                                                     "Please wait");
