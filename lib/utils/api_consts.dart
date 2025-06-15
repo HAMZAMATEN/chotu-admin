@@ -40,4 +40,18 @@ class APIConstants {
 
   /// All orders
   static String getAllOrders = baseUrl + "api/orders";
+
+  /// about-us
+  static String getAboutUs = baseUrl + "api/pages/about-us";
+  static String updateAboutUs = baseUrl + "api/pages/about-us";
+
+  /// privacy-policy
+  static String getPrivacyPolicy = baseUrl + "api/pages/privacy-policy";
+  static String updatePrivacyPolicy = baseUrl + "api/pages/privacy-policy";
+
+  /// terms-and-conditions
+  static String getTermsAndConditions =
+      baseUrl + "api/pages/terms-and-conditions";
+  static String updateTermsAndConditions =
+      baseUrl + "api/pages/terms-and-conditions";
 }

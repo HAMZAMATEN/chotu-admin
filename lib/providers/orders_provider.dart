@@ -177,8 +177,9 @@ class OrdersProvider extends ChangeNotifier {
       http.Response response = await apiServicesProvider.getRequestResponse(
           "${APIConstants.getAllOrders}?store_id=$storeId&store_name=$storeName&start_date=$startDate&end_date=$endDate&page=$page");
 
-      print(
-          "RESPONSE CODE FOR getAllOrders ${response.statusCode} AND BODY${jsonDecode(response.body)}");
+
+
+      print("RESPONSE CODE FOR getAllOrders ${response.statusCode}");
       if (response.statusCode == 200) {
         AllOrdersModel allOrdersModel =
             AllOrdersModel.fromJson(jsonDecode(response.body));
