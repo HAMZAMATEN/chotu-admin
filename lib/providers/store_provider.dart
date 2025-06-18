@@ -61,8 +61,6 @@ class StoreProvider extends ChangeNotifier {
           StoreModel store = StoreModel.fromJson(shopData);
           tempStoresList.add(store);
         });
-        // allStoresList?.clear();
-        // allStoresList = tempSotresList;
         pageViseStoresMap?[storePagination!.currentPage] = tempStoresList;
       }
       notifyListeners();
@@ -216,6 +214,7 @@ class StoreProvider extends ChangeNotifier {
         );
         Navigator.of(context).pop(); // Close the dialog
         getAllStores();
+        clearControllers();
         print('STORE ADDED SUCCESSFULLY');
       } else {
         EasyLoading.dismiss();
@@ -230,6 +229,7 @@ class StoreProvider extends ChangeNotifier {
       }
     } catch (e) {
       EasyLoading.dismiss();
+      clearControllers();
       Navigator.pop(context);
       AppFunctions.showToastMessage(message: "Failed to add shop. Please try again.");
       print('Store Addition failed: ${e}');
@@ -376,6 +376,81 @@ class StoreProvider extends ChangeNotifier {
   resetSearchStoreList(){
     searchedStoresList = null ;
     notifyListeners();
+  }
+
+  Future<void> updateShopToDataBase(
+      String storeId,
+      Map<String, dynamic> body, BuildContext context) async {
+    try {
+      print("Update SHOP BODY IS ");
+      print(body);
+      EasyLoading.showToast("Uploading image files");
+      EasyLoading.show();
+      final uri = Uri.parse(APIConstants.updateStore+'$storeId');
+      final request = await http.MultipartRequest('POST', uri);
+
+      if(storeImageMap != null){
+        // Add f_image file if it is not equal to null
+        request.files.add(
+          http.MultipartFile.fromBytes(
+            'f_img',
+            storeImageMap!['image'],
+            filename: storeImageMap!['fileName'],
+          ),
+        );
+      }
+
+      if(storeCoverImageMap != null){
+        // Add c_image file if it is not equal to null
+        request.files.add(
+          http.MultipartFile.fromBytes(
+            'c_img',
+            storeCoverImageMap!['image'],
+            filename: storeCoverImageMap!['fileName'],
+          ),
+        );
+      }
+
+      request.headers['Content-Type'] = 'multipart/form-data';
+      request.headers['Authorization'] = 'Bearer ${AppConstants.authToken}';
+
+      // Add text fields
+      request.fields['name'] = body['name'];
+      request.fields['category_id'] = body['category_id'];
+      request.fields['address'] = body['address'];
+      request.fields['longitude'] = body['longitude'];
+      request.fields['latitude'] = body['latitude'];
+      request.fields['status'] = '1';
+
+      // Send request
+      final response = await request.send();
+
+      if (response.statusCode == 200) {
+        EasyLoading.dismiss();
+        setAllStoresToNull();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Shop Updated successfully!')),
+        );
+        Navigator.of(context).pop(); // Close the dialog
+        getAllStores(page: storePagination!.currentPage);
+        clearControllers();
+        print('STORE ADDED SUCCESSFULLY');
+      } else {
+        EasyLoading.dismiss();
+        clearControllers();
+        Navigator.pop(context);
+        AppFunctions.showToastMessage(message: "Failed to add shop. Please try again.");
+        print('Store Updation failed: ${response.statusCode}');
+        print('Store Updation failed: ${await response.stream.bytesToString()}');
+      }
+    } catch (e) {
+      EasyLoading.dismiss();
+      clearControllers();
+      Navigator.pop(context);
+      AppFunctions.showToastMessage(message: "Failed to update shop. Please try again.");
+      print('Store Updation failed: ${e}');
+      print("EXCEPTION WHILE Updation SHOP TO DB");
+    }
   }
 
 }

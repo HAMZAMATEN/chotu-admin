@@ -1,7 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chotu_admin/model/product_model.dart';
 import 'package:chotu_admin/model/shop_model.dart';
+import 'package:chotu_admin/providers/categories_provider.dart';
 import 'package:chotu_admin/providers/store_product_provider.dart';
+import 'package:chotu_admin/providers/store_provider.dart';
+import 'package:chotu_admin/screens/shops/shop_products/update_shop_dialogue.dart';
 import 'package:chotu_admin/screens/shops/widgets/addNewShopDialogBox.dart';
 import 'package:chotu_admin/screens/shops/widgets/addShopProductDialogBox.dart';
 import 'package:chotu_admin/screens/shops/widgets/shop_screen_card_widgets.dart';
@@ -22,9 +25,9 @@ import 'package:shimmer/shimmer.dart';
 import '../../../generated/assets.dart';
 
 class ShopProductsScreen extends StatefulWidget {
-  StoreModel storeModel;
+  StoreModel storemodel;
 
-  ShopProductsScreen({required this.storeModel});
+  ShopProductsScreen({required this.storemodel});
 
   @override
   State<ShopProductsScreen> createState() => _ShopProductsScreenState();
@@ -33,112 +36,186 @@ class ShopProductsScreen extends StatefulWidget {
 class _ShopProductsScreenState extends State<ShopProductsScreen> {
   TextEditingController startDateController = TextEditingController();
   TextEditingController endDateController = TextEditingController();
+  late StoreModel store;
+  late StoreProductProvider storeProductProvider;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    setState(() {
+      store = widget.storemodel;
+    });
+
+    /// this function will fetch shop's products as well as its analytics
     Provider.of<StoreProductProvider>(context, listen: false)
-        .getStoreProducts(widget.storeModel.id!);
+        .getStoreProducts(storeId: widget.storemodel.id!);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.bgColor,
-      body: Consumer<StoreProductProvider>(builder: (context, provider, child) {
-        return Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(color: Colors.white, boxShadow: [
-              BoxShadow(
-                offset: const Offset(0, 0),
-                color: Colors.black.withOpacity(.1),
-                blurRadius: 2,
-                spreadRadius: 0,
-              )
-            ]),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    /// back icon
-                    Row(
-                      children: [
-                        InkWell(
-                            overlayColor: WidgetStatePropertyAll<Color>(
-                                Colors.transparent),
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Align(
-                                alignment: Alignment.topLeft,
-                                child: Icon(Icons.arrow_back_ios))),
-                        padding20,
-                        Expanded(
-                          child: Text(
-                            '${widget.storeModel.name}',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: getBoldStyle(
-                              color: Colors.black,
-                              fontSize: 16,
+      body: Consumer2<StoreProductProvider, StoreProvider>(
+        builder: (context, provider, provide2, child) {
+          storeProductProvider = provider;
+          StoreModel? newStore;
+          if ((provide2
+                  .pageViseStoresMap?[provide2.storePagination!.currentPage]) ==
+              null) {
+            return CircularProgressIndicator(
+              color: AppColors.primaryColor,
+            );
+          }
+          if (provide2.pageViseStoresMap != null) {
+            if ((provide2.pageViseStoresMap![
+                    provide2.storePagination!.currentPage]) !=
+                null) {
+              newStore = (provide2.pageViseStoresMap![
+                      provide2.storePagination!.currentPage])!
+                  .where((store) => store.id == widget.storemodel.id)
+                  .firstOrNull;
+            }
+          }
+          if (newStore != null) {
+            store = newStore;
+          }
+
+          if (newStore == null) {
+            return Center(
+              child: CircularProgressIndicator(
+                color: AppColors.primaryColor,
+              ),
+            );
+          }
+
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(color: Colors.white, boxShadow: [
+                BoxShadow(
+                  offset: const Offset(0, 0),
+                  color: Colors.black.withOpacity(.1),
+                  blurRadius: 2,
+                  spreadRadius: 0,
+                )
+              ]),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      /// back icon
+                      Row(
+                        children: [
+                          InkWell(
+                              overlayColor: WidgetStatePropertyAll<Color>(
+                                  Colors.transparent),
+                              onTap: () {
+                                Navigator.pop(context);
+                              },
+                              child: Align(
+                                  alignment: Alignment.topLeft,
+                                  child: Icon(Icons.arrow_back_ios))),
+                          padding20,
+                          Expanded(
+                            child: Text(
+                              '${store.name}',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: getBoldStyle(
+                                color: Colors.black,
+                                fontSize: 16,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                    StoreCard(
-                      store: widget.storeModel,
-                    ),
-                    padding30,
+                        ],
+                      ),
+                      StoreCard(
+                        store: store,
+                        onEdit: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) => Container(
+                                child: UpdateShopDialogue(store: store)),
+                          );
+                        },
+                      ),
+                      padding30,
 
-                    /// Status Summary Cards
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _buildStatsCard(
-                              'Total Products', 5, Colors.orange),
-                        ),
-                        padding12,
-                        Expanded(
-                          child: _buildStatsCard('Active', 4, Colors.green),
-                        ),
-                        padding12,
-                        Expanded(
-                          child: _buildStatsCard('DeActive', 1, Colors.red),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
+                      /// Status Summary Cards
+                      productStatsRow(),
+                      padding10,
 
-                    /// Search Bar & add shop button
-                    searchFieldWidget(context),
+                      /// Search Bar & add shop button
+                      searchFieldWidget(context),
 
-                    padding30,
+                      padding30,
 
-                    /// list of products listed by shop
-                    productsBodyWidget(provider, context),
-                  ],
+                      /// list of products listed by shop
+                      productsBodyWidget(provider, context),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        );
-      }),
+          );
+        },
+      ),
     );
+  }
+
+  Widget productStatsRow() {
+
+    if( storeProductProvider.storeAnalyticsModelMap[widget.storemodel.id] != null){
+      return Row(
+        children: [
+          Expanded(
+            child: _buildStatsCard('Total Products', storeProductProvider.storeAnalyticsModelMap[widget.storemodel.id]!.total, Colors.orange),
+          ),
+          padding12,
+          Expanded(
+            child: _buildStatsCard('Active',  storeProductProvider.storeAnalyticsModelMap[widget.storemodel.id]!.active, Colors.green),
+          ),
+          padding12,
+          Expanded(
+            child: _buildStatsCard('DeActive',  storeProductProvider.storeAnalyticsModelMap[widget.storemodel.id]!.nonActive, Colors.red),
+          ),
+        ],
+      );
+    }else{
+      return Shimmer.fromColors(
+        baseColor: AppColors.baseColor,
+        highlightColor: AppColors.highlightColor,
+        child: Row(
+          children: [
+            Expanded(
+              child: _buildStatsCard('Total Products', 5, Colors.orange),
+            ),
+            padding12,
+            Expanded(
+              child: _buildStatsCard('Active',  4, Colors.green),
+            ),
+            padding12,
+            Expanded(
+              child: _buildStatsCard('DeActive',  1, Colors.red),
+            ),
+          ],
+        ),
+      );
+    }
+
   }
 
   Widget productsBodyWidget(
       StoreProductProvider provider, BuildContext context) {
     return Column(
       children: [
-        if (provider.storeProductsMap[widget.storeModel.id] != null) ...[
+        if (provider.storeProductsMap[store.id] != null) ...[
           if (provider
-              .storeProductsMap[widget.storeModel.id]![
+              .storeProductsMap[store.id]![
                   provider.storeProductPagination!.currentPage]!
               .isNotEmpty) ...[
             Align(
@@ -150,12 +227,12 @@ class _ShopProductsScreenState extends State<ShopProductsScreen> {
                 runAlignment: WrapAlignment.start,
                 children: List.generate(
                     provider
-                        .storeProductsMap[widget.storeModel.id]![
+                        .storeProductsMap[store.id]![
                             provider.storeProductPagination!.currentPage]!
                         .length, (index) {
                   return _buildProductCard(
                       context,
-                      provider.storeProductsMap[widget.storeModel.id]![provider
+                      provider.storeProductsMap[store.id]![provider
                           .storeProductPagination!.currentPage]![index]);
                 }),
               ),
@@ -168,15 +245,18 @@ class _ShopProductsScreenState extends State<ShopProductsScreen> {
                 pagination: provider.storeProductPagination!,
                 onPrevious: () {
                   // handle going to previous page
-                  provider.getStoreProducts(widget.storeModel.id!,
+                  provider.getStoreProducts(
+                      storeId: store.id!,
                       page: provider.storeProductPagination!.currentPage - 1);
                 },
                 onNext: () {
                   // handle going to next page
-                  provider.getStoreProducts(widget.storeModel.id!,
+                  provider.getStoreProducts(
+                      storeId: store.id!,
                       page: provider.storeProductPagination!.currentPage + 1);
                 },
               ),
+              padding30,
             ]
           ] else ...[
             Container(
@@ -295,7 +375,7 @@ class _ShopProductsScreenState extends State<ShopProductsScreen> {
               padding12,
               InkWell(
                 onTap: () {
-                  showAddShopDialog(context);
+                  // showAddShopDialog(context);
                 },
                 child: Align(
                   alignment: Alignment.topRight,
@@ -614,7 +694,7 @@ class StoreCard extends StatelessWidget {
                   child: CachedNetworkImage(
                     imageUrl: store.cImg,
                     fit: BoxFit.cover,
-                    height: 150,
+                    height: 250,
                     width: double.infinity,
                     errorListener: (e) {},
                     errorWidget: (ctx, o, s) {
@@ -740,20 +820,41 @@ class StoreCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       RichText(
-                        text: TextSpan(children: [
-                          TextSpan(
-                              text: 'Status: ',
-                              style: getRegularStyle(color: Colors.grey)),
-                          TextSpan(
-                            text:
-                                "${store.status == 1 ? "Active" : "Inactive"}",
-                            style: getMediumStyle(
-                                color: (store.status) == 1
-                                    ? AppColors.primaryColor
-                                    : Colors.red),
-                          ),
-                        ]),
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                                text: 'Status: ',
+                                style: getRegularStyle(color: Colors.grey)),
+                            TextSpan(
+                              text:
+                                  "${store.status == 1 ? "Active" : "Inactive"}",
+                              style: getMediumStyle(
+                                  color: (store.status) == 1
+                                      ? AppColors.primaryColor
+                                      : Colors.red),
+                            ),
+                          ],
+                        ),
                       ),
+                      const SizedBox(height: 4),
+                      Consumer<StoreProvider>(
+                          builder: (context, provider, child) {
+                        return RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                  text: 'Category: ',
+                                  style: getRegularStyle(color: Colors.grey)),
+                              TextSpan(
+                                text:
+                                    "${provider.allCategoriesList?.where((cat) => cat.id == store.categoryId).firstOrNull?.name ?? "Not Defined"}",
+                                style: getMediumStyle(
+                                    color: AppColors.primaryColor),
+                              ),
+                            ],
+                          ),
+                        );
+                      }),
                     ],
                   ),
                 ),

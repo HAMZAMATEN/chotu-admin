@@ -48,7 +48,7 @@ class _ShopCardWidgetState extends State<ShopCardWidget> {
           onTap: () {
             Navigator.push(context, MaterialPageRoute(builder: (_) {
               return ShopProductsScreen(
-                storeModel: widget.storeModel,
+                storemodel: widget.storeModel,
               );
             }));
           },
