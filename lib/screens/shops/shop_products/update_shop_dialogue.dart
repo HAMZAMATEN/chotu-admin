@@ -1,10 +1,15 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chotu_admin/model/category_model.dart';
+import 'package:chotu_admin/model/shop_model.dart';
 import 'package:chotu_admin/providers/store_provider.dart';
 import 'package:chotu_admin/providers/users_provider.dart';
+import 'package:chotu_admin/screens/shops/widgets/addNewShopDialogBox.dart';
 import 'package:chotu_admin/utils/app_Colors.dart';
 import 'package:chotu_admin/utils/app_Paddings.dart';
 import 'package:chotu_admin/utils/app_text_widgets.dart';
 import 'package:chotu_admin/utils/functions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -16,17 +21,50 @@ import 'dart:async';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator_web/geolocator_web.dart';
 
-class AddShopDialog extends StatefulWidget {
+class UpdateShopDialogue extends StatefulWidget {
+  StoreModel store;
+
+  UpdateShopDialogue({required this.store});
+
   @override
-  _AddShopDialogState createState() => _AddShopDialogState();
+  _UpdateShopDialogueState createState() => _UpdateShopDialogueState();
 }
 
-class _AddShopDialogState extends State<AddShopDialog> {
+class _UpdateShopDialogueState extends State<UpdateShopDialogue> {
   final _formKey = GlobalKey<FormState>();
 
   /// Controllers for input fields
   final _shopNameController = TextEditingController();
   final _categoryController = TextEditingController();
+  String? cImgUrl;
+  String? fImgUrl;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    StoreProvider storeProvider =
+        Provider.of<StoreProvider>(context, listen: false);
+    _shopNameController.text = widget.store.name;
+    storeProvider.selectedAddress = widget.store.address;
+    storeProvider.latitudeController.text = widget.store.latitude;
+    storeProvider.longitudeController.text = widget.store.longitude;
+    storeProvider.categoryId = widget.store.categoryId;
+    cImgUrl = widget.store.cImg;
+    fImgUrl = widget.store.fImg;
+
+    if (Provider.of<StoreProvider>(context, listen: false).allCategoriesList !=
+        null) {
+      CategoryModel? categoryModel =
+          Provider.of<StoreProvider>(context, listen: false)
+              .allCategoriesList!
+              .where((cat) => cat.id == widget.store.categoryId)
+              .firstOrNull;
+      if (categoryModel != null) {
+        _categoryController.text = categoryModel.name!;
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -82,24 +120,8 @@ class _AddShopDialogState extends State<AddShopDialog> {
                         ),
                       ),
                       child: ClipRRect(
-                        borderRadius: BorderRadius.circular(50),
-                        child: provider.storeImageMap == null
-                            ? Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    SvgPicture.asset(
-                                      Assets.iconsMageUsersFill,
-                                    ),
-                                    Text('jpg,png or jpeg',style: getLightStyle(color: Colors.black54,fontSize: 14),)
-                                  ],
-                                ),
-                              )
-                            : Image.memory(
-                                provider.storeImageMap!['image'],
-                                fit: BoxFit.cover,
-                              ),
-                      ),
+                          borderRadius: BorderRadius.circular(100),
+                          child: buildFImageSelectionWidget(provider)),
                     ),
                   ),
                   padding20,
@@ -158,12 +180,12 @@ class _AddShopDialogState extends State<AddShopDialog> {
                           child: provider.allCategoriesList == null
                               ? Text("No Categories Found")
                               : DropdownButton(
-                              padding: EdgeInsets.symmetric(horizontal: 10),
+                                  padding: EdgeInsets.symmetric(horizontal: 10),
                                   borderRadius: BorderRadius.circular(25),
                                   hint: Text("Select"),
                                   items: provider.allCategoriesList!
                                       .map((e) => DropdownMenuItem(
-                                            child: Text(e.name??""),
+                                            child: Text(e.name ?? ""),
                                             value: e.name,
                                           ))
                                       .toList()
@@ -172,7 +194,11 @@ class _AddShopDialogState extends State<AddShopDialog> {
                                   onChanged: (val) {
                                     if (val != null) {
                                       _categoryController.text = val;
-                                      provider.updateCategoryId(provider.allCategoriesList!.where((e)=>e.name == val).first.id!);
+                                      provider.updateCategoryId(provider
+                                          .allCategoriesList!
+                                          .where((e) => e.name == val)
+                                          .first
+                                          .id!);
                                     }
                                   },
                                 ),
@@ -199,26 +225,8 @@ class _AddShopDialogState extends State<AddShopDialog> {
                           ),
                         ),
                         child: ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: provider.storeCoverImageMap == null
-                              ? Center(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(
-                                        Icons.image,
-                                        color: AppColors.textFieldBorderColor,
-                                        size: 35,
-                                      ),
-                                      Text('jpg,png or jpeg',style: getLightStyle(color: Colors.black54,fontSize: 14),)
-                                    ],
-                                  ),
-                                )
-                              : Image.memory(
-                                  provider.storeCoverImageMap!['image'],
-                                  fit: BoxFit.cover,
-                                ),
-                        ),
+                            borderRadius: BorderRadius.circular(12),
+                            child: buildCImageWidget(provider)),
                       ),
                     ),
                   ),
@@ -231,24 +239,28 @@ class _AddShopDialogState extends State<AddShopDialog> {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  GoogleMapPicker(),
+                  GoogleMapPicker(
+                    store: widget.store,
+                  ),
                   const SizedBox(height: 20),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: CustomTextField(
-                        title: 'Address ${provider.selectedAddress  != "" ?  ': '+provider.selectedAddress : ''}',
-                        enabled: true,
-                        controller: provider.locationSearchController,
-                        obscureText: false,
-                        textInputAction: TextInputAction.next,
-                        keyboardType: TextInputType.phone,
-                        hintText: '',
-                        validator: (val) {
-                          if (provider.selectedAddress.isEmpty || provider.selectedAddress == "") {
-                            return "Please enter shop address";
-                          }
-                          return null;
-                        },
+                      title:
+                          'Address ${provider.selectedAddress != "" ? ': ' + provider.selectedAddress : ''}',
+                      enabled: true,
+                      controller: provider.locationSearchController,
+                      obscureText: false,
+                      textInputAction: TextInputAction.next,
+                      keyboardType: TextInputType.phone,
+                      hintText: '',
+                      validator: (val) {
+                        if (provider.selectedAddress.isEmpty ||
+                            provider.selectedAddress == "") {
+                          return "Please enter shop address";
+                        }
+                        return null;
+                      },
                       onChanged: (value) {
                         if (value.isNotEmpty) {
                           provider.fetchSuggestions(value);
@@ -257,10 +269,9 @@ class _AddShopDialogState extends State<AddShopDialog> {
                         }
                       },
                     ),
-
                   ),
                   const SizedBox(height: 20),
-                  if(provider.suggestions.isNotEmpty)...[
+                  if (provider.suggestions.isNotEmpty) ...[
                     Container(
                       height: 400,
                       decoration: BoxDecoration(
@@ -280,7 +291,7 @@ class _AddShopDialogState extends State<AddShopDialog> {
                             ),
                             subtitle: Text(
                               place['structured_formatting']
-                              ?['secondary_text'] ??
+                                      ?['secondary_text'] ??
                                   '',
                               style: getRegularStyle(
                                   color: AppColors.textColor, fontSize: 12),
@@ -292,10 +303,10 @@ class _AddShopDialogState extends State<AddShopDialog> {
                               final placeId = place["place_id"];
                               if (placeId != null) {
                                 final latLng =
-                                await provider.getPlaceDetails(placeId);
+                                    await provider.getPlaceDetails(placeId);
                                 if (latLng != null) {
                                   print("PICKED LAT LANG ARE:::$latLng");
-                                  if(provider.mapController != null){
+                                  if (provider.mapController != null) {
                                     print("MAP CONTROLLER IS NOT NULL");
                                     provider.mapController!.animateCamera(
                                       CameraUpdate.newLatLng(latLng),
@@ -303,13 +314,13 @@ class _AddShopDialogState extends State<AddShopDialog> {
                                     Marker marker = Marker(
                                       markerId: MarkerId("selected"),
                                       position: latLng,
-                                      infoWindow: InfoWindow(title: "Selected Location"),
+                                      infoWindow: InfoWindow(
+                                          title: "Selected Location"),
                                     );
                                     provider.addMarker(marker);
-                                  }else{
+                                  } else {
                                     print("MAP CONTROLLER IS NULL");
                                   }
-
                                 }
                               }
                               FocusScope.of(context).unfocus();
@@ -387,50 +398,31 @@ class _AddShopDialogState extends State<AddShopDialog> {
           ),
           InkWell(
             onTap: () {
-              if (_formKey.currentState!.validate()) {
-                if (provider.storeImageMap != null) {
-                  if (provider.storeCoverImageMap != null) {
+                Map<String, String> body = {};
+              if(_formKey.currentState!.validate()){
+                if (provider.categoryId != null) {
+                  if (provider.latitudeController.text.isNotEmpty &&
+                      provider.longitudeController.text.isNotEmpty) {
+                    body = {
+                      'name': _shopNameController.text,
+                      'category_id': provider.categoryId.toString(),
+                      'address': provider.selectedAddress,
+                      'latitude': provider.latitudeController.text,
+                      'longitude': provider.longitudeController.text,
+                    };
 
-                    if(provider.categoryId != null){
-                      if (provider.latitudeController.text.isNotEmpty &&
-                          provider.longitudeController.text.isNotEmpty) {
-
-                        Map<String,String> body = {
-                          'name': _shopNameController.text,
-                          'category_id': provider.categoryId.toString(),
-                          'address': provider.selectedAddress,
-                          'latitude': provider.latitudeController.text,
-                          'longitude': provider.longitudeController.text,
-                        };
-
-                         provider.addShopToDataBase(body,context);
-
-                        // ScaffoldMessenger.of(context).showSnackBar(
-                        //   const SnackBar(
-                        //       content: Text('Shop added successfully!')),
-                        // );
-                        // Navigator.of(context).pop(); // Close the dialog
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content: Text('Please Select Store Address!')),
-                        );
-                      }
-                    }else{
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                            content: Text('Please Select Store Category')),
-                      );
-                    }
+                    provider.updateShopToDataBase(
+                        widget.store.id.toString(), body, context);
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                          content: Text('Please Select Store Image!')),
+                          content: Text('Please Select Store Address!')),
                     );
                   }
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Please Select Store Image!')),
+                    const SnackBar(
+                        content: Text('Please Select Store Category')),
                   );
                 }
               }
@@ -441,7 +433,7 @@ class _AddShopDialogState extends State<AddShopDialog> {
                   borderRadius: BorderRadius.circular(8),
                   color: AppColors.primaryColor),
               child: Text(
-                'Add Shop',
+                'Update Shop',
                 style: getMediumStyle(
                   color: Colors.white,
                 ),
@@ -451,6 +443,98 @@ class _AddShopDialogState extends State<AddShopDialog> {
         ],
       );
     });
+  }
+
+  Widget buildCImageWidget(StoreProvider provider) {
+    if (provider.storeCoverImageMap == null) {
+      if (cImgUrl != null) {
+        return CachedNetworkImage(
+          imageUrl: cImgUrl!,
+          cacheManager: CacheManager(
+            Config(
+              cImgUrl!,
+              stalePeriod: Duration(days: 5),
+            ),
+          ),
+          fit: BoxFit.cover,
+          errorListener: (e) {},
+          errorWidget: (ctx, o, s) {
+            return Center(
+              child: Icon(
+                Icons.image_not_supported_outlined,
+                color: Colors.black54,
+              ),
+            );
+          },
+        );
+      } else {
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SvgPicture.asset(
+                Assets.iconsMageUsersFill,
+              ),
+              Text(
+                'jpg,png or jpeg',
+                style: getLightStyle(color: Colors.black54, fontSize: 14),
+              )
+            ],
+          ),
+        );
+      }
+    } else {
+      return Image.memory(
+        provider.storeCoverImageMap!['image'],
+        fit: BoxFit.cover,
+      );
+    }
+  }
+
+  Widget buildFImageSelectionWidget(StoreProvider provider) {
+    if (provider.storeImageMap == null) {
+      if (fImgUrl != null) {
+        return CachedNetworkImage(
+          imageUrl: fImgUrl!,
+          cacheManager: CacheManager(
+            Config(
+              fImgUrl!,
+              stalePeriod: Duration(days: 5),
+            ),
+          ),
+          fit: BoxFit.cover,
+          errorListener: (e) {},
+          errorWidget: (ctx, o, s) {
+            return Center(
+              child: Icon(
+                Icons.image_not_supported_outlined,
+                color: Colors.black54,
+              ),
+            );
+          },
+        );
+      } else {
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SvgPicture.asset(
+                Assets.iconsMageUsersFill,
+              ),
+              Text(
+                'jpg,png or jpeg',
+                style: getLightStyle(color: Colors.black54, fontSize: 14),
+              )
+            ],
+          ),
+        );
+      }
+    } else {
+      return Image.memory(
+        provider.storeImageMap!['image'],
+        fit: BoxFit.cover,
+      );
+    }
   }
 }
 
@@ -462,16 +546,16 @@ void showAddShopDialog(BuildContext context) {
 }
 
 class GoogleMapPicker extends StatefulWidget {
+  StoreModel store;
 
-  GoogleMapPicker({Key? key,}) : super(key: key);
+  GoogleMapPicker({Key? key, required this.store}) : super(key: key);
+
   @override
   _GoogleMapPickerState createState() => _GoogleMapPickerState();
 }
 
 class _GoogleMapPickerState extends State<GoogleMapPicker> {
-
   LatLng? _currentLatLng;
-  LatLng? _selectedLatLng;
 
   // late StoreProvider storeProvider;
 
@@ -482,49 +566,46 @@ class _GoogleMapPickerState extends State<GoogleMapPicker> {
   }
 
   Future<void> _determinePosition() async {
-    try{
+    try {
       setState(() {
-        _currentLatLng = LatLng(24.86146, 67.00994); // Default to Karachi coordinates
-        Provider.of<StoreProvider>(context,listen: false).markers.add(
-          Marker(
-            markerId: MarkerId("current"),
-            position: _currentLatLng!,
-            // infoWindow: InfoWindow(title: "Current Location"),
-          ),
-        );
-        Provider.of<StoreProvider>(context, listen: false).selectedAddress = "Karachi Sindh Pakistan";
-        Provider.of<StoreProvider>(context, listen: false).latitudeController.text = _currentLatLng!.latitude.toString();
-        Provider.of<StoreProvider>(context, listen: false).longitudeController.text = _currentLatLng!.longitude.toString();
+        _currentLatLng = LatLng(
+            double.parse(widget.store.latitude),
+            double.parse(
+                widget.store.longitude)); // Default to Karachi coordinates
+        Provider.of<StoreProvider>(context, listen: false).markers.add(
+              Marker(
+                markerId: MarkerId("current"),
+                position: _currentLatLng!,
+                // infoWindow: InfoWindow(title: "Current Location"),
+              ),
+            );
       });
-    }catch(e){
+    } catch (e) {
       print("EXCEPTION WHILE adding marker $e");
     }
-
   }
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<StoreProvider>(
-      builder: (context,provider,child) {
-        return Container(
-          width: 600,
-          height: 400,
-          child: _currentLatLng == null
-              ? Center(child: CircularProgressIndicator())
-              : GoogleMap(
-                  initialCameraPosition: CameraPosition(
-                    target: _currentLatLng!,
-                    zoom: 14,
-                  ),
-                  onMapCreated: (GoogleMapController controller) {
-                    provider.setMapController(controller);
-                  },
-                  markers: provider.markers,
-                  myLocationEnabled: true,
-                  myLocationButtonEnabled: true,
+    return Consumer<StoreProvider>(builder: (context, provider, child) {
+      return Container(
+        width: 600,
+        height: 400,
+        child: _currentLatLng == null
+            ? Center(child: CircularProgressIndicator())
+            : GoogleMap(
+                initialCameraPosition: CameraPosition(
+                  target: _currentLatLng!,
+                  zoom: 14,
                 ),
-        );
-      }
-    );
+                onMapCreated: (GoogleMapController controller) {
+                  provider.setMapController(controller);
+                },
+                markers: provider.markers,
+                myLocationEnabled: true,
+                myLocationButtonEnabled: true,
+              ),
+      );
+    });
   }
 }

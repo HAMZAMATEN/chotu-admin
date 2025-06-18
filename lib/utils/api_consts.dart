@@ -9,6 +9,9 @@ class APIConstants {
   static String getAllStores = baseUrl + "api/stores";
   static String updateStoreStatus = baseUrl + "api/update/store/status/";
   static String searchStore = baseUrl + "api/store/search/";
+  static String updateStore = baseUrl + "api/update/store/";
+  static String getStoreAnalytics = baseUrl + "api/store/analytics/";
+
 
   // categories constants
   static String getAllCategories = baseUrl + "api/store/categories";
