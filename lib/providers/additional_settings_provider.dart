@@ -1,78 +1,47 @@
 import 'dart:convert';
 
+import 'package:chotu_admin/main.dart';
+import 'package:chotu_admin/model/faq_item_model.dart';
+import 'package:chotu_admin/providers/api_services_provider.dart';
+import 'package:chotu_admin/utils/api_consts.dart';
+import 'package:chotu_admin/utils/functions.dart';
 import 'package:flutter/cupertino.dart';
-
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import '../utils/toast_dialogue.dart';
 
 class AdditionalSettingsProvider extends ChangeNotifier {
+  ApiServicesProvider apiServicesProvider =
+      navigatorKey.currentContext!.read<ApiServicesProvider>();
+
   GlobalKey<FormState> faqKey = GlobalKey();
   GlobalKey<FormState> contactUsKey = GlobalKey();
   GlobalKey<FormState> aboutUsKey = GlobalKey();
 
-  List<FaqItem> _faqItems = [
-    FaqItem(
-      question: "What is the purpose of this app?",
-      answer:
-      "This app allows users to browse, buy, and sell products seamlessly. It offers a wide range of categories, secure payment options, and user-friendly navigation for a smooth shopping experience.",
-    ),
-    FaqItem(
-      question: "Who can use this app?",
-      answer:
-      "The app is designed for shoppers looking for great deals, sellers who want to list their products, and businesses aiming to reach a broader audience.",
-    ),
-    FaqItem(
-      question: "How can I search for products?",
-      answer:
-      "You can use the search bar to filter products by category, price range, brand, and availability. Advanced filters help you find exactly what you need.",
-    ),
-    FaqItem(
-      question: "How do I list an item for sale?",
-      answer:
-      "You can list your products by going to the 'Sell' section in the app. Simply upload product images, add a description, set a price, and publish your listing.",
-    ),
-    FaqItem(
-      question: "What payment methods are available?",
-      answer:
-      "The app supports multiple payment options, including credit/debit cards, PayPal, and digital wallets, ensuring secure and convenient transactions.",
-    ),
-    FaqItem(
-      question: "Is my personal and payment information secure?",
-      answer:
-      "Yes, the app follows strict security protocols, including data encryption and fraud protection, to keep your information safe.",
-    ),
-    FaqItem(
-      question: "What should I do if the app crashes or freezes?",
-      answer:
-      "Try closing and reopening the app. If the problem persists, please contact our support team through the 'Help & Support' section.",
-    ),
-  ];
+  List<FaqItemModel>? faqItems;
 
-  List<FaqItem> get faqItems => _faqItems;
 
-  TextEditingController questionController = TextEditingController();
-  TextEditingController answerController = TextEditingController();
 
   TextEditingController contactUsTitleController = TextEditingController();
-  TextEditingController contactUsDescriptionController =
-      TextEditingController();
-  TextEditingController aboutUsTitleController = TextEditingController();
-  TextEditingController aboutUsDescriptionController = TextEditingController();
+  TextEditingController contactUsDescriptionController = TextEditingController();
+
 
   final List<Map<String, String>> _aboutUsContent = [
     {
       "title": "About Chotu App",
       "description":
-      "Welcome to Chotu App, your go-to platform for seamless live order management. We are committed to delivering a fast, reliable, and user-friendly experience, making online ordering effortless for businesses and customers alike.",
+          "Welcome to Chotu App, your go-to platform for seamless live order management. We are committed to delivering a fast, reliable, and user-friendly experience, making online ordering effortless for businesses and customers alike.",
     },
     {
       "title": "Our Mission",
       "description":
-      "To transform the commerce industry by providing a real-time ordering platform that connects businesses and customers efficiently, ensuring smooth transactions and instant order processing.",
+          "To transform the commerce industry by providing a real-time ordering platform that connects businesses and customers efficiently, ensuring smooth transactions and instant order processing.",
     },
     {
       "title": "Our Vision",
       "description":
-      "To become the leading live order platform, recognized for innovation, trust, and an unmatched ordering experience.",
+          "To become the leading live order platform, recognized for innovation, trust, and an unmatched ordering experience.",
     },
   ];
 
@@ -97,19 +66,21 @@ class AdditionalSettingsProvider extends ChangeNotifier {
       "description": "Monday to Friday, 9:00 AM - 5:00 PM", // Optional field
     },
   ];
-  List<Map<String, String>> get contactUsContent => _contactUsContent;
 
+  List<Map<String, String>> get contactUsContent => _contactUsContent;
 
   Set<String> _selectedAboutUsContent = {};
   bool _showAboutUsCheckboxes = false;
 
   bool get showAboutUsCheckboxes => _showAboutUsCheckboxes;
+
   Set<String> get selectedAboutUsContent => _selectedAboutUsContent;
 
   Set<String> _selectedContactUsContent = {};
   bool _showContactUsCheckboxes = false;
 
   bool get showContactUsCheckboxes => _showContactUsCheckboxes;
+
   Set<String> get selectedContactUsContent => _selectedContactUsContent;
 
   void toggleAboutUsCheckboxMode() {
@@ -132,22 +103,17 @@ class AdditionalSettingsProvider extends ChangeNotifier {
 
   void deleteSelectedAboutUs(BuildContext context) {
     if (_selectedAboutUsContent.isEmpty) {
-      ShowToastDialog.showToast('Please select at least one about us section to delete!');
+      ShowToastDialog.showToast(
+          'Please select at least one about us section to delete!');
       return;
     }
-    _aboutUsContent.removeWhere((type) => _selectedAboutUsContent.contains(jsonEncode(type)));
+    _aboutUsContent.removeWhere(
+        (type) => _selectedAboutUsContent.contains(jsonEncode(type)));
     _selectedAboutUsContent.clear();
     _showAboutUsCheckboxes = false;
     notifyListeners();
   }
 
-  addAboutUsItem() {
-    _aboutUsContent.add({
-      "title": aboutUsTitleController.text,
-      "description": aboutUsDescriptionController.text,
-    });
-    notifyListeners();
-  }
 
   void toggleContactUsCheckboxMode() {
     _showContactUsCheckboxes = !_showContactUsCheckboxes;
@@ -168,10 +134,12 @@ class AdditionalSettingsProvider extends ChangeNotifier {
 
   void deleteSelectedContactUsSection(BuildContext context) {
     if (_selectedContactUsContent.isEmpty) {
-      ShowToastDialog.showToast('Please select at least one contact us section to delete!');
+      ShowToastDialog.showToast(
+          'Please select at least one contact us section to delete!');
       return;
     }
-    _contactUsContent.removeWhere((type) => _selectedContactUsContent.contains(jsonEncode(type)));
+    _contactUsContent.removeWhere(
+        (type) => _selectedContactUsContent.contains(jsonEncode(type)));
     _selectedContactUsContent.clear();
     _showContactUsCheckboxes = false;
     notifyListeners();
@@ -185,18 +153,211 @@ class AdditionalSettingsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// about us variables
+  String? aboutUs;
 
+  String? aboutUsLastUpdate;
 
-}
+  /// about us variables
+  String? termsAndCondition;
+  String? termsAndConditionLastUpdate;
 
-class FaqItem {
-  String question;
-  String answer;
-  bool isExpanded;
+  /// about us variables
+  String? privacyPolicy;
+  String? privacyPolicyLastUpdate;
 
-  FaqItem({
-    required this.question,
-    required this.answer,
-    this.isExpanded = false,
-  });
+  Future<void> getAboutUs() async {
+    try {
+      http.Response response =
+          await apiServicesProvider.getRequestResponse(APIConstants.getAboutUs);
+
+      print("Response of getAboutUs is ${response.body}");
+      print("Response Status of getAboutUs is ${response.statusCode}");
+
+      if (response.statusCode == 200) {
+        aboutUs = (jsonDecode(response.body))['content'];
+        aboutUsLastUpdate = AppFunctions.extractDate(
+            ((jsonDecode(response.body))['updated_at']));
+      } else {
+        aboutUs = "";
+        aboutUsLastUpdate = "";
+      }
+      notifyListeners();
+    } catch (e) {
+      print("Exception while getting about us content: $e");
+      AppFunctions.showToastMessage(message: 'Error fetching About Us content');
+    }
+  }
+
+  Future<void> getTermsAndConditions() async {
+    try {
+      http.Response response = await apiServicesProvider
+          .getRequestResponse(APIConstants.getTermsAndConditions);
+
+      print("Response of getTermsAndConditions is ${response.body}");
+      print(
+          "Response Status of getTermsAndConditions is ${response.statusCode}");
+
+      if (response.statusCode == 200) {
+        termsAndCondition = (jsonDecode(response.body))['content'];
+        termsAndConditionLastUpdate = AppFunctions.extractDate(
+            ((jsonDecode(response.body))['updated_at']));
+      } else {
+        termsAndCondition = "";
+        termsAndConditionLastUpdate = "";
+      }
+      notifyListeners();
+    } catch (e) {
+      print("Exception while getting terms and conditions content: $e");
+      AppFunctions.showToastMessage(
+          message: 'Error fetching Terms and Conditions content');
+    }
+  }
+
+  Future<void> getPrivacyPolicy() async {
+    try {
+      http.Response response = await apiServicesProvider
+          .getRequestResponse(APIConstants.getPrivacyPolicy);
+
+      print("Response of getPrivacyPolicy is ${response.body}");
+      print("Response Status of getPrivacyPolicy is ${response.statusCode}");
+
+      if (response.statusCode == 200) {
+        privacyPolicy = (jsonDecode(response.body))['content'];
+        privacyPolicyLastUpdate = AppFunctions.extractDate(
+            ((jsonDecode(response.body))['updated_at']));
+      } else {
+        privacyPolicy = "";
+        privacyPolicyLastUpdate = "";
+      }
+      notifyListeners();
+    } catch (e) {
+      print("Exception while getting privacy policy content: $e");
+      AppFunctions.showToastMessage(
+          message: 'Error fetching Privacy Policy content');
+    }
+  }
+
+  Future<void> updateAdditionalSettingContent({
+    bool isAboutUs = false,
+    bool isTermAndCondition = false,
+    bool isPrivacyPolicy = false,
+    required String content,
+  }) async {
+    try {
+      EasyLoading.show(status: 'Updating...');
+      String settingEndPoint = "";
+      String title = "";
+      if (isAboutUs) {
+        settingEndPoint = "about-us";
+        title = "About Us";
+      }
+      if (isTermAndCondition) {
+        settingEndPoint = "terms-and-conditions";
+        title = "Terms & Condition";
+      }
+      if (isPrivacyPolicy) {
+        settingEndPoint = "privacy-policy";
+        title = "Privacy Policy";
+      }
+
+      print(
+          "URL IS ${APIConstants.updateAdditionalSettings + "${settingEndPoint}"}");
+      http.Response response = await apiServicesProvider.putRequestResponse(
+        APIConstants.updateAdditionalSettings + "${settingEndPoint}",
+        body: {
+          "title": "${title}",
+          "content": "${content}",
+        },
+      );
+
+      print(
+          "Response Status of updateAdditionalSettingContent is ${response.statusCode}");
+      print("Response of updateAdditionalSettingContent is ${response.body}");
+
+      if (response.statusCode == 200) {
+        if (isAboutUs) {
+          await getAboutUs();
+        }
+        if (isTermAndCondition) {
+          await getTermsAndConditions();
+        }
+        if (isPrivacyPolicy) {
+          await getPrivacyPolicy();
+        }
+      }
+      AppFunctions.showToastMessage(message: 'Content Updated Successfully');
+      notifyListeners();
+      EasyLoading.dismiss();
+    } catch (e) {
+      EasyLoading.dismiss();
+      print(
+          "Exception while getting updateAdditionalSettingContent content: $e");
+      AppFunctions.showToastMessage(
+          message: 'Error updating updateAdditionalSettingContent');
+    }
+  }
+
+  Future<void> getAllFaqs() async {
+    try {
+      http.Response response =
+          await apiServicesProvider.getRequestResponse(APIConstants.getAllFaqs);
+
+      print("Response of getAllFaqs is ${response.body}");
+      print("Response Status of getAllFaqs is ${response.statusCode}");
+
+      if (response.statusCode == 200) {
+        List<dynamic> faqList = jsonDecode(response.body);
+        faqItems = faqList.map((item) => FaqItemModel.fromJson(item)).toList();
+        faqItems!.sort((a, b) => a.id.compareTo(b.id));
+        print("faqItems: $faqItems");
+      } else {
+        faqItems = [];
+      }
+      notifyListeners();
+    } catch (e) {
+      faqItems = [];
+      print("Exception while getAllFaqs content: $e");
+      AppFunctions.showToastMessage(
+          message: 'Error fetching getAllFaqs content');
+    }
+  }
+
+  Future<void> addFaq({required Map<String, dynamic> body}) async {
+    try {
+      http.Response response = await apiServicesProvider
+          .postRequestResponse(APIConstants.addFaq, body: body);
+
+      print("Response of addFaq is ${response.body}");
+      print("Response Status of addFaq is ${response.statusCode}");
+
+      if (response.statusCode == 201) {
+        getAllFaqs();
+        AppFunctions.showToastMessage(message: 'FAQ Added Successfully');
+      }
+      notifyListeners();
+    } catch (e) {
+      print("Exception while addFaq content: $e");
+      AppFunctions.showToastMessage(message: 'Error fetching addFaq content');
+    }
+  }
+
+  Future<void> deleteFaq({required int faqId}) async {
+    try {
+      http.Response response = await apiServicesProvider
+          .deleteRequestResponse(APIConstants.deleteFaq+'${faqId}');
+
+      print("Response of addFaq is ${response.body}");
+      print("Response Status of addFaq is ${response.statusCode}");
+
+      if (response.statusCode == 200) {
+        getAllFaqs();
+        AppFunctions.showToastMessage(message: 'FAQ Deleted Successfully');
+      }
+      notifyListeners();
+    } catch (e) {
+      print("Exception while deleteFaq content: $e");
+      AppFunctions.showToastMessage(message: 'Error fetching deleteFaq content');
+    }
+  }
 }

@@ -94,4 +94,8 @@ class AppFunctions {
       return null;
     }
   }
+
+  static String extractDate(String dateTimeString) {
+    return DateTime.parse(dateTimeString).toLocal().toString().split(' ').first;
+  }
 }

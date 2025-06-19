@@ -44,4 +44,43 @@ class ApiServicesProvider extends ChangeNotifier {
     }
     return response;
   }
+
+
+  Future<http.Response> putRequestResponse(String url,
+      {Map<String, dynamic>? body, bool? applyAuth = true}) async {
+    http.Response? response = await http.put(
+      Uri.parse(url),
+      headers: (applyAuth! == true)
+          ? {
+        'Authorization': 'Bearer ${AppConstants.authToken}',
+        'Content-Type': 'application/json',
+      }
+          : {
+        'Content-Type': 'application/json',
+      },
+      body: body != null ? jsonEncode(body) : null,
+    );
+
+    if (response.statusCode == 401) {
+      AppFunctions.showToastMessage(message: "Session Expired!");
+      Get.offAll(() => LoginView());
+    }
+    return response;
+  }
+
+
+  Future<http.Response> deleteRequestResponse(String url) async {
+    http.Response? response = await http.delete(
+      Uri.parse(url),
+      headers: {
+        'Authorization': 'Bearer ${AppConstants.authToken}',
+      },
+    );
+
+    if (response.statusCode == 401) {
+      AppFunctions.showToastMessage(message: "Session Expired!");
+      Get.offAll(() => LoginView());
+    }
+    return response;
+  }
 }
