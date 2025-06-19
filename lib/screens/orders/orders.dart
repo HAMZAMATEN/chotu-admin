@@ -455,7 +455,8 @@ class _OrderDashboardState extends State<OrderDashboard> {
 
                                     provider.getAllOrders(
                                         storeId: storeId,
-                                        storeName: storeName,
+                                        storeName:
+                                            storeName == "All Shops" ? "" : storeName,
                                         startDate: provider.formattedStartDate,
                                         endDate: provider.formattedEndDate,
                                         page: 1);
@@ -728,7 +729,10 @@ class _OrderDashboardState extends State<OrderDashboard> {
                       const Divider(
                         color: Color(0xffAFA9A9),
                       ),
-                      _buildRow(title: 'Total Billing', description: '${order.billingDetails?.currency ?? "PKR"} ${order.billingDetails?.total ?? "0"}'),
+                      _buildRow(
+                          title: 'Total Billing',
+                          description:
+                              '${order.billingDetails?.currency ?? "PKR"} ${order.billingDetails?.total ?? "0"}'),
                     ],
                   ),
                 ),
