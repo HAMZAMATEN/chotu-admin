@@ -1,190 +1,31 @@
 import 'dart:convert';
 
+import 'package:chotu_admin/main.dart';
+import 'package:chotu_admin/model/faq_item_model.dart';
+import 'package:chotu_admin/providers/api_services_provider.dart';
 import 'package:chotu_admin/utils/api_consts.dart';
+import 'package:chotu_admin/utils/functions.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
-
-import '../main.dart';
-import '../utils/functions.dart';
 import '../utils/toast_dialogue.dart';
-import 'api_services_provider.dart';
 
 class AdditionalSettingsProvider extends ChangeNotifier {
   ApiServicesProvider apiServicesProvider =
       navigatorKey.currentContext!.read<ApiServicesProvider>();
+
   GlobalKey<FormState> faqKey = GlobalKey();
   GlobalKey<FormState> contactUsKey = GlobalKey();
   GlobalKey<FormState> aboutUsKey = GlobalKey();
 
-  Future<void> addAboutUs(
-    String title,
-    String content,
-    BuildContext context,
-  ) async {
-    ShowToastDialog.showLoader('Adding About Us');
-    try {
-      await apiServicesProvider
-          .putRequestResponse(APIConstants.updateAboutUs, body: {
-        "title": title,
-        "content": content,
-      }).then((response) {
-        print("STATUS:::${response.statusCode}");
-        if (response.statusCode == 200) {
-          AppFunctions.showToastMessage(message: "About Us added successfully");
-          Navigator.pop(context);
-        } else {
-          AppFunctions.showToastMessage(message: "Failed to add about us");
-          var data = jsonDecode(response.body);
-          print(
-              "EXCEPTION WHILE ADDING ABOUT US AND ST:::${response.statusCode} BODY:::$data");
-        }
+  List<FaqItemModel>? faqItems;
 
-        ShowToastDialog.closeLoader();
-      });
-    } catch (e) {
-      print("EXCEPTION WHILE ADDING ABOUT US:::$e");
 
-      AppFunctions.showToastMessage(
-          message: "Exception while adding about us : $e");
-      ShowToastDialog.closeLoader();
-    }
-  }
-
-  Future<void> addTermsAndConditions(
-    String title,
-    String content,
-    BuildContext context,
-  ) async {
-    ShowToastDialog.showLoader('Adding Terms and Conditions');
-    try {
-      await apiServicesProvider
-          .putRequestResponse(APIConstants.updateAboutUs, body: {
-        "title": title,
-        "content": content,
-      }).then((response) {
-        print("STATUS:::${response.statusCode}");
-        if (response.statusCode == 200) {
-          AppFunctions.showToastMessage(
-              message: "Terms and Conditions added successfully");
-          Navigator.pop(context);
-        } else {
-          AppFunctions.showToastMessage(
-              message: "Failed to add Terms and Conditions");
-          var data = jsonDecode(response.body);
-          print(
-              "EXCEPTION WHILE ADDING Terms and Conditions AND ST:::${response.statusCode} BODY:::$data");
-        }
-
-        ShowToastDialog.closeLoader();
-      });
-    } catch (e) {
-      print("EXCEPTION WHILE ADDING Terms and Conditions:::$e");
-
-      AppFunctions.showToastMessage(
-          message: "Exception while adding Terms and Conditions : $e");
-      ShowToastDialog.closeLoader();
-    }
-  }
-
-  Future<void> addPrivacyPolicy(
-    String title,
-    String content,
-    BuildContext context,
-  ) async {
-    ShowToastDialog.showLoader('Adding About Us');
-    try {
-      await apiServicesProvider
-          .putRequestResponse(APIConstants.updatePrivacyPolicy, body: {
-        "title": title,
-        "content": content,
-      }).then((response) {
-        print("STATUS:::${response.statusCode}");
-        if (response.statusCode == 200) {
-          AppFunctions.showToastMessage(
-              message: "Privacy policy added successfully");
-          Navigator.pop(context);
-        } else {
-          AppFunctions.showToastMessage(
-              message: "Failed to add Privacy policy");
-          var data = jsonDecode(response.body);
-          print(
-              "EXCEPTION WHILE ADDING Privacy policy AND ST:::${response.statusCode} BODY:::$data");
-        }
-
-        ShowToastDialog.closeLoader();
-      });
-    } catch (e) {
-      print("EXCEPTION WHILE ADDING Privacy policy:::$e");
-
-      AppFunctions.showToastMessage(
-          message: "Exception while adding Privacy policy : $e");
-      ShowToastDialog.closeLoader();
-    }
-  }
-
-  Future<void> getAllAboutUs() async {
-    try {
-      await apiServicesProvider
-          .getRequestResponse(APIConstants.getAboutUs)
-          .then((response) {
-        if (response.statusCode == 200) {}
-      });
-    } catch (e) {
-      print("EXCEPTION WHILE getting ABOUT US:::$e");
-
-      AppFunctions.showToastMessage(
-          message: "Exception while getting about us : $e");
-    }
-  }
-
-  List<FaqItem> _faqItems = [
-    FaqItem(
-      question: "What is the purpose of this app?",
-      answer:
-          "This app allows users to browse, buy, and sell products seamlessly. It offers a wide range of categories, secure payment options, and user-friendly navigation for a smooth shopping experience.",
-    ),
-    FaqItem(
-      question: "Who can use this app?",
-      answer:
-          "The app is designed for shoppers looking for great deals, sellers who want to list their products, and businesses aiming to reach a broader audience.",
-    ),
-    FaqItem(
-      question: "How can I search for products?",
-      answer:
-          "You can use the search bar to filter products by category, price range, brand, and availability. Advanced filters help you find exactly what you need.",
-    ),
-    FaqItem(
-      question: "How do I list an item for sale?",
-      answer:
-          "You can list your products by going to the 'Sell' section in the app. Simply upload product images, add a description, set a price, and publish your listing.",
-    ),
-    FaqItem(
-      question: "What payment methods are available?",
-      answer:
-          "The app supports multiple payment options, including credit/debit cards, PayPal, and digital wallets, ensuring secure and convenient transactions.",
-    ),
-    FaqItem(
-      question: "Is my personal and payment information secure?",
-      answer:
-          "Yes, the app follows strict security protocols, including data encryption and fraud protection, to keep your information safe.",
-    ),
-    FaqItem(
-      question: "What should I do if the app crashes or freezes?",
-      answer:
-          "Try closing and reopening the app. If the problem persists, please contact our support team through the 'Help & Support' section.",
-    ),
-  ];
-
-  List<FaqItem> get faqItems => _faqItems;
-
-  TextEditingController questionController = TextEditingController();
-  TextEditingController answerController = TextEditingController();
 
   TextEditingController contactUsTitleController = TextEditingController();
-  TextEditingController contactUsDescriptionController =
-      TextEditingController();
-  TextEditingController aboutUsTitleController = TextEditingController();
-  TextEditingController aboutUsDescriptionController = TextEditingController();
+  TextEditingController contactUsDescriptionController = TextEditingController();
+
 
   final List<Map<String, String>> _aboutUsContent = [
     {
@@ -273,13 +114,6 @@ class AdditionalSettingsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  addAboutUsItem() {
-    _aboutUsContent.add({
-      "title": aboutUsTitleController.text,
-      "description": aboutUsDescriptionController.text,
-    });
-    notifyListeners();
-  }
 
   void toggleContactUsCheckboxMode() {
     _showContactUsCheckboxes = !_showContactUsCheckboxes;
@@ -318,16 +152,212 @@ class AdditionalSettingsProvider extends ChangeNotifier {
     });
     notifyListeners();
   }
-}
 
-class FaqItem {
-  String question;
-  String answer;
-  bool isExpanded;
+  /// about us variables
+  String? aboutUs;
 
-  FaqItem({
-    required this.question,
-    required this.answer,
-    this.isExpanded = false,
-  });
+  String? aboutUsLastUpdate;
+
+  /// about us variables
+  String? termsAndCondition;
+  String? termsAndConditionLastUpdate;
+
+  /// about us variables
+  String? privacyPolicy;
+  String? privacyPolicyLastUpdate;
+
+  Future<void> getAboutUs() async {
+    try {
+      http.Response response =
+          await apiServicesProvider.getRequestResponse(APIConstants.getAboutUs);
+
+      print("Response of getAboutUs is ${response.body}");
+      print("Response Status of getAboutUs is ${response.statusCode}");
+
+      if (response.statusCode == 200) {
+        aboutUs = (jsonDecode(response.body))['content'];
+        aboutUsLastUpdate = AppFunctions.extractDate(
+            ((jsonDecode(response.body))['updated_at']));
+      } else {
+        aboutUs = "";
+        aboutUsLastUpdate = "";
+      }
+      notifyListeners();
+    } catch (e) {
+      print("Exception while getting about us content: $e");
+      AppFunctions.showToastMessage(message: 'Error fetching About Us content');
+    }
+  }
+
+  Future<void> getTermsAndConditions() async {
+    try {
+      http.Response response = await apiServicesProvider
+          .getRequestResponse(APIConstants.getTermsAndConditions);
+
+      print("Response of getTermsAndConditions is ${response.body}");
+      print(
+          "Response Status of getTermsAndConditions is ${response.statusCode}");
+
+      if (response.statusCode == 200) {
+        termsAndCondition = (jsonDecode(response.body))['content'];
+        termsAndConditionLastUpdate = AppFunctions.extractDate(
+            ((jsonDecode(response.body))['updated_at']));
+      } else {
+        termsAndCondition = "";
+        termsAndConditionLastUpdate = "";
+      }
+      notifyListeners();
+    } catch (e) {
+      print("Exception while getting terms and conditions content: $e");
+      AppFunctions.showToastMessage(
+          message: 'Error fetching Terms and Conditions content');
+    }
+  }
+
+  Future<void> getPrivacyPolicy() async {
+    try {
+      http.Response response = await apiServicesProvider
+          .getRequestResponse(APIConstants.getPrivacyPolicy);
+
+      print("Response of getPrivacyPolicy is ${response.body}");
+      print("Response Status of getPrivacyPolicy is ${response.statusCode}");
+
+      if (response.statusCode == 200) {
+        privacyPolicy = (jsonDecode(response.body))['content'];
+        privacyPolicyLastUpdate = AppFunctions.extractDate(
+            ((jsonDecode(response.body))['updated_at']));
+      } else {
+        privacyPolicy = "";
+        privacyPolicyLastUpdate = "";
+      }
+      notifyListeners();
+    } catch (e) {
+      print("Exception while getting privacy policy content: $e");
+      AppFunctions.showToastMessage(
+          message: 'Error fetching Privacy Policy content');
+    }
+  }
+
+  Future<void> updateAdditionalSettingContent({
+    bool isAboutUs = false,
+    bool isTermAndCondition = false,
+    bool isPrivacyPolicy = false,
+    required String content,
+  }) async {
+    try {
+      EasyLoading.show(status: 'Updating...');
+      String settingEndPoint = "";
+      String title = "";
+      if (isAboutUs) {
+        settingEndPoint = "about-us";
+        title = "About Us";
+      }
+      if (isTermAndCondition) {
+        settingEndPoint = "terms-and-conditions";
+        title = "Terms & Condition";
+      }
+      if (isPrivacyPolicy) {
+        settingEndPoint = "privacy-policy";
+        title = "Privacy Policy";
+      }
+
+      print(
+          "URL IS ${APIConstants.updateAdditionalSettings + "${settingEndPoint}"}");
+      http.Response response = await apiServicesProvider.putRequestResponse(
+        APIConstants.updateAdditionalSettings + "${settingEndPoint}",
+        body: {
+          "title": "${title}",
+          "content": "${content}",
+        },
+      );
+
+      print(
+          "Response Status of updateAdditionalSettingContent is ${response.statusCode}");
+      print("Response of updateAdditionalSettingContent is ${response.body}");
+
+      if (response.statusCode == 200) {
+        if (isAboutUs) {
+          await getAboutUs();
+        }
+        if (isTermAndCondition) {
+          await getTermsAndConditions();
+        }
+        if (isPrivacyPolicy) {
+          await getPrivacyPolicy();
+        }
+      }
+      AppFunctions.showToastMessage(message: 'Content Updated Successfully');
+      notifyListeners();
+      EasyLoading.dismiss();
+    } catch (e) {
+      EasyLoading.dismiss();
+      print(
+          "Exception while getting updateAdditionalSettingContent content: $e");
+      AppFunctions.showToastMessage(
+          message: 'Error updating updateAdditionalSettingContent');
+    }
+  }
+
+  Future<void> getAllFaqs() async {
+    try {
+      http.Response response =
+          await apiServicesProvider.getRequestResponse(APIConstants.getAllFaqs);
+
+      print("Response of getAllFaqs is ${response.body}");
+      print("Response Status of getAllFaqs is ${response.statusCode}");
+
+      if (response.statusCode == 200) {
+        List<dynamic> faqList = jsonDecode(response.body);
+        faqItems = faqList.map((item) => FaqItemModel.fromJson(item)).toList();
+        faqItems!.sort((a, b) => a.id.compareTo(b.id));
+        print("faqItems: $faqItems");
+      } else {
+        faqItems = [];
+      }
+      notifyListeners();
+    } catch (e) {
+      faqItems = [];
+      print("Exception while getAllFaqs content: $e");
+      AppFunctions.showToastMessage(
+          message: 'Error fetching getAllFaqs content');
+    }
+  }
+
+  Future<void> addFaq({required Map<String, dynamic> body}) async {
+    try {
+      http.Response response = await apiServicesProvider
+          .postRequestResponse(APIConstants.addFaq, body: body);
+
+      print("Response of addFaq is ${response.body}");
+      print("Response Status of addFaq is ${response.statusCode}");
+
+      if (response.statusCode == 201) {
+        getAllFaqs();
+        AppFunctions.showToastMessage(message: 'FAQ Added Successfully');
+      }
+      notifyListeners();
+    } catch (e) {
+      print("Exception while addFaq content: $e");
+      AppFunctions.showToastMessage(message: 'Error fetching addFaq content');
+    }
+  }
+
+  Future<void> deleteFaq({required int faqId}) async {
+    try {
+      http.Response response = await apiServicesProvider
+          .deleteRequestResponse(APIConstants.deleteFaq+'${faqId}');
+
+      print("Response of addFaq is ${response.body}");
+      print("Response Status of addFaq is ${response.statusCode}");
+
+      if (response.statusCode == 200) {
+        getAllFaqs();
+        AppFunctions.showToastMessage(message: 'FAQ Deleted Successfully');
+      }
+      notifyListeners();
+    } catch (e) {
+      print("Exception while deleteFaq content: $e");
+      AppFunctions.showToastMessage(message: 'Error fetching deleteFaq content');
+    }
+  }
 }

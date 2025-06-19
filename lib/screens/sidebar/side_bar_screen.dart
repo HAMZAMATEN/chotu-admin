@@ -24,7 +24,7 @@ class _SideBarScreenState extends State<SideBarScreen> {
     // TODO: implement initState
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<SideBarProvider>(context, listen: false).setIndex(1);
+      Provider.of<SideBarProvider>(context, listen: false).setIndex(0);
     });
     super.initState();
   }

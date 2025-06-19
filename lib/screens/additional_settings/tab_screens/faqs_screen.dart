@@ -1,3 +1,9 @@
+import 'package:chotu_admin/main.dart';
+import 'package:chotu_admin/model/faq_item_model.dart';
+import 'package:chotu_admin/utils/app_Colors.dart';
+import 'package:chotu_admin/utils/app_Paddings.dart';
+import 'package:chotu_admin/utils/fonts_manager.dart';
+import 'package:chotu_admin/widgets/ShowConformationAlert.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -6,12 +12,12 @@ import 'package:chotu_admin/utils/app_text_widgets.dart';
 import 'package:chotu_admin/widgets/custom_Button.dart';
 import 'package:chotu_admin/widgets/custom_TextField.dart';
 
-import '../../utils/app_Colors.dart';
-import '../../utils/app_Paddings.dart';
-import '../../utils/fonts_manager.dart';
-
 class FaqsScreen extends StatelessWidget {
-  const FaqsScreen({super.key});
+  FaqsScreen({super.key});
+
+  late AdditionalSettingsProvider additionalSettingsProvider;
+  TextEditingController questionController = TextEditingController();
+  TextEditingController answerController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -34,17 +40,25 @@ class FaqsScreen extends StatelessWidget {
                   padding20,
                   Consumer<AdditionalSettingsProvider>(
                     builder: (context, provider, child) {
+                      additionalSettingsProvider = provider;
+                      if (provider.faqItems == null) {
+                        return Center(
+                          child: CircularProgressIndicator(
+                            color: AppColors.primaryColor,
+                          ),
+                        );
+                      }
                       return ListView.builder(
                           padding: EdgeInsets.zero,
-                          itemCount: provider.faqItems.length,
+                          itemCount: provider.faqItems!.length,
                           shrinkWrap: true,
                           physics: NeverScrollableScrollPhysics(),
                           itemBuilder: (context, index) {
                             return Padding(
                               padding: EdgeInsets.only(bottom: 10.0),
                               child: _buildFAQCard(
-                                  question: provider.faqItems[index].question,
-                                  answer: provider.faqItems[index].answer),
+                                faqItem: provider.faqItems![index],
+                              ),
                             );
                           });
                     },
@@ -78,7 +92,7 @@ class FaqsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildFAQCard({required String question, required String answer}) {
+  Widget _buildFAQCard({required FaqItemModel faqItem}) {
     return Container(
       padding: EdgeInsets.only(left: 20, top: 20, bottom: 10, right: 20),
       decoration: BoxDecoration(
@@ -101,12 +115,12 @@ class FaqsScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            question,
+            faqItem.question,
             style: getSemiBoldStyle(color: AppColors.blackColor, fontSize: 14),
           ),
           padding10,
           Text(
-            answer,
+            faqItem.answer,
             style: getRegularStyle(
               fontSize: MyFonts.size14,
               color: AppColors.textColor,
@@ -114,8 +128,24 @@ class FaqsScreen extends StatelessWidget {
           ),
           padding10,
           Align(
-            alignment: Alignment.bottomRight,
-              child: IconButton(onPressed: (){}, icon: Icon(Icons.delete,color: Colors.green,)))
+              alignment: Alignment.bottomRight,
+              child: IconButton(
+                  onPressed: () async {
+                    showCustomConfirmationDialog(
+                      context: navigatorKey.currentContext!,
+                      message: 'Are you sure you want to delete this FAQ?',
+                      cancelText: 'No',
+                      confirmText: 'Delete',
+                      onConfirm: () async{
+                        await additionalSettingsProvider.deleteFaq(
+                            faqId: faqItem.id);
+                      },
+                    );
+                  },
+                  icon: Icon(
+                    Icons.delete,
+                    color: Colors.green,
+                  )))
         ],
       ),
     );
@@ -130,7 +160,7 @@ class FaqsScreen extends StatelessWidget {
             children: [
               CustomTextField(
                   title: 'Question',
-                  controller: provider.questionController,
+                  controller: questionController,
                   obscureText: false,
                   textInputAction: TextInputAction.next,
                   keyboardType: TextInputType.text,
@@ -139,14 +169,14 @@ class FaqsScreen extends StatelessWidget {
                     if (val == null || val.isEmpty) {
                       return "Please add question";
                     }
-                    return "";
+                    return null;
                   }),
               padding10,
               CustomTextField(
                   title: 'Answer',
                   minLines: 8,
                   maxLines: 8,
-                  controller: provider.answerController,
+                  controller: answerController,
                   obscureText: false,
                   textInputAction: TextInputAction.done,
                   keyboardType: TextInputType.text,
@@ -155,20 +185,29 @@ class FaqsScreen extends StatelessWidget {
                     if (val == null || val.isEmpty) {
                       return "Please add answer";
                     }
-                    return "";
+                    return null;
                   }),
               padding30,
               CustomButton(
-                width: MediaQuery
-                    .of(context)
-                    .size
-                    .width * .2,
+                width: MediaQuery.of(context).size.width * .2,
                 btnColor: AppColors.btnColor,
                 btnText: 'Add',
                 btnTextColor: AppColors.btnTextColor,
-                onPress: () {
-                  if (provider.faqKey.currentState!.validate()) {}
-                },),
+                onPress: () async {
+                  if (provider.faqKey.currentState!.validate()) {
+                    Map<String, dynamic> body = {
+                      'question': '${questionController.text}',
+                      'answer': '${answerController.text}',
+                      'is_active': '1',
+                    };
+
+                    await provider.addFaq(body: body);
+                    questionController.clear();
+                    answerController.clear();
+                    provider.getAllFaqs();
+                  }
+                },
+              ),
             ],
           ),
         );

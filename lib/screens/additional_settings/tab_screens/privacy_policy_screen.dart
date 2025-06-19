@@ -1,0 +1,118 @@
+import 'package:chotu_admin/providers/additional_settings_provider.dart';
+import 'package:chotu_admin/utils/app_Colors.dart';
+import 'package:chotu_admin/utils/app_text_widgets.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+class PrivacyPolicyScreen extends StatefulWidget {
+  const PrivacyPolicyScreen({super.key});
+
+  @override
+  State<PrivacyPolicyScreen> createState() => _PrivacyPolicyScreenState();
+}
+
+class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
+  TextEditingController privacyController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Consumer<AdditionalSettingsProvider>(
+          builder: (context, provider, child) {
+        if (provider.privacyPolicy != null) {
+          privacyController.text = provider.privacyPolicy!;
+        }
+        if (provider.privacyPolicy == null) {
+          return Center(
+              child: CircularProgressIndicator(
+            color: AppColors.primaryColor,
+          ));
+        }
+        return SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Privacy Policy',
+                  style: getBoldStyle(fontSize: 24, color: Colors.black),
+                ),
+                SizedBox(height: 10),
+                Text(
+                  'Last Updated : ${provider.privacyPolicyLastUpdate}',
+                  style: getMediumStyle(fontSize: 16, color: Colors.grey),
+                ),
+                SizedBox(height: 20),
+                Container(
+                  padding:
+                      EdgeInsets.only(left: 20, top: 20, bottom: 10, right: 20),
+                  decoration: BoxDecoration(
+                    color: AppColors.whiteColor,
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(
+                      width: 1,
+                      color: Color(0xffE5E8EC),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        offset: Offset(0, 0),
+                        blurRadius: 2,
+                        spreadRadius: 0,
+                        color: Color(0x00000008),
+                      ),
+                    ],
+                  ),
+                  child: TextField(
+                    controller: privacyController,
+                    maxLines: 13,
+                    maxLength: 3000,
+                    style: getMediumStyle(
+                      fontSize: 16,
+                      color: Colors.black,
+                    ),
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      hintText:
+                          'Privacy is important to users. This policy explains how we collect, use, and protect users information.',
+                      hintStyle:
+                          getRegularStyle(fontSize: 16, color: Colors.grey),
+                    ),
+                  ),
+                ),
+                // Add more content here as needed
+                SizedBox(height: 20),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: InkWell(
+                    onTap: () async {
+                      await provider.updateAdditionalSettingContent(
+                          content: privacyController.text,
+                          isPrivacyPolicy: true);
+                    },
+                    child: Container(
+                      width: 120,
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        color: Colors.green,
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Update',
+                          style: getMediumStyle(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      }),
+    );
+  }
+}
