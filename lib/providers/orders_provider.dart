@@ -177,8 +177,6 @@ class OrdersProvider extends ChangeNotifier {
       http.Response response = await apiServicesProvider.getRequestResponse(
           "${APIConstants.getAllOrders}?store_id=$storeId&store_name=$storeName&start_date=$startDate&end_date=$endDate&page=$page");
 
-
-
       print("RESPONSE CODE FOR getAllOrders ${response.statusCode}");
       if (response.statusCode == 200) {
         AllOrdersModel allOrdersModel =
@@ -227,5 +225,66 @@ class OrdersProvider extends ChangeNotifier {
 
     getAllOrders(
         storeId: "", storeName: "", startDate: "", endDate: "", page: 1);
+  }
+
+  /// search order
+
+  bool searchLoading = false;
+
+  void setSearchLoading(val) {
+    searchLoading = val;
+    notifyListeners();
+  }
+
+  Future<void> searchOrders(String val) async {
+    if (val.isNotEmpty) {
+      _startDate = null;
+      _endDate = null;
+      selectedStore = '';
+      setSearchLoading(true);
+      try {
+        http.Response response = await apiServicesProvider.getRequestResponse(
+            "${APIConstants.getOrderByIdOrName}?search=$val");
+
+        print("RESPONSE CODE FOR searchOrders ${jsonDecode(response.body)}");
+        if (response.statusCode == 200) {
+          AllOrdersModel allOrdersModel =
+              AllOrdersModel.fromJson(jsonDecode(response.body));
+          List<Order> tempOrdersList = [];
+
+          List<dynamic> dataList = (jsonDecode(response.body))['data'];
+
+
+          pagination = allOrdersModel.pagination;
+
+          setCurrentPage(int.parse(pagination?.currentPage.toString() ?? "1"));
+
+
+          dataList.forEach((orderData) {
+            Order order = Order.fromJson(orderData);
+            tempOrdersList.add(order);
+          });
+          filterOrdersList?.clear();
+
+          filterOrdersList = tempOrdersList;
+          notifyListeners();
+          setSearchLoading(false);
+        } else {
+          setSearchLoading(false);
+        }
+      } catch (e) {
+        print('Exception while searchOrders: $e');
+        AppFunctions.showToastMessage(
+            message: "Exception while searchOrders: $e");
+        setSearchLoading(false);
+      }
+    } else {
+      getAllOrders(
+          storeId: "",
+          storeName: "",
+          startDate: "",
+          endDate: "",
+          page: _currentPage);
+    }
   }
 }

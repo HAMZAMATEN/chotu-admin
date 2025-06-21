@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
@@ -13,6 +14,7 @@ import 'package:chotu_admin/widgets/custom_TextField.dart';
 
 import '../../utils/app_Colors.dart';
 import '../../utils/fonts_manager.dart';
+import '../../utils/functions.dart';
 import '../../widgets/custom_Button.dart';
 import '../users/widgets/ShowUserPopupDialog.dart';
 
@@ -29,6 +31,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
     // TODO: implement initState
     Provider.of<DashboardProvider>(context, listen: false)
         .getDashboardAnalytics();
+    Provider.of<DashboardProvider>(context, listen: false)
+        .getDeliveryFeeSettings();
     super.initState();
   }
 
@@ -55,7 +59,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         children: [
                           // Expanded(child: _buildRecentlyJoinedUsersSection()),
                           // padding30,
-                          Expanded(child: _buildSocialLinksSection()),
+                          Expanded(child: _buildSocialLinksSection(provider)),
                         ],
                       ),
                       padding20,
@@ -106,10 +110,30 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: _buildTopCard(
                 iconPath: Icons.shopify_sharp,
                 title: 'Total Shops',
-                amount: statData?.totalShops.toString() ?? "0",
+                amount: statData?.shop?.total.toString() ?? "0",
               ),
             ),
             padding20,
+            Expanded(
+              child: _buildTopCard(
+                iconPath: Icons.shopify_sharp,
+                title: 'Active Shop',
+                amount: statData?.shop?.active.toString() ?? "0",
+              ),
+            ),
+            padding20,
+            Expanded(
+              child: _buildTopCard(
+                iconPath: Icons.shopify_sharp,
+                title: 'In-active Shops',
+                amount: statData?.shop?.inActive.toString() ?? "0",
+              ),
+            ),
+          ],
+        ),
+        padding10,
+        Row(
+          children: [
             Expanded(
               child: _buildTopCard(
                 iconPath: Icons.verified_user,
@@ -125,6 +149,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 amount: statData?.totalUsers.toString() ?? "0",
               ),
             ),
+            padding20,
+            Expanded(child: Container())
           ],
         ),
         // padding10,
@@ -236,7 +262,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   /// build social links section
-  Widget _buildSocialLinksSection() {
+  Widget _buildSocialLinksSection(DashboardProvider provider) {
     return Container(
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -258,58 +284,95 @@ class _DashboardScreenState extends State<DashboardScreen> {
           padding20,
           CustomTextField(
               title: 'Delivery Charges',
-              controller: TextEditingController(
-                text: '200',
-              ),
-              obscureText: false,
-              textInputAction: TextInputAction.done,
-              keyboardType: TextInputType.text,
-              suffixIcon: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Icon(
-                  Icons.monetization_on_outlined,
-                  color: Colors.green,
-                  size: 20,
-                ),
-              ),
-              hintText: ''),
-          padding20,
-          CustomTextField(
-              title: 'Link of the app at play store',
-              controller: TextEditingController(
-                text: 'https://www.playstore.com/app/Saqfi',
-              ),
+              controller: provider.deliveryFeeCon,
               obscureText: false,
               textInputAction: TextInputAction.done,
               keyboardType: TextInputType.text,
               suffixIcon: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
-                  'copy link',
+                  'PKR',
                   style: getMediumStyle(color: Colors.green, fontSize: 14),
                 ),
               ),
-              hintText: ''),
+              hintText: '0.00'),
+          padding20,
+          CustomTextField(
+              title: 'Link of the app at play store',
+              controller: provider.googleLinkCon,
+              obscureText: false,
+              textInputAction: TextInputAction.done,
+              keyboardType: TextInputType.text,
+              suffixIcon: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: InkWell(
+                  onTap: () {
+                    if(provider.googleLinkCon.text.isNotEmpty){
+                      Clipboard.setData(
+                        ClipboardData(text: provider.googleLinkCon.text),
+                      );
+
+                      AppFunctions.showToastMessage(message: "Copied!!");
+                    }
+                  },
+                  child: Text(
+                    'Copy link',
+                    style: getMediumStyle(color: Colors.green, fontSize: 14),
+                  ),
+                ),
+              ),
+              hintText: 'https://www.playstore.com/app/chotu'),
           padding20,
           CustomTextField(
               title: 'Link of the app at app store',
               suffixIcon: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  'copy link',
-                  style: getMediumStyle(color: Colors.green, fontSize: 14),
+                child: InkWell(
+                  onTap: () {
+                    if(provider.appleLinkCon.text.isNotEmpty){
+                      Clipboard.setData(
+                        ClipboardData(text: provider.appleLinkCon.text),
+                      );
+
+                      AppFunctions.showToastMessage(message: "Copied!!");
+                    }
+                  },
+                  child: Text(
+                    'Copy link',
+                    style: getMediumStyle(color: Colors.green, fontSize: 14),
+                  ),
                 ),
               ),
-              controller: TextEditingController(
-                text: 'https://www.playstore.com/app/Saqfi',
-              ),
+              controller: provider.appleLinkCon,
               obscureText: false,
               textInputAction: TextInputAction.done,
               keyboardType: TextInputType.text,
-              hintText: ''),
+              hintText: 'https://www.appstore.com/app/chotu'),
           padding20,
           Row(
             children: [
+              InkWell(
+                onTap: () {
+                  provider.setDeliveryFeeSettings();
+                },
+                child: Container(
+                  height: 40,
+                  width: 150,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    color: AppColors.btnColor,
+                  ),
+                  child: Center(
+                    child: Text(
+                      "Save",
+                      style: getRegularStyle(
+                        color: AppColors.btnTextColor,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
               Container(
                 height: 60,
                 width: 150,
