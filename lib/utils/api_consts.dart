@@ -38,11 +38,17 @@ class APIConstants {
   /// DashboardAnalytics
   static String getDashboardAnalytics = baseUrl + "api/dashboardAnalytics";
 
+  /// Dashboard Delivery Settings
+  static String getDashboardDeliverySettings = baseUrl + "api/delivery-settings";
+  static String setDashboardDeliverySettings = baseUrl + "api/delivery-settings";
+
   /// OrderAnalytics
   static String getOrdersAnalytics = baseUrl + "api/order/analytics";
 
   /// All orders
   static String getAllOrders = baseUrl + "api/orders";
+  /// search-order
+  static String getOrderByIdOrName = baseUrl + "api/orderByIdOrName";
 
 
   /// ===============> Additional Settings <===============

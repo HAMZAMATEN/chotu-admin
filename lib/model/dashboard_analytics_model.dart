@@ -26,7 +26,7 @@ class Data {
     required this.totalRevenue,
     required this.totalOrders,
     required this.cancelOrders,
-    required this.totalShops,
+    required this.shop,
     required this.totalRides,
     required this.totalUsers,
   });
@@ -34,7 +34,7 @@ class Data {
   final int? totalRevenue;
   final int? totalOrders;
   final int? cancelOrders;
-  final int? totalShops;
+  final Shop? shop;
   final int? totalRides;
   final int? totalUsers;
 
@@ -43,7 +43,7 @@ class Data {
       totalRevenue: json["total_revenue"],
       totalOrders: json["total_orders"],
       cancelOrders: json["cancel_orders"],
-      totalShops: json["total_shops"],
+      shop: json["shop"] == null ? null : Shop.fromJson(json["shop"]),
       totalRides: json["total_rides"],
       totalUsers: json["total_users"],
     );
@@ -53,9 +53,36 @@ class Data {
     "total_revenue": totalRevenue,
     "total_orders": totalOrders,
     "cancel_orders": cancelOrders,
-    "total_shops": totalShops,
+    "shop": shop?.toJson(),
     "total_rides": totalRides,
     "total_users": totalUsers,
+  };
+
+}
+
+class Shop {
+  Shop({
+    required this.total,
+    required this.active,
+    required this.inActive,
+  });
+
+  final int? total;
+  final int? active;
+  final int? inActive;
+
+  factory Shop.fromJson(Map<String, dynamic> json){
+    return Shop(
+      total: json["total"],
+      active: json["active"],
+      inActive: json["inActive"],
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    "total": total,
+    "active": active,
+    "inActive": inActive,
   };
 
 }
