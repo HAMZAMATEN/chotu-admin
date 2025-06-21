@@ -391,8 +391,8 @@ class Pagination {
   });
 
   final int? total;
-  final int? perPage;
-  final String? currentPage;
+  final dynamic perPage;
+  final dynamic currentPage;
   final int? lastPage;
 
   factory Pagination.fromJson(Map<String, dynamic> json){

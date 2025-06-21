@@ -455,8 +455,9 @@ class _OrderDashboardState extends State<OrderDashboard> {
 
                                     provider.getAllOrders(
                                         storeId: storeId,
-                                        storeName:
-                                            storeName == "All Shops" ? "" : storeName,
+                                        storeName: storeName == "All Shops"
+                                            ? ""
+                                            : storeName,
                                         startDate: provider.formattedStartDate,
                                         endDate: provider.formattedEndDate,
                                         page: 1);
@@ -539,11 +540,15 @@ class _OrderDashboardState extends State<OrderDashboard> {
                           child: CustomTextField(
                             width: MediaQuery.of(context).size.width,
                             title: '',
-                            controller: TextEditingController(),
+                            controller: provider.searchController,
                             obscureText: false,
+                            onChanged: (val) {
+                              provider.searchOrders(val);
+                            },
                             textInputAction: TextInputAction.search,
                             keyboardType: TextInputType.text,
-                            hintText: 'Search orders by name and id',
+                            hintText:
+                                'Search orders by name , shop name or order-id',
                             suffixIcon: SizedBox(
                               height: 24,
                               width: 24,
@@ -562,54 +567,87 @@ class _OrderDashboardState extends State<OrderDashboard> {
                     // Scrollable Data Table
 
                     Expanded(
-                      child: provider.allOrdersList == null
-                          ? SingleChildScrollView(
-                              child: shimmerOrdersWidget(context))
-                          : provider.allOrdersList!.isEmpty
-                              ? Center(
-                                  child: Text(
-                                    "No orders available yet!!",
-                                    style: getBoldStyle(
-                                      color: AppColors.textColor,
-                                      fontSize: 22,
+                      child: provider.searchController.text.isEmpty
+                          ? provider.allOrdersList == null
+                              ? SingleChildScrollView(
+                                  child: shimmerOrdersWidget(context))
+                              : provider.allOrdersList!.isEmpty
+                                  ? Center(
+                                      child: Text(
+                                        "No orders available yet!!",
+                                        style: getBoldStyle(
+                                          color: AppColors.textColor,
+                                          fontSize: 22,
+                                        ),
+                                      ),
+                                    )
+                                  : SingleChildScrollView(
+                                      child: Align(
+                                        alignment: Alignment.topLeft,
+                                        child: Wrap(
+                                          // alignment: WrapAlignment.center,
+                                          // crossAxisAlignment: WrapCrossAlignment.center,
+                                          spacing: 16,
+                                          runSpacing: 16,
+                                          children: provider.allOrdersList!
+                                              .map((order) {
+                                            return _buildOrderCard(
+                                                context, order, provider);
+                                          }).toList(),
+                                        ),
+                                      ),
+                                    )
+                          : provider.searchLoading
+                              ? SingleChildScrollView(
+                                  child: shimmerOrdersWidget(context))
+                              : provider.filterOrdersList == null ||
+                                      provider.filterOrdersList!.isEmpty
+                                  ? Center(
+                                      child: Text(
+                                        "No orders found!!",
+                                        style: getBoldStyle(
+                                          color: AppColors.textColor,
+                                          fontSize: 22,
+                                        ),
+                                      ),
+                                    )
+                                  : SingleChildScrollView(
+                                      child: Align(
+                                        alignment: Alignment.topLeft,
+                                        child: Wrap(
+                                          // alignment: WrapAlignment.center,
+                                          // crossAxisAlignment: WrapCrossAlignment.center,
+                                          spacing: 16,
+                                          runSpacing: 16,
+                                          children: provider.filterOrdersList!
+                                              .map((order) {
+                                            return _buildOrderCard(
+                                                context, order, provider);
+                                          }).toList(),
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                )
-                              : SingleChildScrollView(
-                                  child: Align(
-                                    alignment: Alignment.topLeft,
-                                    child: Wrap(
-                                      // alignment: WrapAlignment.center,
-                                      // crossAxisAlignment: WrapCrossAlignment.center,
-                                      spacing: 16,
-                                      runSpacing: 16,
-                                      children:
-                                          provider.allOrdersList!.map((order) {
-                                        return _buildOrderCard(
-                                            context, order, provider);
-                                      }).toList(),
-                                    ),
-                                  ),
-                                ),
                     ),
 
-                    padding20,
-                    PaginationWidget(
-                      currentPage: provider.currentPage,
-                      lastPage: provider.pagination == null
-                          ? 1
-                          : provider.pagination!.lastPage ?? 1,
-                      onPageSelected: (int selectedPage) {
-                        // fetch data for selectedPage
-                        print("Go to page $selectedPage");
-                        provider.getAllOrders(
-                            storeId: "",
-                            storeName: "",
-                            startDate: "",
-                            endDate: "",
-                            page: 1);
-                      },
-                    ),
+                    // if (provider.searchController.text.isEmpty)
+                      padding20,
+                    // if (provider.searchController.text.isEmpty)
+                      PaginationWidget(
+                        currentPage: provider.currentPage,
+                        lastPage: provider.pagination == null
+                            ? 1
+                            : provider.pagination!.lastPage ?? 1,
+                        onPageSelected: (int selectedPage) {
+                          // fetch data for selectedPage
+                          print("Go to page $selectedPage");
+                          provider.getAllOrders(
+                              storeId: "",
+                              storeName: "",
+                              startDate: "",
+                              endDate: "",
+                              page: 1);
+                        },
+                      ),
                   ],
                 ),
               ),
