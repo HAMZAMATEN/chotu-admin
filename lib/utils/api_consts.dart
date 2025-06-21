@@ -58,4 +58,10 @@ class APIConstants {
   static String addFaq = baseUrl + "api/faqs";
   static String updateFaq = baseUrl + "api/faqs/";
   static String deleteFaq = baseUrl + "api/faqs/";
+
+
+  /// getting Contact-Us
+  static String getContactUs = baseUrl + "api/contact-info";
+  static String updateContactUs = baseUrl + "api/contact-info";
 }
+
