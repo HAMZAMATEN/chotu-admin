@@ -47,6 +47,15 @@ class StoreProvider extends ChangeNotifier {
 
   bool get suggestionLoading => _suggestionLoading;
 
+
+  /// adding shop variables
+
+  TextEditingController latitudeController = TextEditingController();
+  TextEditingController longitudeController = TextEditingController();
+  Map<String, dynamic>? storeImageMap;
+  Map<String, dynamic>? storeCoverImageMap;
+  int? categoryId;
+
   Future<void> getAllStores({int? page = 1}) async {
     try {
       http.Response response = await apiServicesProvider
@@ -127,15 +136,7 @@ class StoreProvider extends ChangeNotifier {
     }
   }
 
-  /// adding shop variables
 
-  TextEditingController latitudeController = TextEditingController();
-  TextEditingController longitudeController = TextEditingController();
-
-  Map<String, dynamic>? storeImageMap;
-  Map<String, dynamic>? storeCoverImageMap;
-
-  int? categoryId;
 
   setImagesMapsToNull() {
     storeImageMap = null;

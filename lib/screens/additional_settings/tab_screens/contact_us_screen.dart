@@ -88,7 +88,8 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                         Map<String,dynamic> body = {
                           "phone_number":"${phoneNumberController.text}",
                           "address":"${addressController.text}",
-                          "working_hours":"${workingTimeController.text}"
+                          "working_hours":"${workingTimeController.text}",
+                          'email': "${emailController.text}",
                         };
                         await provider.updateContactUs(body: body);
                       },

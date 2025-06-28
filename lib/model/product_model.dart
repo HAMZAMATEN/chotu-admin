@@ -13,7 +13,7 @@ class ProductModel {
   final String description;
   final StoreModel store;
   final String img;
-  final int status;
+   int status;
 
   ProductModel({
     required this.id,

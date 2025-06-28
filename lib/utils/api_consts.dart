@@ -34,6 +34,11 @@ class APIConstants {
   /// Products Constants
   static String getAllProducts = baseUrl + "api/get/all/products";
   static String getProductByStoreId = baseUrl + "api/get/products/by/store/";
+  static String addProduct = baseUrl + "api/add/product";
+  static String updateProductStatus = baseUrl + "api/update/product/status/";
+  static String deleteProduct = baseUrl + "api/delete/product/";
+  static String updateProduct = baseUrl + "api/update/product/";
+  static String searchProduct = baseUrl + "api/product/search?";
 
   /// DashboardAnalytics
   static String getDashboardAnalytics = baseUrl + "api/dashboardAnalytics";

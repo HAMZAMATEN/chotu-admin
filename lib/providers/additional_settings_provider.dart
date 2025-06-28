@@ -380,10 +380,6 @@ class AdditionalSettingsProvider extends ChangeNotifier {
         contactUsMap!['phone_number'] = data['phone_number'] ?? "";
         contactUsMap!['working_hours'] = data['working_hours'] ?? "";
         contactUsMap!['address'] = data['address'] ?? "";
-        // contactUsMap?['email'] = data['email'] ?? "";
-        // contactUsMap?['phoneNumber'] = data['phone_number'] ?? "";
-        // contactUsMap?['workingHours'] = data['working_hours'] ?? "";
-        // contactUsMap?['address'] = data['address'] ?? "";
       } else {
         contactUsMap!['email'] = "";
         contactUsMap!['phone_number'] = "";
