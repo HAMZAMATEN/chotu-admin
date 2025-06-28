@@ -6,9 +6,9 @@ import 'package:chotu_admin/utils/app_Paddings.dart';
 import 'package:chotu_admin/utils/app_text_widgets.dart';
 import 'package:chotu_admin/widgets/custom_TextField.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:chotu_admin/providers/additional_settings_provider.dart';
-
 
 class ContactUsScreen extends StatefulWidget {
   const ContactUsScreen({super.key});
@@ -18,17 +18,58 @@ class ContactUsScreen extends StatefulWidget {
 }
 
 class _ContactUsScreenState extends State<ContactUsScreen> {
+  late AdditionalSettingsProvider additionalSettingsProvider;
+  TextEditingController emailController = TextEditingController();
+  TextEditingController addressController = TextEditingController();
+  TextEditingController phoneNumberController = TextEditingController();
+  TextEditingController workingTimeController = TextEditingController();
+  List<TextEditingController> controllersList = [];
+
+
+
+
   @override
   Widget build(BuildContext context) {
-    return _contactUs();
-  }
-
-  Widget _contactUs() {
-    return Expanded(
-      child: Consumer<AdditionalSettingsProvider>(
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Consumer<AdditionalSettingsProvider>(
         builder: (context, provider, child) {
-          return Padding(
-            padding: EdgeInsets.symmetric(horizontal: 30.0),
+          additionalSettingsProvider = provider;
+          if (provider.contactUsMap == null) {
+            return Center(
+              child: Container(
+                height: 100,
+                width: 100,
+                child: Center(
+                  child: CircularProgressIndicator(
+                    color: AppColors.primaryColor,
+                  ),
+                ),
+              ),
+            );
+          }
+          final entries = provider.contactUsMap?.entries.toList() ?? [];
+          if(entries.isNotEmpty){
+            phoneNumberController.text = provider.contactUsMap!['phone_number'];
+            addressController.text = provider.contactUsMap!['address'];
+            workingTimeController.text = provider.contactUsMap!['working_hours'];
+            emailController.text = provider.contactUsMap!['email'];
+            controllersList = [
+              emailController,
+              phoneNumberController,
+              workingTimeController,
+              addressController,
+            ];
+          }
+          else{
+            emailController.text = '';
+            addressController.text = '';
+            phoneNumberController.text = '';
+            workingTimeController.text = '';
+          }
+
+          return Container(
+            margin: EdgeInsets.symmetric(horizontal: 30.0),
             child: Column(
               children: [
                 padding30,
@@ -42,268 +83,52 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                       ),
                     ),
                     Spacer(),
-                    if (!provider.contactUsContent.isEmpty)
-                      InkWell(
-                        onTap: () {
-                          provider.toggleContactUsCheckboxMode();
-                        },
-                        child: Container(
-                          padding:
-                          EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            color: provider.showContactUsCheckboxes
-                                ? Colors.grey
-                                : Colors.redAccent,
-                          ),
-                          child: Center(
-                            child: Text(
-                              provider.showContactUsCheckboxes
-                                  ? 'Cancel'
-                                  : 'Delete',
-                              style: getMediumStyle(color: Colors.white),
-                            ),
+                    InkWell(
+                      onTap: () async{
+                        Map<String,dynamic> body = {
+                          "phone_number":"${phoneNumberController.text}",
+                          "address":"${addressController.text}",
+                          "working_hours":"${workingTimeController.text}",
+                          'email': "${emailController.text}",
+                        };
+                        await provider.updateContactUs(body: body);
+                      },
+                      child: Container(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          color: Colors.green,
+                        ),
+                        child: Center(
+                          child: Text(
+                            'Update',
+                            style: getMediumStyle(color: Colors.white),
                           ),
                         ),
                       ),
-                    padding10,
-                    if (!provider.showContactUsCheckboxes)
-                      InkWell(
-                        onTap: () {
-                          showAdaptiveDialog(
-                            context: context,
-                            barrierDismissible: true,
-                            // Allows closing the dialog by tapping outside
-                            builder: (context) {
-                              return Dialog(
-                                backgroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                child: Container(
-                                  width: 370,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(16),
-                                    child: Form(
-                                      key: provider.contactUsKey,
-                                      child: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          // Close button
-                                          Align(
-                                            alignment: Alignment.topLeft,
-                                            child: IconButton(
-                                              icon: Container(
-                                                  height: 34,
-                                                  width: 34,
-                                                  child: Center(
-                                                      child: Image.asset(
-                                                          Assets.iconsCross))),
-                                              onPressed: () =>
-                                                  Navigator.pop(context),
-                                            ),
-                                          ),
-                                          // User Image
-                                          padding5,
-                                          // User Name and Role
-                                          Text(
-                                            "Add Contact Us",
-                                            style: getSemiBoldStyle(
-                                                fontSize: 20,
-                                                color: Colors.black),
-                                          ),
-                                          // User Information
-
-                                          CustomTextField(
-                                              title: 'Title',
-                                              controller: provider
-                                                  .contactUsTitleController,
-                                              obscureText: false,
-                                              textInputAction:
-                                              TextInputAction.done,
-                                              keyboardType: TextInputType.text,
-                                              validator: (val) {
-                                                if (val == null ||
-                                                    val.isEmpty) {
-                                                  return "Please add title";
-                                                }
-                                                return null;
-                                              },
-                                              hintText: ''),
-                                          padding10,
-                                          CustomTextField(
-                                              title: 'Description',
-                                              minLines: 4,
-                                              maxLines: 8,
-                                              controller: provider
-                                                  .contactUsDescriptionController,
-                                              obscureText: false,
-                                              textInputAction:
-                                              TextInputAction.done,
-                                              keyboardType: TextInputType.text,
-                                              validator: (val) {
-                                                if (val == null ||
-                                                    val.isEmpty) {
-                                                  return "Please add description";
-                                                }
-                                                return null;
-                                              },
-                                              hintText: ''),
-
-                                          padding20,
-                                          // Action Buttons
-
-                                          Row(
-                                            crossAxisAlignment:
-                                            CrossAxisAlignment.end,
-                                            mainAxisAlignment:
-                                            MainAxisAlignment.end,
-                                            children: [
-                                              InkWell(
-                                                overlayColor: WidgetStateColor
-                                                    .transparent,
-                                                onTap: () {
-                                                  Navigator.pop(context);
-                                                },
-                                                child: Container(
-                                                  padding: EdgeInsets.symmetric(
-                                                      vertical: 5,
-                                                      horizontal: 12),
-                                                  decoration: BoxDecoration(
-                                                    borderRadius:
-                                                    BorderRadius.circular(
-                                                        8),
-                                                    color: Colors.grey,
-                                                  ),
-                                                  child: Text(
-                                                    'Cancel',
-                                                    style: getMediumStyle(
-                                                      color: Colors.white,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                              padding10,
-                                              InkWell(
-                                                overlayColor: WidgetStateColor
-                                                    .transparent,
-                                                onTap: () {
-                                                  if (provider.contactUsKey
-                                                      .currentState!
-                                                      .validate()) {
-                                                    provider.addContactUsItem();
-                                                    Navigator.pop(context);
-                                                  }
-                                                },
-                                                child: Container(
-                                                  padding: EdgeInsets.symmetric(
-                                                      vertical: 5,
-                                                      horizontal: 12),
-                                                  decoration: BoxDecoration(
-                                                    borderRadius:
-                                                    BorderRadius.circular(
-                                                        8),
-                                                    color: Colors.green,
-                                                  ),
-                                                  child: Text(
-                                                    'Add',
-                                                    style: getMediumStyle(
-                                                      color: Colors.white,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
-                          );
-                        },
-                        child: Container(
-                          padding:
-                          EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            color: Colors.green,
-                          ),
-                          child: Center(
-                            child: Text(
-                              'Add New',
-                              style: getMediumStyle(color: Colors.white),
-                            ),
-                          ),
-                        ),
-                      ),
-                    SizedBox(width: 5),
-                    if (provider.showContactUsCheckboxes)
-                      InkWell(
-                        onTap: () {
-                          _showConfirmationDialog(context, provider, true);
-                        },
-                        child: Container(
-                          padding:
-                          EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            color: Colors.blueAccent,
-                          ),
-                          child: Center(
-                            child: Text(
-                              'Confirm',
-                              style: getMediumStyle(color: Colors.white),
-                            ),
-                          ),
-                        ),
-                      ),
+                    ),
                   ],
                 ),
-                provider.contactUsContent.isEmpty
-                    ? Column(
-                  children: [
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height * .3,
-                    ),
-                    Center(
-                      child: Text(
-                        "Not Available",
-                        style: getSemiBoldStyle(
-                          color: AppColors.blackColor,
-                          fontSize: 20,
-                        ),
-                      ),
-                    ),
-                  ],
-                )
-                    : Expanded(
+                Expanded(
                   child: SingleChildScrollView(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         padding20,
                         ListView.builder(
-                            itemCount: provider.contactUsContent.length,
-                            shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
-                            itemBuilder: (context, index) {
-                              return Padding(
-                                padding:
-                                const EdgeInsets.only(bottom: 10.0),
-                                child: _contactUsSection(
-                                  title: provider.contactUsContent[index]
-                                  ['title']
-                                      .toString(),
-                                  description: provider
-                                      .contactUsContent[index]
-                                  ['description']
-                                      .toString(),
-                                ),
-                              );
-                            }),
+                          itemCount: entries.length,
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemBuilder: (context, index) {
+                            final entry = entries[index];
+                            return _contactUsSection(
+                              title: entry.key.toString(),
+                              description: entry.value.toString(),
+                              controller: controllersList[index],
+                            );
+                          },
+                        ),
                         padding20,
                       ],
                     ),
@@ -317,59 +142,25 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
     );
   }
 
-  Widget _contactUsSection(
-      {required String title, required String description}) {
+  Widget _contactUsSection({
+    required String title,
+    required String description,
+    required TextEditingController controller,
+  }) {
     return Consumer<AdditionalSettingsProvider>(
       builder: (context, provider, child) {
-        return InkWell(
-          onTap: provider.showContactUsCheckboxes
-              ? () {
-            provider.toggleContactUsSelection({
-              "title": title,
-              "description": description,
-            });
-          }
-              : null,
+        return Container(
+          margin: EdgeInsets.only(bottom: 10),
           child: Row(
             children: [
-              if (provider.showContactUsCheckboxes)
-                Checkbox(
-                  activeColor: AppColors.primaryColor,
-                  value: provider.selectedContactUsContent.contains(
-                    jsonEncode(
-                      {
-                        "title": title,
-                        "description": description,
-                      },
-                    ),
-                  ),
-                  onChanged: (_) {
-                    provider.toggleContactUsSelection({
-                      "title": title,
-                      "description": description,
-                    });
-
-                    print(provider.selectedContactUsContent.contains({
-                      "title": title,
-                      "description": description,
-                    }));
-                  },
-                ),
-              if (provider.showContactUsCheckboxes)
-                SizedBox(
-                  width: 5,
-                ),
               Expanded(
                 child: Container(
                   padding:
-                  EdgeInsets.only(left: 20, top: 20, bottom: 20, right: 70),
+                      EdgeInsets.only(left: 20, top: 20, bottom: 20, right: 70),
                   decoration: BoxDecoration(
                     color: AppColors.whiteColor,
                     borderRadius: BorderRadius.circular(6),
-                    border: Border.all(
-                      width: 1,
-                      color: Color(0xffE5E8EC),
-                    ),
+                    border: Border.all(width: 1, color: Color(0xffE5E8EC)),
                     boxShadow: [
                       BoxShadow(
                         offset: Offset(0, 0),
@@ -382,16 +173,25 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // App Description
                       Text(
-                        title,
+                        title.capitalize!.toString(),
                         style: getBoldStyle(
                             fontSize: 22, color: AppColors.blackColor),
                       ),
                       SizedBox(height: 10),
-                      Text(
-                        description,
-                        style: TextStyle(fontSize: 16),
+                      TextField(
+                        controller: controller,
+                        style:
+                            getMediumStyle(fontSize: 18, color: Colors.black),
+                        readOnly: false,
+                        maxLines: null,
+                        decoration: InputDecoration(
+                          isDense: true,
+                          contentPadding: EdgeInsets.zero,
+                          border: InputBorder.none,
+                          fillColor: Colors.transparent,
+                          filled: true,
+                        ),
                       ),
                       SizedBox(height: 20),
                     ],
@@ -400,72 +200,6 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
               ),
             ],
           ),
-        );
-      },
-    );
-  }
-
-  void _showConfirmationDialog(BuildContext context,
-      AdditionalSettingsProvider provider, bool isContactUs) {
-    showAdaptiveDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Center(
-              child: Text(
-                'Confirm Deletion',
-                style: getSemiBoldStyle(
-                  color: Colors.black,
-                  fontSize: 20,
-                ),
-              )),
-          content: Text(
-            'Are you sure you want to delete the selected content?',
-            style: getMediumStyle(color: Colors.black),
-          ),
-          actions: [
-            InkWell(
-              overlayColor: WidgetStateColor.transparent,
-              onTap: () {
-                Navigator.pop(context);
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(vertical: 5, horizontal: 12),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  color: Colors.grey,
-                ),
-                child: Text(
-                  'Cancel',
-                  style: getMediumStyle(
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-            InkWell(
-              overlayColor: WidgetStateColor.transparent,
-              onTap: () {
-                if (isContactUs) {
-                  provider.deleteSelectedContactUsSection(context);
-                } else {
-                  provider.deleteSelectedAboutUs(context);
-                }
-                Navigator.pop(context);
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(vertical: 5, horizontal: 12),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8), color: Colors.red),
-                child: Text(
-                  'Confirm',
-                  style: getMediumStyle(
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-          ],
         );
       },
     );

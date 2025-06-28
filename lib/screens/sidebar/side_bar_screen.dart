@@ -1,5 +1,6 @@
 import 'package:chotu_admin/screens/session/login_view.dart';
 import 'package:chotu_admin/utils/hive_prefrences.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -24,7 +25,11 @@ class _SideBarScreenState extends State<SideBarScreen> {
     // TODO: implement initState
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<SideBarProvider>(context, listen: false).setIndex(0);
+      if(kDebugMode){
+        Provider.of<SideBarProvider>(context, listen: false).setIndex(0);
+      }else{
+        Provider.of<SideBarProvider>(context, listen: false).setIndex(0);
+      }
     });
     super.initState();
   }

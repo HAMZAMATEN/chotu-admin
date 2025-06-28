@@ -1,7 +1,8 @@
 import 'package:chotu_admin/model/category_model.dart';
 import 'package:chotu_admin/model/shop_model.dart';
 import 'package:chotu_admin/providers/store_provider.dart';
-import 'package:chotu_admin/screens/shops/shop_products/shops_product_screen.dart';
+import 'package:chotu_admin/screens/shop_products/shops_product_screen.dart';
+// import 'package:chotu_admin/screens/shops/shop_products/shops_product_screen.dart';
 import 'package:chotu_admin/screens/shops/widgets/addNewShopDialogBox.dart';
 import 'package:chotu_admin/utils/app_Colors.dart';
 import 'package:chotu_admin/utils/app_Paddings.dart';

@@ -21,11 +21,9 @@ class AdditionalSettingsProvider extends ChangeNotifier {
 
   List<FaqItemModel>? faqItems;
 
-
-
   TextEditingController contactUsTitleController = TextEditingController();
-  TextEditingController contactUsDescriptionController = TextEditingController();
-
+  TextEditingController contactUsDescriptionController =
+      TextEditingController();
 
   final List<Map<String, String>> _aboutUsContent = [
     {
@@ -113,7 +111,6 @@ class AdditionalSettingsProvider extends ChangeNotifier {
     _showAboutUsCheckboxes = false;
     notifyListeners();
   }
-
 
   void toggleContactUsCheckboxMode() {
     _showContactUsCheckboxes = !_showContactUsCheckboxes;
@@ -345,7 +342,7 @@ class AdditionalSettingsProvider extends ChangeNotifier {
   Future<void> deleteFaq({required int faqId}) async {
     try {
       http.Response response = await apiServicesProvider
-          .deleteRequestResponse(APIConstants.deleteFaq+'${faqId}');
+          .deleteRequestResponse(APIConstants.deleteFaq + '${faqId}');
 
       print("Response of addFaq is ${response.body}");
       print("Response Status of addFaq is ${response.statusCode}");
@@ -357,7 +354,71 @@ class AdditionalSettingsProvider extends ChangeNotifier {
       notifyListeners();
     } catch (e) {
       print("Exception while deleteFaq content: $e");
-      AppFunctions.showToastMessage(message: 'Error fetching deleteFaq content');
+      AppFunctions.showToastMessage(
+          message: 'Error fetching deleteFaq content');
+    }
+  }
+
+
+
+  Map<String, dynamic>? contactUsMap;
+
+
+  Future<void> getContactUs() async {
+    try {
+      http.Response response = await apiServicesProvider
+          .getRequestResponse(APIConstants.getContactUs);
+
+      print("Response of getContactUs is ${response.body}");
+      print("Response Status of getContactUs is ${response.statusCode}");
+      contactUsMap = {};
+      if (response.statusCode == 200) {
+        dynamic data = jsonDecode(response.body);
+        print("DATAEMail IS ${data['phone_number']}");
+
+        contactUsMap!['email'] = data['email'] ?? "";
+        contactUsMap!['phone_number'] = data['phone_number'] ?? "";
+        contactUsMap!['working_hours'] = data['working_hours'] ?? "";
+        contactUsMap!['address'] = data['address'] ?? "";
+      } else {
+        contactUsMap!['email'] = "";
+        contactUsMap!['phone_number'] = "";
+        contactUsMap!['working_hours'] = "";
+        contactUsMap!['address'] = "";
+      }
+      print("MAP IS ${contactUsMap}");
+      notifyListeners();
+    } catch (e) {
+      contactUsMap!['email'] = "";
+      contactUsMap!['phone_number'] = "";
+      contactUsMap!['working_hours'] = "";
+      contactUsMap!['address'] = "";
+      print("Exception while getContactUs content: $e");
+      AppFunctions.showToastMessage(message: 'Error fetching getContactUs content');
+      notifyListeners();
+    }
+  }
+
+
+  Future<void> updateContactUs({required Map<String, dynamic> body}) async {
+    try {
+      EasyLoading.show(status: "Updating...");
+      http.Response response = await apiServicesProvider
+          .postRequestResponse(APIConstants.updateContactUs, body: body);
+
+      print("Response of updateContactUs is ${response.body}");
+      print("Response Status of updateContactUs is ${response.statusCode}");
+
+      if (response.statusCode == 200) {
+        getContactUs();
+        AppFunctions.showToastMessage(message: 'Contact-Us Updated Successfully');
+      }
+      EasyLoading.dismiss();
+      notifyListeners();
+    } catch (e) {
+      print("Exception while updateContactUsFaq content: $e");
+      EasyLoading.dismiss();
+      AppFunctions.showToastMessage(message: 'Error updateContactUs content');
     }
   }
 }

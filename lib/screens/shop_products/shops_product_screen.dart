@@ -4,14 +4,18 @@ import 'package:chotu_admin/model/shop_model.dart';
 import 'package:chotu_admin/providers/categories_provider.dart';
 import 'package:chotu_admin/providers/store_product_provider.dart';
 import 'package:chotu_admin/providers/store_provider.dart';
-import 'package:chotu_admin/screens/shops/shop_products/update_shop_dialogue.dart';
+
+import 'package:chotu_admin/screens/shops/widgets/update_shop_dialogue.dart';
 import 'package:chotu_admin/screens/shops/widgets/addNewShopDialogBox.dart';
-import 'package:chotu_admin/screens/shops/widgets/addShopProductDialogBox.dart';
+
+// import 'package:chotu_admin/screens/shops/shop_products/addShopProductDialogBox.dart';
 import 'package:chotu_admin/screens/shops/widgets/shop_screen_card_widgets.dart';
 import 'package:chotu_admin/utils/app_Colors.dart';
 import 'package:chotu_admin/utils/app_Paddings.dart';
 import 'package:chotu_admin/utils/app_text_widgets.dart';
+import 'package:chotu_admin/utils/custom_alert_dialogue.dart';
 import 'package:chotu_admin/utils/functions.dart';
+import 'package:chotu_admin/widgets/ShowConformationAlert.dart';
 import 'package:chotu_admin/widgets/custom_Button.dart';
 import 'package:chotu_admin/widgets/custom_TextField.dart';
 import 'package:chotu_admin/widgets/pagination_button.dart';
@@ -23,6 +27,8 @@ import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../../generated/assets.dart';
+import 'widgets/add_shop_product_dialog_box.dart';
+import 'widgets/update_shop_product_dialog_box.dart';
 
 class ShopProductsScreen extends StatefulWidget {
   StoreModel storemodel;
@@ -34,8 +40,8 @@ class ShopProductsScreen extends StatefulWidget {
 }
 
 class _ShopProductsScreenState extends State<ShopProductsScreen> {
-  TextEditingController startDateController = TextEditingController();
-  TextEditingController endDateController = TextEditingController();
+  TextEditingController searchController = TextEditingController();
+
   late StoreModel store;
   late StoreProductProvider storeProductProvider;
 
@@ -155,7 +161,26 @@ class _ShopProductsScreenState extends State<ShopProductsScreen> {
                       padding30,
 
                       /// list of products listed by shop
-                      productsBodyWidget(provider, context),
+                      ///  or Search Products
+
+                      if (provider.searchedProducts == null) ...[
+                        productsBodyWidget(provider, context),
+                      ] else ...[
+                        if (provider.searchedProducts == []) ...[
+                          Container(
+                              width: double.infinity,
+                              height: 200,
+                              child: Center(
+                                child: Text(
+                                  "No Products Found",
+                                  style: getMediumStyle(
+                                      color: Colors.black, fontSize: 40),
+                                ),
+                              )),
+                        ] else ...[
+                          searchedProductsBodyWidget(provider, context),
+                        ],
+                      ],
                     ],
                   ),
                 ),
@@ -168,24 +193,36 @@ class _ShopProductsScreenState extends State<ShopProductsScreen> {
   }
 
   Widget productStatsRow() {
-
-    if( storeProductProvider.storeAnalyticsModelMap[widget.storemodel.id] != null){
+    if (storeProductProvider.storeAnalyticsModelMap[widget.storemodel.id] !=
+        null) {
       return Row(
         children: [
           Expanded(
-            child: _buildStatsCard('Total Products', storeProductProvider.storeAnalyticsModelMap[widget.storemodel.id]!.total, Colors.orange),
+            child: _buildStatsCard(
+                'Total Products',
+                storeProductProvider
+                    .storeAnalyticsModelMap[widget.storemodel.id]!.total,
+                Colors.orange),
           ),
           padding12,
           Expanded(
-            child: _buildStatsCard('Active',  storeProductProvider.storeAnalyticsModelMap[widget.storemodel.id]!.active, Colors.green),
+            child: _buildStatsCard(
+                'Active',
+                storeProductProvider
+                    .storeAnalyticsModelMap[widget.storemodel.id]!.active,
+                Colors.green),
           ),
           padding12,
           Expanded(
-            child: _buildStatsCard('DeActive',  storeProductProvider.storeAnalyticsModelMap[widget.storemodel.id]!.nonActive, Colors.red),
+            child: _buildStatsCard(
+                'DeActive',
+                storeProductProvider
+                    .storeAnalyticsModelMap[widget.storemodel.id]!.nonActive,
+                Colors.red),
           ),
         ],
       );
-    }else{
+    } else {
       return Shimmer.fromColors(
         baseColor: AppColors.baseColor,
         highlightColor: AppColors.highlightColor,
@@ -196,17 +233,37 @@ class _ShopProductsScreenState extends State<ShopProductsScreen> {
             ),
             padding12,
             Expanded(
-              child: _buildStatsCard('Active',  4, Colors.green),
+              child: _buildStatsCard('Active', 4, Colors.green),
             ),
             padding12,
             Expanded(
-              child: _buildStatsCard('DeActive',  1, Colors.red),
+              child: _buildStatsCard('DeActive', 1, Colors.red),
             ),
           ],
         ),
       );
     }
+  }
 
+  Widget searchedProductsBodyWidget(
+      StoreProductProvider provider, BuildContext context) {
+    return Column(
+      children: [
+        Align(
+          alignment: Alignment.topLeft,
+          child: Wrap(
+            spacing: 16,
+            runSpacing: 16,
+            alignment: WrapAlignment.start,
+            runAlignment: WrapAlignment.start,
+            children: List.generate(provider.searchedProducts!.length, (index) {
+              return _buildProductCard(
+                  context, provider.searchedProducts![index]);
+            }),
+          ),
+        ),
+      ],
+    );
   }
 
   Widget productsBodyWidget(
@@ -284,7 +341,7 @@ class _ShopProductsScreenState extends State<ShopProductsScreen> {
           child: CustomTextField(
             width: MediaQuery.of(context).size.width,
             title: '',
-            controller: TextEditingController(),
+            controller: searchController,
             obscureText: false,
             textInputAction: TextInputAction.search,
             keyboardType: TextInputType.text,
@@ -296,31 +353,87 @@ class _ShopProductsScreenState extends State<ShopProductsScreen> {
                 child: SvgPicture.asset(Assets.iconsSearchnormal1),
               ),
             ),
+            onFieldSubmitted: (val) async {
+              if (val.isNotEmpty) {
+                await storeProductProvider.searchProductByName(
+                  searchText: val,
+                  storeId: store.id!.toString(),
+                );
+              }
+            },
+            prefixIcon: storeProductProvider.searchedProducts != null
+                ? Tooltip(
+                    message: 'Clear Search',
+                    child: InkWell(
+                      onTap: () async {
+                        FocusScope.of(context).unfocus();
+                        searchController.clear();
+                        storeProductProvider.clearSearchProductsList();
+                      },
+                      child: SizedBox(
+                        height: 24,
+                        width: 24,
+                        child: Center(
+                          child: Icon(
+                            Icons.cancel_outlined,
+                            color: Colors.black,
+                            size: 30,
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+                : null,
           ),
         ),
         padding12,
-        InkWell(
-          onTap: () {
-            showAddShopProductDialog(context);
-          },
-          child: Align(
-            alignment: Alignment.topRight,
-            child: Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                color: AppColors.primaryColor,
-              ),
-              child: Text(
-                'Add New Product',
-                style: getSemiBoldStyle(
-                  color: AppColors.whiteColor,
-                  fontSize: 16,
+        if (storeProductProvider.searchedProducts == null) ...[
+          InkWell(
+            onTap: () {
+              showAddShopProductDialog(context, store);
+            },
+            child: Align(
+              alignment: Alignment.topRight,
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  color: AppColors.primaryColor,
+                ),
+                child: Text(
+                  'Add New Product',
+                  style: getSemiBoldStyle(
+                    color: AppColors.whiteColor,
+                    fontSize: 16,
+                  ),
                 ),
               ),
             ),
           ),
-        ),
+        ] else ...[
+          InkWell(
+            onTap: () {
+              showAddShopProductDialog(context, store);
+            },
+            child: Align(
+              alignment: Alignment.topRight,
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  color: AppColors.primaryColor,
+                ),
+                child: Text(
+                  'Add New Product',
+                  style: getSemiBoldStyle(
+                    color: AppColors.whiteColor,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ],
     );
   }
@@ -443,138 +556,208 @@ class _ShopProductsScreenState extends State<ShopProductsScreen> {
 
   /// build product Card
   Widget _buildProductCard(BuildContext context, ProductModel product) {
-    bool isActive =
-        true; // Initial status (you can fetch this from your backend)
+    bool isActive = product.status == 1;
 
-    return FractionallySizedBox(
-      widthFactor: 1 / 3.16, // Takes 1/3 of the parent width
-      child: Container(
-        width: double.infinity,
-        decoration: BoxDecoration(color: Colors.white, boxShadow: [
-          BoxShadow(
-              offset: const Offset(0, 0),
-              blurRadius: 7,
-              spreadRadius: 0,
-              color: Colors.black.withOpacity(.25)),
-        ]),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
+    return InkWell(
+      onTap: () {
+        showUpdateShopProductDialog(context, product);
+      },
+      child: FractionallySizedBox(
+        widthFactor: 1 / 3.16,
+        child: Stack(
           children: [
-            /// Product Name
             Container(
-              height: 51,
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.topRight,
-                  colors: [
-                    Color(0xff45CF8D),
-                    Color(0xff046938),
-                  ],
-                ),
-              ),
-              child: Center(
-                child: Text(
-                  'Product Name - ${product.name}',
-                  style: getMediumStyle(color: Colors.white, fontSize: 16),
-                ),
-              ),
-            ),
-
-            /// Product Image
-            Container(
-              height: 150,
               width: double.infinity,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: CachedNetworkImageProvider('${product.img}',
-                      cacheKey: '${product.img}',
-                      cacheManager: CacheManager(
-                        Config(
-                          '${product.img}',
-                          stalePeriod: Duration(days: 5),
-                        ),
-                      ), errorListener: (error) {
-                    print(
-                        "ERROR WHILE LOADING IMAGE URL : $product.img} & error : ${error}");
-                  }), // Using NetworkImage directly
-                  fit: BoxFit.cover,
+              height: 700,
+              decoration: BoxDecoration(color: Colors.white, boxShadow: [
+                BoxShadow(
+                  offset: const Offset(0, 0),
+                  blurRadius: 7,
+                  spreadRadius: 0,
+                  color: Colors.black.withOpacity(.25),
                 ),
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.topRight,
-                  colors: [
-                    Color(0xff45CF8D),
-                    Color(0xff046938),
-                  ],
-                ),
-              ),
-            ),
-
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 10.0, vertical: 14),
+              ]),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Row(
-                    children: [
-                      Text(
-                        'Product Details',
-                        style: getMediumStyle(
-                            color: AppColors.textColor, fontSize: 16),
+                  /// Product Name
+                  Container(
+                    height: 51,
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.topRight,
+                        colors: [
+                          Color(0xff45CF8D),
+                          Color(0xff046938),
+                        ],
                       ),
-                      Spacer(),
-                      SizedBox()
-                    ],
-                  ),
-                  padding16,
-                  _buildRow(
-                      title: 'Category',
-                      description: '${product.category.name}'),
-                  _buildRow(
-                      title: 'Description',
-                      description: '${product.description}'),
-                  _buildRow(
-                      title: 'Product Price', description: '${product.price}'),
-                  _buildRow(
-                      title: 'Discounted Price',
-                      description: '${product.discountPrice}'),
-                  _buildRow(
-                      title: 'Quantity (value/unit)',
-                      description: '${product.unitValue}/${product.unit}'),
-                  _buildRow(
-                      title: 'Brand Name', description: '${product.brand}'),
-                  _buildRow(
-                      title: 'Shop Name', description: '${product.store.name}'),
-                  _buildRow(
-                      title: 'Shop Address',
-                      description: '${product.store.address}'),
-                  padding16,
-                  const Divider(
-                    color: Color(0xffAFA9A9),
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Product Name - ${product.name}',
+                        style: getMediumStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
+                        maxLines: 1,
+                      ),
+                    ),
                   ),
 
-                  // Product Status Switch
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Product Status',
-                        style: getMediumStyle(
-                            color: AppColors.textColor, fontSize: 16),
-                      ),
-                      Switch(
-                        value: isActive,
-                        activeColor: Colors.green,
-                        onChanged: (value) {
-                          _showConfirmationDialog(context, value);
+                  /// Product Image
+                  Container(
+                    height: 150,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: CachedNetworkImageProvider(
+                          '${product.img}',
+                          cacheKey: '${product.img}',
+                          cacheManager: CacheManager(
+                            Config(
+                              '${product.img}',
+                              stalePeriod: const Duration(days: 5),
+                            ),
+                          ),
+                        ),
+                        fit: BoxFit.cover,
+                        onError: (error, stackTrace) {
+                          print(
+                              "ERROR WHILE LOADING IMAGE URL : ${product.img} & error : $error");
                         },
+                      ),
+                      gradient: const LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.topRight,
+                        colors: [
+                          Color(0xff45CF8D),
+                          Color(0xff046938),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10.0, vertical: 14),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        /// Status Switch
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Product Status',
+                              style: getMediumStyle(
+                                color: AppColors.textColor,
+                                fontSize: 16,
+                              ),
+                            ),
+                            Switch(
+                              value: isActive,
+                              activeColor: Colors.green,
+                              onChanged: (value) async {
+                                await showCustomConfirmationDialog(
+                                  context: context,
+                                  message: value
+                                      ? "Are you sure you want to activate this product?"
+                                      : "Are you sure you want to deactivate this product?",
+                                  onConfirm: () async {
+                                    await storeProductProvider
+                                        .updateProductStatus(
+                                      product: product,
+                                    );
+                                    await storeProductProvider
+                                        .getStoreAnalytics(
+                                      storeId: widget.storemodel.id!,
+                                    );
+                                  },
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                        padding10,
+                        Row(
+                          children: [
+                            Text(
+                              'Product Details',
+                              style: getMediumStyle(
+                                  color: AppColors.textColor, fontSize: 16),
+                            ),
+                            const Spacer(),
+                            const SizedBox()
+                          ],
+                        ),
+                        padding16,
+                        _buildRow(
+                            title: 'Category',
+                            description: '${product.category.name}'),
+                        _buildRow(
+                            title: 'Description',
+                            description: '${product.description}'),
+                        _buildRow(
+                            title: 'Product Price',
+                            description: '${product.price}'),
+                        _buildRow(
+                            title: 'Discounted Price',
+                            description: '${product.discountPrice}'),
+                        _buildRow(
+                            title: 'Quantity (value/unit)',
+                            description:
+                                '${product.unitValue}/${product.unit}'),
+                        _buildRow(
+                            title: 'Brand Name',
+                            description: '${product.brand}'),
+                        _buildRow(
+                            title: 'Shop Name',
+                            description: '${product.store.name}'),
+                        _buildRow(
+                            title: 'Shop Address',
+                            description: '${product.store.address}'),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            ///  Delete Icon - Top Right
+            Positioned(
+              top: 10,
+              right: 10,
+              child: InkWell(
+                onTap: () async {
+                  await showCustomConfirmationDialog(
+                    context: context,
+                    message: "Are you sure you want to delete this product?",
+                    onConfirm: () async {
+                      await storeProductProvider.deleteProduct(
+                          product: product);
+                      await storeProductProvider.getStoreAnalytics(
+                          storeId: widget.storemodel.id!);
+                    },
+                  );
+                },
+                borderRadius: BorderRadius.circular(20),
+                child: Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: Colors.red.shade50,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 4,
+                        offset: Offset(0, 2),
                       ),
                     ],
                   ),
-                ],
+                  child: const Icon(Icons.delete_outline, color: Colors.red),
+                ),
               ),
             ),
           ],
@@ -641,7 +824,7 @@ class _ShopProductsScreenState extends State<ShopProductsScreen> {
                 child: Text(
                   textAlign: TextAlign.right,
                   description,
-                  maxLines: 4,
+                  maxLines: 5,
                   overflow: TextOverflow.ellipsis,
                   style: getRegularStyle(
                     color: const Color(0xff454545),

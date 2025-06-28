@@ -31,6 +31,7 @@ class _AddSettingsTabScreenState extends State<AddSettingsTabScreen>
     provider.getTermsAndConditions();
     provider.getPrivacyPolicy();
     provider.getAllFaqs();
+    provider.getContactUs();
   }
 
   @override
@@ -41,42 +42,40 @@ class _AddSettingsTabScreenState extends State<AddSettingsTabScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.all(30),
-      child: Column(
-        children: [
-          TabBar(
-            controller: _tabController,
-            // Attach the controller here
-            tabAlignment: TabAlignment.center,
-            dividerColor: Colors.transparent,
-            indicatorColor: AppColors.primaryColor,
-            unselectedLabelStyle:
-                getMediumStyle(color: Colors.black45, fontSize: 14),
-            labelStyle: getSemiBoldStyle(color: Colors.black, fontSize: 18),
-            tabs: const [
-              Text("Privacy Policy"),
-              Text("Terms & Conditions"),
-              Text("About Us"),
-              Text("FAQ's"),
-              Text("Contact Us"),
+    return Column(
+      children: [
+        TabBar(
+          controller: _tabController,
+          padding: EdgeInsets.all(12),
+          // Attach the controller here
+          tabAlignment: TabAlignment.center,
+          dividerColor: Colors.transparent,
+          indicatorColor: AppColors.primaryColor,
+          unselectedLabelStyle:
+              getMediumStyle(color: Colors.black45, fontSize: 14),
+          labelStyle: getSemiBoldStyle(color: Colors.black, fontSize: 18),
+          tabs: const [
+            Text("Privacy Policy"),
+            Text("Terms & Conditions"),
+            Text("About Us"),
+            Text("FAQ's"),
+            Text("Contact Us"),
+          ],
+        ),
+        padding10,
+        Expanded(
+          child: TabBarView(
+            controller: _tabController, // Attach the controller here
+            children: [
+              PrivacyPolicyScreen(),
+              TermsAndConditionsScreen(),
+              AboutUsScreen(),
+              FaqsScreen(),
+              ContactUsScreen(),
             ],
           ),
-          padding10,
-          Expanded(
-            child: TabBarView(
-              controller: _tabController, // Attach the controller here
-              children: [
-                PrivacyPolicyScreen(),
-                TermsAndConditionsScreen(),
-                AboutUsScreen(),
-                FaqsScreen(),
-                ContactUsScreen(),
-              ],
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
