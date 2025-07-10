@@ -9,5 +9,6 @@ class AppConstants {
 
 
   static String authToken = '';
+  static String googleMapApiKey = '';
 
 }

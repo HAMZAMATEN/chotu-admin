@@ -211,7 +211,6 @@ class RidersProvider with ChangeNotifier {
         'https://maps.googleapis.com/maps/api/place/autocomplete/json';
     final String request =
         '$baseURL?input=$input&key=$apiKey&components=country:pk';
-
     final response = await http.get(Uri.parse(request));
 
     if (response.statusCode == 200) {

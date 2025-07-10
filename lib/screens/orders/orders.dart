@@ -22,6 +22,7 @@ import '../../utils/fonts_manager.dart';
 import '../../widgets/pagination_widget.dart';
 import '../shops/widgets/shop_screen_card_widgets.dart';
 import 'orderDetailScreen.dart';
+import 'widgets/showOrderChatPopupDialog.dart';
 
 class OrderDashboard extends StatefulWidget {
   @override
@@ -630,24 +631,24 @@ class _OrderDashboardState extends State<OrderDashboard> {
                     ),
 
                     // if (provider.searchController.text.isEmpty)
-                      padding20,
+                    padding20,
                     // if (provider.searchController.text.isEmpty)
-                      PaginationWidget(
-                        currentPage: provider.currentPage,
-                        lastPage: provider.pagination == null
-                            ? 1
-                            : provider.pagination!.lastPage ?? 1,
-                        onPageSelected: (int selectedPage) {
-                          // fetch data for selectedPage
-                          print("Go to page $selectedPage");
-                          provider.getAllOrders(
-                              storeId: "",
-                              storeName: "",
-                              startDate: "",
-                              endDate: "",
-                              page: 1);
-                        },
-                      ),
+                    PaginationWidget(
+                      currentPage: provider.currentPage,
+                      lastPage: provider.pagination == null
+                          ? 1
+                          : provider.pagination!.lastPage ?? 1,
+                      onPageSelected: (int selectedPage) {
+                        // fetch data for selectedPage
+                        print("Go to page $selectedPage");
+                        provider.getAllOrders(
+                            storeId: "",
+                            storeName: "",
+                            startDate: "",
+                            endDate: "",
+                            page: 1);
+                      },
+                    ),
                   ],
                 ),
               ),
@@ -771,6 +772,35 @@ class _OrderDashboardState extends State<OrderDashboard> {
                           title: 'Total Billing',
                           description:
                               '${order.billingDetails?.currency ?? "PKR"} ${order.billingDetails?.total ?? "0"}'),
+
+                      padding8,
+
+
+                      /// see order chat
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              'See Order Chat',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: getRegularStyle(
+                                color: const Color(0xff454545),
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
+                          padding12,
+                          Expanded(
+                            child: Align(
+                                alignment: Alignment.topRight,
+                                child: InkWell(
+                                    onTap: () => showOrderChatPopupDialog(context),
+
+                                    child: Icon(Icons.chat_outlined))),
+                          ),
+                        ],
+                      )
                     ],
                   ),
                 ),
