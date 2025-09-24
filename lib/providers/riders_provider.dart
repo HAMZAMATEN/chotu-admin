@@ -269,7 +269,7 @@ class RidersProvider with ChangeNotifier {
       // EasyLoading.showToast("Uploading Rider Data");
       ShowToastDialog.showLoader("Uploading Rider Data");
       final uri = Uri.parse(
-          'https://chotuapp.deeptech.pk/api/register/rider'); // 🔁 Replace with your API
+          'https://chotuapp.foreversolutions.co.uk/api/register/rider'); // 🔁 Replace with your API
       final request = await http.MultipartRequest('POST', uri);
 
       // Add image file
@@ -432,7 +432,7 @@ class RidersProvider with ChangeNotifier {
       // EasyLoading.showToast("Uploading Rider Data");
       ShowToastDialog.showLoader("Updating Rider Data");
       final uri = Uri.parse(
-          'https://chotuapp.deeptech.pk/api/update/rider/$id'); // 🔁 Replace with your API
+          'https://chotuapp.foreversolutions.co.uk/api/update/rider/$id'); // 🔁 Replace with your API
       final request = await http.MultipartRequest('POST', uri);
 
       // Add image file
