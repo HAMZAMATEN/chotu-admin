@@ -1,10 +1,7 @@
 import 'dart:convert';
 
-import 'package:chotu_admin/screens/session/login_view.dart';
 import 'package:chotu_admin/utils/app_constants.dart';
-import 'package:chotu_admin/utils/functions.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
 class ApiServicesProvider extends ChangeNotifier {
@@ -16,10 +13,10 @@ class ApiServicesProvider extends ChangeNotifier {
       },
     );
 
-    if (response.statusCode == 401) {
-      AppFunctions.showToastMessage(message: "Session Expired!");
-      Get.offAll(() => LoginView());
-    }
+    // if (response.statusCode == 401) {
+    //   AppFunctions.showToastMessage(message: "Session Expired!");
+    //   Get.offAll(() => LoginView());
+    // }
     return response;
   }
 
@@ -38,10 +35,10 @@ class ApiServicesProvider extends ChangeNotifier {
       body: body != null ? jsonEncode(body) : null,
     );
 
-    if (response.statusCode == 401) {
-      AppFunctions.showToastMessage(message: "Session Expired!");
-      Get.offAll(() => LoginView());
-    }
+    // if (response.statusCode == 401) {
+    //   AppFunctions.showToastMessage(message: "Session Expired!");
+    //   Get.offAll(() => LoginView());
+    // }
     return response;
   }
 
@@ -61,10 +58,10 @@ class ApiServicesProvider extends ChangeNotifier {
       body: body != null ? jsonEncode(body) : null,
     );
 
-    if (response.statusCode == 401) {
-      AppFunctions.showToastMessage(message: "Session Expired!");
-      Get.offAll(() => LoginView());
-    }
+    // if (response.statusCode == 401) {
+    //   AppFunctions.showToastMessage(message: "Session Expired!");
+    //   Get.offAll(() => LoginView());
+    // }
     return response;
   }
 
@@ -77,10 +74,10 @@ class ApiServicesProvider extends ChangeNotifier {
       },
     );
 
-    if (response.statusCode == 401) {
-      AppFunctions.showToastMessage(message: "Session Expired!");
-      Get.offAll(() => LoginView());
-    }
+    // if (response.statusCode == 401) {
+    //   AppFunctions.showToastMessage(message: "Session Expired!");
+    //   Get.offAll(() => LoginView());
+    // }
     return response;
   }
 }

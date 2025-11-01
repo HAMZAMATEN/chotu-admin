@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:chotu_admin/model/all_orders_model.dart';
 import 'package:chotu_admin/providers/orders_provider.dart';
 import 'package:chotu_admin/screens/orders/widgets/ShowOrderDetailPopupDialog.dart';
@@ -8,12 +6,9 @@ import 'package:chotu_admin/utils/app_Paddings.dart';
 import 'package:chotu_admin/utils/app_text_widgets.dart';
 import 'package:chotu_admin/widgets/custom_Button.dart';
 import 'package:chotu_admin/widgets/custom_TextField.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -21,8 +16,6 @@ import '../../generated/assets.dart';
 import '../../utils/fonts_manager.dart';
 import '../../widgets/pagination_widget.dart';
 import '../shops/widgets/shop_screen_card_widgets.dart';
-import 'orderDetailScreen.dart';
-import 'widgets/showOrderChatPopupDialog.dart';
 
 class OrderDashboard extends StatefulWidget {
   @override
@@ -631,24 +624,24 @@ class _OrderDashboardState extends State<OrderDashboard> {
                     ),
 
                     // if (provider.searchController.text.isEmpty)
-                    padding20,
+                      padding20,
                     // if (provider.searchController.text.isEmpty)
-                    PaginationWidget(
-                      currentPage: provider.currentPage,
-                      lastPage: provider.pagination == null
-                          ? 1
-                          : provider.pagination!.lastPage ?? 1,
-                      onPageSelected: (int selectedPage) {
-                        // fetch data for selectedPage
-                        print("Go to page $selectedPage");
-                        provider.getAllOrders(
-                            storeId: "",
-                            storeName: "",
-                            startDate: "",
-                            endDate: "",
-                            page: 1);
-                      },
-                    ),
+                      PaginationWidget(
+                        currentPage: provider.currentPage,
+                        lastPage: provider.pagination == null
+                            ? 1
+                            : provider.pagination!.lastPage ?? 1,
+                        onPageSelected: (int selectedPage) {
+                          // fetch data for selectedPage
+                          print("Go to page $selectedPage");
+                          provider.getAllOrders(
+                              storeId: "",
+                              storeName: "",
+                              startDate: "",
+                              endDate: "",
+                              page: 1);
+                        },
+                      ),
                   ],
                 ),
               ),
@@ -772,35 +765,6 @@ class _OrderDashboardState extends State<OrderDashboard> {
                           title: 'Total Billing',
                           description:
                               '${order.billingDetails?.currency ?? "PKR"} ${order.billingDetails?.total ?? "0"}'),
-
-                      padding8,
-
-
-                      /// see order chat
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              'See Order Chat',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: getRegularStyle(
-                                color: const Color(0xff454545),
-                                fontSize: 14,
-                              ),
-                            ),
-                          ),
-                          padding12,
-                          Expanded(
-                            child: Align(
-                                alignment: Alignment.topRight,
-                                child: InkWell(
-                                    onTap: () => showOrderChatPopupDialog(context),
-
-                                    child: Icon(Icons.chat_outlined))),
-                          ),
-                        ],
-                      )
                     ],
                   ),
                 ),

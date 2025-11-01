@@ -6,13 +6,13 @@ import 'package:chotu_admin/providers/api_services_provider.dart';
 import 'package:chotu_admin/screens/sidebar/side_bar_screen.dart';
 import 'package:chotu_admin/utils/api_consts.dart';
 import 'package:chotu_admin/utils/app_constants.dart';
+import 'package:chotu_admin/utils/app_prefrences.dart';
 import 'package:chotu_admin/utils/functions.dart';
-import 'package:chotu_admin/utils/hive_prefrences.dart';
 import 'package:chotu_admin/utils/toast_dialogue.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
-import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class SessionProvider extends ChangeNotifier {
   TextEditingController emailController = TextEditingController();
@@ -38,8 +38,8 @@ class SessionProvider extends ChangeNotifier {
         AdminModel adminModel = AdminModel.fromJson(data['user']);
         AppConstants.authToken = data['token'];
         currentAdmin = adminModel;
-        HivePreferences.setIsLogin(true);
-        HivePreferences.setAuthToken(data['token']);
+        AppPreferences.setIsLogin(true);
+        AppPreferences.setAuthToken(data['token']);
         notifyListeners();
         ShowToastDialog.closeLoader();
         Get.offAll(() => SideBarScreen());

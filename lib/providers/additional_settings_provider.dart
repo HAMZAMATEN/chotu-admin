@@ -9,6 +9,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+
 import '../utils/toast_dialogue.dart';
 
 class AdditionalSettingsProvider extends ChangeNotifier {

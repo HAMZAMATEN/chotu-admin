@@ -1,28 +1,21 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chotu_admin/model/product_model.dart';
 import 'package:chotu_admin/model/shop_model.dart';
-import 'package:chotu_admin/providers/categories_provider.dart';
 import 'package:chotu_admin/providers/store_product_provider.dart';
 import 'package:chotu_admin/providers/store_provider.dart';
-
-import 'package:chotu_admin/screens/shops/widgets/update_shop_dialogue.dart';
-import 'package:chotu_admin/screens/shops/widgets/addNewShopDialogBox.dart';
-
 // import 'package:chotu_admin/screens/shops/shop_products/addShopProductDialogBox.dart';
 import 'package:chotu_admin/screens/shops/widgets/shop_screen_card_widgets.dart';
+import 'package:chotu_admin/screens/shops/widgets/update_shop_dialogue.dart';
 import 'package:chotu_admin/utils/app_Colors.dart';
 import 'package:chotu_admin/utils/app_Paddings.dart';
 import 'package:chotu_admin/utils/app_text_widgets.dart';
-import 'package:chotu_admin/utils/custom_alert_dialogue.dart';
 import 'package:chotu_admin/utils/functions.dart';
 import 'package:chotu_admin/widgets/ShowConformationAlert.dart';
-import 'package:chotu_admin/widgets/custom_Button.dart';
 import 'package:chotu_admin/widgets/custom_TextField.dart';
 import 'package:chotu_admin/widgets/pagination_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -387,7 +380,6 @@ class _ShopProductsScreenState extends State<ShopProductsScreen> {
           ),
         ),
         padding12,
-        if (storeProductProvider.searchedProducts == null) ...[
           InkWell(
             onTap: () {
               showAddShopProductDialog(context, store);
@@ -410,30 +402,29 @@ class _ShopProductsScreenState extends State<ShopProductsScreen> {
               ),
             ),
           ),
-        ] else ...[
-          InkWell(
-            onTap: () {
-              showAddShopProductDialog(context, store);
-            },
-            child: Align(
-              alignment: Alignment.topRight,
-              child: Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  color: AppColors.primaryColor,
-                ),
-                child: Text(
-                  'Add New Product',
-                  style: getSemiBoldStyle(
-                    color: AppColors.whiteColor,
-                    fontSize: 16,
-                  ),
+        padding12,
+        InkWell(
+          onTap: () {
+            storeProductProvider.pickAndUploadExcel(context, store);
+          },
+          child: Align(
+            alignment: Alignment.topRight,
+            child: Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                color: AppColors.primaryColor,
+              ),
+              child: Text(
+                'Upload Product Sheet .xlxs',
+                style: getSemiBoldStyle(
+                  color: AppColors.whiteColor,
+                  fontSize: 16,
                 ),
               ),
             ),
           ),
-        ],
+        ),
       ],
     );
   }
@@ -696,9 +687,19 @@ class _ShopProductsScreenState extends State<ShopProductsScreen> {
                         _buildRow(
                             title: 'Category',
                             description: '${product.category.name}'),
-                        _buildRow(
-                            title: 'Description',
-                            description: '${product.description}'),
+                        Tooltip(
+                          message: product.description,
+                          // constraints: BoxConstraints(maxWidth: 250),
+                          decoration: BoxDecoration(
+                            color: Colors.black87,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          textStyle: getRegularStyle(color: Colors.white,fontSize: 11),
+                          preferBelow: false,
+                          child: _buildRow(
+                              title: 'Description',
+                              description: '${product.description}'),
+                        ),
                         _buildRow(
                             title: 'Product Price',
                             description: '${product.price}'),
@@ -822,9 +823,9 @@ class _ShopProductsScreenState extends State<ShopProductsScreen> {
               child: Align(
                 alignment: Alignment.topRight,
                 child: Text(
-                  textAlign: TextAlign.right,
+                  textAlign: TextAlign.justify,
                   description,
-                  maxLines: 5,
+                  maxLines: 4,
                   overflow: TextOverflow.ellipsis,
                   style: getRegularStyle(
                     color: const Color(0xff454545),

@@ -1,15 +1,12 @@
-import 'dart:convert';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chotu_admin/providers/riders_provider.dart';
 import 'package:chotu_admin/utils/app_Colors.dart';
 import 'package:chotu_admin/utils/app_Paddings.dart';
-import 'package:chotu_admin/utils/app_constants.dart';
 import 'package:chotu_admin/utils/app_text_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+
 import '../../../generated/assets.dart';
 import '../../../widgets/custom_TextField.dart';
 

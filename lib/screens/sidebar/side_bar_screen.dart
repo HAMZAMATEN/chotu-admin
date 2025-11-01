@@ -1,15 +1,14 @@
-import 'package:chotu_admin/screens/session/login_view.dart';
-import 'package:chotu_admin/utils/hive_prefrences.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/get.dart';
-import 'package:provider/provider.dart';
 import 'package:chotu_admin/generated/assets.dart';
+import 'package:chotu_admin/screens/session/login_view.dart';
 import 'package:chotu_admin/utils/app_Colors.dart';
 import 'package:chotu_admin/utils/app_Paddings.dart';
+import 'package:chotu_admin/utils/app_prefrences.dart';
 import 'package:chotu_admin/utils/app_text_widgets.dart';
-import 'package:chotu_admin/widgets/custom_TextField.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:provider/provider.dart';
+
 import '../../providers/side_bar_provider.dart';
 
 class SideBarScreen extends StatefulWidget {
@@ -145,8 +144,9 @@ class _SideBarScreenState extends State<SideBarScreen> {
                           overlayColor:
                               WidgetStateProperty.all(Colors.transparent),
                           hoverColor: const Color(0xffF6F6F6),
-                          onTap: () {
-                            HivePreferences.setIsLogin(false);
+                          onTap: () async{
+                            await AppPreferences.setIsLogin(false);
+                            await AppPreferences.clearAuthToken();
                             Get.offAll(LoginView());
                           },
                           child: Container(

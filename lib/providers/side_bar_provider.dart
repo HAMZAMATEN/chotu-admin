@@ -1,11 +1,11 @@
-import 'package:flutter/material.dart';
 import 'package:chotu_admin/screens/additional_settings/additional_settings_tab_screen.dart';
 import 'package:chotu_admin/screens/dashboard/dashboard_screen.dart';
 import 'package:chotu_admin/screens/riders/all_riders_screen.dart';
 import 'package:chotu_admin/screens/users/all_users.dart';
+import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import '../screens/categories/categories.dart';
 
+import '../screens/categories/categories.dart';
 import '../screens/orders/orders.dart';
 import '../screens/shops/shops_screen.dart';
 

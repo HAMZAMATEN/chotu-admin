@@ -1,48 +1,53 @@
-import 'package:chotu_admin/firebase_options.dart';
+import 'package:chotu_admin/providers/add_properties_provider.dart';
+import 'package:chotu_admin/providers/additional_settings_provider.dart';
 import 'package:chotu_admin/providers/api_services_provider.dart';
 import 'package:chotu_admin/providers/categories_provider.dart';
+import 'package:chotu_admin/providers/dashboard_provider.dart';
+import 'package:chotu_admin/providers/landing_page_provider.dart';
 import 'package:chotu_admin/providers/orders_provider.dart';
-
+import 'package:chotu_admin/providers/riders_provider.dart';
 import 'package:chotu_admin/providers/session_provider.dart';
+import 'package:chotu_admin/providers/side_bar_provider.dart';
 import 'package:chotu_admin/providers/users_provider.dart';
+import 'package:chotu_admin/screens/sidebar/side_bar_screen.dart';
+import 'package:chotu_admin/utils/app_Colors.dart';
 import 'package:chotu_admin/utils/app_constants.dart';
-import 'package:chotu_admin/utils/hive_prefrences.dart';
+import 'package:chotu_admin/utils/app_prefrences.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:get/get.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:provider/provider.dart';
-import 'package:chotu_admin/providers/riders_provider.dart';
-import 'package:chotu_admin/providers/add_properties_provider.dart';
-import 'package:chotu_admin/providers/additional_settings_provider.dart';
-import 'package:chotu_admin/providers/dashboard_provider.dart';
-import 'package:chotu_admin/providers/landing_page_provider.dart';
-import 'package:chotu_admin/providers/side_bar_provider.dart';
-import 'package:chotu_admin/screens/sidebar/side_bar_screen.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
+import 'package:get/get.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'providers/store_product_provider.dart';
 import 'providers/store_provider.dart';
 import 'screens/session/login_view.dart';
 
 // flutter run -d chrome --web-browser-flag="--disable-web-security" --web-browser-flag="--disable-site-isolation-trials"
 
-late Box sessionBox;
+late final SharedPreferences sp;
 final navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  setUrlStrategy(PathUrlStrategy());
-
+  sp = await SharedPreferences.getInstance();
   await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
+    options: FirebaseOptions(
+      apiKey: 'AIzaSyDf_azDXM69RG_ryRAaHJrgooVq3UX_K4U',
+      appId: '1:493629751703:web:bc61fa8061fa20ba17c4d2',
+      messagingSenderId: '493629751703',
+      projectId: 'chotu-admin-app',
+      authDomain: 'chotu-admin-app.firebaseapp.com',
+      storageBucket: 'chotu-admin-app.firebasestorage.app',
+      measurementId: 'G-EYKW61YSSP',
+    ),
   );
-  sessionBox = await Hive.openBox('session');
+
+  setUrlStrategy(PathUrlStrategy());
   runApp(const MyApp());
 }
-// git remote set-url origin https://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@github.com/HAMZAMATEN/chotu-admin.git
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -52,35 +57,10 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  bool alreadyLogin = false;
-  bool sessionLoading = true;
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    sessionFunction();
-  }
-
-  updateLoading(bool val) {
-    sessionLoading = val;
-    setState(() {});
-  }
-
-  sessionFunction() {
-    if (HivePreferences.getIsLogin() == null ||
-        HivePreferences.getIsLogin() == false) {
-      alreadyLogin = false;
-      updateLoading(false);
-    } else if (HivePreferences.getIsLogin() == true) {
-      alreadyLogin = true;
-      AppConstants.authToken = HivePreferences.getAuthToken();
-      print("AUTH TOKEN IS ${AppConstants.authToken}");
-      updateLoading(false);
-    } else {
-      alreadyLogin = false;
-      updateLoading(false);
-    }
   }
 
   // This widget is the root of your application.
@@ -94,7 +74,7 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(
           create: (_) => DashboardProvider(),
         ),
-         ChangeNotifierProvider(
+        ChangeNotifierProvider(
           create: (_) => CategoriesProvider(),
         ),
         ChangeNotifierProvider(
@@ -139,19 +119,63 @@ class _MyAppState extends State<MyApp> {
         ),
         builder: EasyLoading.init(),
         // home: SideBarScreen(),
-        initialRoute: '/',
-        home: (sessionLoading == true)
-            ? Scaffold(
-                backgroundColor: Colors.white,
-                body: Center(
-                  child: CircularProgressIndicator(
-                    color: Colors.blue,
-                  ),
-                ),
-              )
-            : (alreadyLogin == true)
-                ? SideBarScreen()
-                : LoginView() ,
+        initialRoute: '/LoadingScreen',
+        home: LoadingScreen(),
+      ),
+    );
+  }
+}
+
+class LoadingScreen extends StatefulWidget {
+  const LoadingScreen({super.key});
+
+  @override
+  State<LoadingScreen> createState() => _LoadingScreenState();
+}
+
+class _LoadingScreenState extends State<LoadingScreen> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      /// Added a 4 Seconds delay , to make it look better
+      Future.delayed(Duration(seconds: 4), () {
+        getIsLogin();
+      });
+    });
+  }
+
+  Future<void> getIsLogin() async {
+    bool isLogin = await AppPreferences.getIsLogin();
+    if (isLogin == true) {
+      String? storedToken = await AppPreferences.getAuthToken();
+      if (storedToken != null) {
+        AppConstants.authToken = storedToken;
+        debugPrint("AUTH TOKEN IS ${AppConstants.authToken}");
+      } else {
+        Get.offAll(() => LoginView());
+      }
+      Get.offAll(() => SideBarScreen());
+    } else {
+      Get.offAll(() => LoginView());
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Center(
+        child: Container(
+          height: 100,
+          width: 100,
+          child: Center(
+            child: CircularProgressIndicator(
+              color: AppColors.primaryColor,
+            ),
+          ),
+        ),
       ),
     );
   }

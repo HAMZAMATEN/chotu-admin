@@ -1,5 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:chotu_admin/screens/all_properties/widgets/property_card.dart';
+import 'package:flutter/cupertino.dart';
 
 class AllPropertiesScreen extends StatelessWidget {
   const AllPropertiesScreen({super.key});
