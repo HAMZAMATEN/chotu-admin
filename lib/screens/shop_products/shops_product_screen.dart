@@ -613,7 +613,7 @@ class _ShopProductsScreenState extends State<ShopProductsScreen> {
                             ),
                           ),
                         ),
-                        fit: BoxFit.cover,
+                        fit: BoxFit.contain,
                         onError: (error, stackTrace) {
                           print(
                               "ERROR WHILE LOADING IMAGE URL : ${product.img} & error : $error");

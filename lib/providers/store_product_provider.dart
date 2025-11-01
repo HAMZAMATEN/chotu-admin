@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:archive/archive.dart';
+import 'package:chotu_admin/generated/assets.dart';
 import 'package:chotu_admin/main.dart';
 import 'package:chotu_admin/model/pagination_model.dart';
 import 'package:chotu_admin/model/product_model.dart';
@@ -350,6 +351,7 @@ class StoreProductProvider extends ChangeNotifier {
   }
 
   /// Excel Function for Product for a Specific Store
+
   Future<void> pickAndUploadExcel(
       BuildContext context, StoreModel store) async {
     try {
@@ -371,8 +373,15 @@ class StoreProductProvider extends ChangeNotifier {
         return;
       }
 
+      // 🆕 Load default fallback image once
+      final Uint8List defaultImageBytes = (await rootBundle.load(
+        Assets.imagesImageNoImage,
+      ))
+          .buffer
+          .asUint8List();
+
       // Step 2: Decode XLSX (ZIP)
-      final archive = await ZipDecoder().decodeBytes(bytes);
+      final archive = ZipDecoder().decodeBytes(bytes);
 
       List<Uint8List> imageBytesList = [];
       List<String> imageNames = [];
@@ -381,7 +390,7 @@ class StoreProductProvider extends ChangeNotifier {
       for (final file in archive) {
         if (file.isFile && file.name.startsWith('xl/media/')) {
           String imageName = file.name.split('/').last;
-          Uint8List imageBytes = await file.content as Uint8List;
+          Uint8List imageBytes = file.content as Uint8List;
           debugPrint("Extracted image: $imageName, size: ${imageBytes.length}");
           imageBytesList.add(imageBytes);
           imageNames.add(imageName);
@@ -432,7 +441,6 @@ class StoreProductProvider extends ChangeNotifier {
 
       print("SHEET LENGTH::::${sheet.rows.length}");
 
-      // 🧩 Track which images were used for which rows
       final usedImages = <String, List<int>>{};
 
       for (int i = 1; i < sheet.rows.length; i++) {
@@ -452,18 +460,21 @@ class StoreProductProvider extends ChangeNotifier {
             continue;
           }
 
-          // 🆕 Safely pick image if exists
-          Uint8List? imageBytes =
-          (i - 1) < imageBytesList.length ? imageBytesList[i - 1] : null;
-          String? fileName =
-          (i - 1) < imageNames.length ? imageNames[i - 1] : null;
+          // 🖼 Pick image (or fallback to default)
+          Uint8List imageBytes = (i - 1) < imageBytesList.length
+              ? imageBytesList[i - 1]
+              : defaultImageBytes;
+
+          String fileName = (i - 1) < imageNames.length
+              ? imageNames[i - 1]
+              : "default-image.jpeg";
 
           // 🧾 Log matching
-          if (imageBytes != null && fileName != null) {
+          if (imageBytes == defaultImageBytes) {
+            debugPrint("⚠️ Row $i using default image");
+          } else {
             debugPrint("✅ Row $i matched with image: $fileName");
             usedImages.putIfAbsent(fileName, () => []).add(i);
-          } else {
-            debugPrint("⚠️ Row $i has no image, uploading without one");
           }
 
           Map<String, dynamic> body = {
@@ -478,16 +489,13 @@ class StoreProductProvider extends ChangeNotifier {
             "store_id": "${store.id}",
           };
 
-          Map<String, dynamic>? productMap;
-          if (imageBytes != null && imageBytes.isNotEmpty) {
-            productMap = {
-              'image': imageBytes,
-              'fileName': fileName,
-            };
-          }
+          Map<String, dynamic>? productMap = {
+            'image': imageBytes,
+            'fileName': fileName,
+          };
 
           bool productAdded =
-          await addExcelProductToDataBase(body, context, productMap);
+              await addExcelProductToDataBase(body, context, productMap);
 
           print("PRODUCT ADDED AT INDEX::::$i");
           if (productAdded == true) {
@@ -507,7 +515,6 @@ class StoreProductProvider extends ChangeNotifier {
         }
       }
 
-      // 🧾 After loop — show duplicate image usage
       for (final entry in usedImages.entries) {
         if (entry.value.length > 1) {
           debugPrint(
@@ -577,7 +584,6 @@ class StoreProductProvider extends ChangeNotifier {
           debugPrint("⚠️ No valid image bytes found for product.");
         }
       }
-
 
       request.headers['Content-Type'] = 'multipart/form-data';
       request.headers['Authorization'] = 'Bearer ${AppConstants.authToken}';
