@@ -1,20 +1,16 @@
+import 'dart:async';
+
 import 'package:chotu_admin/providers/store_provider.dart';
-import 'package:chotu_admin/providers/users_provider.dart';
 import 'package:chotu_admin/utils/app_Colors.dart';
 import 'package:chotu_admin/utils/app_Paddings.dart';
 import 'package:chotu_admin/utils/app_text_widgets.dart';
-import 'package:chotu_admin/utils/functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 
 import '../../../generated/assets.dart';
 import '../../../widgets/custom_TextField.dart';
-import 'dart:async';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:geolocator_web/geolocator_web.dart';
 
 class AddShopDialog extends StatefulWidget {
   @override

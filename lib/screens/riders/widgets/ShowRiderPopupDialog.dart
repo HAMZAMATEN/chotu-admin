@@ -1,18 +1,13 @@
-import 'package:chotu_admin/providers/riders_provider.dart';
-import 'package:chotu_admin/screens/riders/ShiftDetailScreen.dart';
-import 'package:chotu_admin/widgets/ShowConformationAlert.dart';
-import 'package:chotu_admin/widgets/cache_image_widget.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:provider/provider.dart';
 import 'package:chotu_admin/generated/assets.dart';
-import 'package:chotu_admin/providers/side_bar_provider.dart';
-import 'package:chotu_admin/screens/riders/review_screen.dart';
+import 'package:chotu_admin/providers/riders_provider.dart';
 import 'package:chotu_admin/utils/app_Colors.dart';
 import 'package:chotu_admin/utils/app_Paddings.dart';
 import 'package:chotu_admin/utils/app_text_widgets.dart';
+import 'package:chotu_admin/widgets/ShowConformationAlert.dart';
+import 'package:chotu_admin/widgets/cache_image_widget.dart';
 import 'package:chotu_admin/widgets/custom_Button.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../../model/all_riders_model.dart';
 import 'add_edit_rider_alert.dart';

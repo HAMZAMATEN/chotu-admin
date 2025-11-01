@@ -3,7 +3,6 @@ import 'package:chotu_admin/providers/riders_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
-import '../../../providers/users_provider.dart';
 import '../../../utils/app_Colors.dart';
 import '../../../utils/app_Paddings.dart';
 import '../../../utils/app_text_widgets.dart';

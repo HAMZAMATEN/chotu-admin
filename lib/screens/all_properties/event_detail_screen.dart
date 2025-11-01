@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:chotu_admin/screens/all_properties/widgets/build_event_detail_left_section.dart';
 import 'package:chotu_admin/screens/all_properties/widgets/build_event_detail_right_section.dart';
+import 'package:flutter/material.dart';
 
 import '../../utils/app_Colors.dart';
 import '../../utils/app_Paddings.dart';

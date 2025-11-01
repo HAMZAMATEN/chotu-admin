@@ -1,6 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:chotu_admin/screens/all_properties/widgets/event_card.dart';
-import 'package:chotu_admin/screens/all_properties/widgets/property_card.dart';
+import 'package:flutter/cupertino.dart';
 
 class AllEventsScreen extends StatelessWidget {
   const AllEventsScreen({super.key});

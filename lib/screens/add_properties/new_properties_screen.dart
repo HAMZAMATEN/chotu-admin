@@ -1,8 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
-import 'package:chotu_admin/screens/add_properties/add_properties_tab_screen.dart';
 
 import '../../generated/assets.dart';
 import '../../providers/add_properties_provider.dart';

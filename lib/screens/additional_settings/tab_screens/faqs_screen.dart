@@ -1,16 +1,15 @@
 import 'package:chotu_admin/main.dart';
 import 'package:chotu_admin/model/faq_item_model.dart';
+import 'package:chotu_admin/providers/additional_settings_provider.dart';
 import 'package:chotu_admin/utils/app_Colors.dart';
 import 'package:chotu_admin/utils/app_Paddings.dart';
+import 'package:chotu_admin/utils/app_text_widgets.dart';
 import 'package:chotu_admin/utils/fonts_manager.dart';
 import 'package:chotu_admin/widgets/ShowConformationAlert.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:chotu_admin/providers/additional_settings_provider.dart';
-import 'package:chotu_admin/utils/app_text_widgets.dart';
 import 'package:chotu_admin/widgets/custom_Button.dart';
 import 'package:chotu_admin/widgets/custom_TextField.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class FaqsScreen extends StatelessWidget {
   FaqsScreen({super.key});

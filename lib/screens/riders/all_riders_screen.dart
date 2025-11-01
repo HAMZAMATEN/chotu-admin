@@ -1,13 +1,13 @@
+import 'package:chotu_admin/providers/riders_provider.dart';
 import 'package:chotu_admin/screens/riders/widgets/add_edit_rider_alert.dart';
 import 'package:chotu_admin/screens/riders/widgets/shimmer_effect_rider.dart';
+import 'package:chotu_admin/utils/app_Colors.dart';
+import 'package:chotu_admin/utils/app_Paddings.dart';
+import 'package:chotu_admin/widgets/custom_TextField.dart';
 import 'package:chotu_admin/widgets/pagination_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
-import 'package:chotu_admin/providers/riders_provider.dart';
-import 'package:chotu_admin/utils/app_Colors.dart';
-import 'package:chotu_admin/utils/app_Paddings.dart';
-import 'package:chotu_admin/widgets/custom_TextField.dart';
 
 import '../../generated/assets.dart';
 import '../../utils/app_text_widgets.dart';

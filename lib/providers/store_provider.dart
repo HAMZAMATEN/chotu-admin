@@ -9,12 +9,11 @@ import 'package:chotu_admin/utils/api_consts.dart';
 import 'package:chotu_admin/utils/app_constants.dart';
 import 'package:chotu_admin/utils/functions.dart';
 import 'package:chotu_admin/utils/toast_dialogue.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class StoreProvider extends ChangeNotifier {
   ApiServicesProvider apiServicesProvider =

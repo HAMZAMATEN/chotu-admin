@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:chotu_admin/model/all_orders_model.dart';
 import 'package:chotu_admin/providers/orders_provider.dart';
 import 'package:chotu_admin/screens/orders/widgets/ShowOrderDetailPopupDialog.dart';
@@ -8,12 +6,9 @@ import 'package:chotu_admin/utils/app_Paddings.dart';
 import 'package:chotu_admin/utils/app_text_widgets.dart';
 import 'package:chotu_admin/widgets/custom_Button.dart';
 import 'package:chotu_admin/widgets/custom_TextField.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -21,7 +16,6 @@ import '../../generated/assets.dart';
 import '../../utils/fonts_manager.dart';
 import '../../widgets/pagination_widget.dart';
 import '../shops/widgets/shop_screen_card_widgets.dart';
-import 'orderDetailScreen.dart';
 
 class OrderDashboard extends StatefulWidget {
   @override

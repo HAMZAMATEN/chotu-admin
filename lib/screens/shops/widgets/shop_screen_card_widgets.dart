@@ -1,22 +1,15 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chotu_admin/model/category_model.dart';
 import 'package:chotu_admin/model/shop_model.dart';
 import 'package:chotu_admin/providers/store_provider.dart';
 import 'package:chotu_admin/screens/shop_products/shops_product_screen.dart';
-// import 'package:chotu_admin/screens/shops/shop_products/shops_product_screen.dart';
-import 'package:chotu_admin/screens/shops/widgets/addNewShopDialogBox.dart';
 import 'package:chotu_admin/utils/app_Colors.dart';
 import 'package:chotu_admin/utils/app_Paddings.dart';
 import 'package:chotu_admin/utils/app_text_widgets.dart';
 import 'package:chotu_admin/utils/toast_dialogue.dart';
-import 'package:chotu_admin/widgets/custom_Button.dart';
-import 'package:chotu_admin/widgets/custom_TextField.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
 import '../../../widgets/ShowConformationAlert.dart';
 

@@ -1,14 +1,13 @@
+import 'dart:html' as html;
 import 'dart:typed_data';
 
 import 'package:chotu_admin/main.dart';
+import 'package:chotu_admin/utils/app_colors.dart';
+import 'package:chotu_admin/utils/app_text_widgets.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 // import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
-import 'package:chotu_admin/utils/app_colors.dart';
-import 'package:chotu_admin/utils/app_text_widgets.dart';
-import 'package:image_picker_for_web/image_picker_for_web.dart' as pk;
-import 'dart:html' as html;
 
 
 class AppFunctions {
