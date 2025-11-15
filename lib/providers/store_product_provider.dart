@@ -380,49 +380,49 @@ class StoreProductProvider extends ChangeNotifier {
           .buffer
           .asUint8List();
 
-      // Step 2: Decode XLSX (ZIP)
-      final archive = ZipDecoder().decodeBytes(bytes);
-
-      List<Uint8List> imageBytesList = [];
-      List<String> imageNames = [];
-
-      // Step 3: Extract images from xl/media/
-      for (final file in archive) {
-        if (file.isFile && file.name.startsWith('xl/media/')) {
-          String imageName = file.name.split('/').last;
-          Uint8List imageBytes = file.content as Uint8List;
-          debugPrint("Extracted image: $imageName, size: ${imageBytes.length}");
-          imageBytesList.add(imageBytes);
-          imageNames.add(imageName);
-        }
-      }
-
-      // Combine names and bytes into pairs
-      List<MapEntry<String, Uint8List>> pairedList = [];
-      for (int i = 0; i < imageNames.length; i++) {
-        pairedList.add(MapEntry(imageNames[i], imageBytesList[i]));
-      }
-
-      // Sort by file name naturally
-      pairedList.sort((a, b) {
-        final regex = RegExp(r'(\d+)');
-        final aNum = int.tryParse(regex.firstMatch(a.key)?.group(0) ?? '') ?? 0;
-        final bNum = int.tryParse(regex.firstMatch(b.key)?.group(0) ?? '') ?? 0;
-
-        int numCompare = aNum.compareTo(bNum);
-        if (numCompare != 0) return numCompare;
-        return a.key.compareTo(b.key);
-      });
-
-      imageNames
-        ..clear()
-        ..addAll(pairedList.map((e) => e.key));
-      imageBytesList
-        ..clear()
-        ..addAll(pairedList.map((e) => e.value));
-
-      print("IMAGES NAME ${imageNames}");
-      imageBytesList.forEach((b) => print(b.length));
+      // // Step 2: Decode XLSX (ZIP)
+      // final archive = ZipDecoder().decodeBytes(bytes);
+      //
+      // List<Uint8List> imageBytesList = [];
+      // List<String> imageNames = [];
+      //
+      // // Step 3: Extract images from xl/media/
+      // for (final file in archive) {
+      //   if (file.isFile && file.name.startsWith('xl/media/')) {
+      //     String imageName = file.name.split('/').last;
+      //     Uint8List imageBytes = file.content as Uint8List;
+      //     debugPrint("Extracted image: $imageName, size: ${imageBytes.length}");
+      //     imageBytesList.add(imageBytes);
+      //     imageNames.add(imageName);
+      //   }
+      // }
+      //
+      // // Combine names and bytes into pairs
+      // List<MapEntry<String, Uint8List>> pairedList = [];
+      // for (int i = 0; i < imageNames.length; i++) {
+      //   pairedList.add(MapEntry(imageNames[i], imageBytesList[i]));
+      // }
+      //
+      // // Sort by file name naturally
+      // pairedList.sort((a, b) {
+      //   final regex = RegExp(r'(\d+)');
+      //   final aNum = int.tryParse(regex.firstMatch(a.key)?.group(0) ?? '') ?? 0;
+      //   final bNum = int.tryParse(regex.firstMatch(b.key)?.group(0) ?? '') ?? 0;
+      //
+      //   int numCompare = aNum.compareTo(bNum);
+      //   if (numCompare != 0) return numCompare;
+      //   return a.key.compareTo(b.key);
+      // });
+      //
+      // imageNames
+      //   ..clear()
+      //   ..addAll(pairedList.map((e) => e.key));
+      // imageBytesList
+      //   ..clear()
+      //   ..addAll(pairedList.map((e) => e.value));
+      //
+      // print("IMAGES NAME ${imageNames}");
+      // imageBytesList.forEach((b) => print(b.length));
 
       // Step 4: Decode Excel
       var excel = Excel.decodeBytes(bytes);
@@ -441,7 +441,6 @@ class StoreProductProvider extends ChangeNotifier {
 
       print("SHEET LENGTH::::${sheet.rows.length}");
 
-      final usedImages = <String, List<int>>{};
 
       for (int i = 1; i < sheet.rows.length; i++) {
         try {
@@ -450,32 +449,39 @@ class StoreProductProvider extends ChangeNotifier {
           String categoryId = row[1]?.value.toString() ?? '1';
           String brand = row[2]?.value.toString() ?? '';
           String price = row[3]?.value.toString() ?? '';
-          String discountPrice = row[4]?.value.toString() ?? '';
+          String discountPrice = row[4]?.value.toString() ?? '0';
           String unit = row[5]?.value.toString() ?? '';
           String unitValue = row[6]?.value.toString() ?? '';
           String description = row[7]?.value.toString() ?? '';
+          String imageUrl = row[8]?.value.toString() ?? '';
 
-          if (name.isEmpty) {
-            debugPrint("Skipping row $i due to missing name");
+          if (name.isEmpty
+          || categoryId.isEmpty
+          || brand.isEmpty
+          || price.isEmpty
+          || unit.isEmpty
+          || unitValue.isEmpty
+          || description.isEmpty
+          || imageUrl.isEmpty
+          ) {
+            debugPrint("Skipping row $i due to missing value");
             continue;
           }
 
-          // 🖼 Pick image (or fallback to default)
-          Uint8List imageBytes = (i - 1) < imageBytesList.length
-              ? imageBytesList[i - 1]
-              : defaultImageBytes;
-
-          String fileName = (i - 1) < imageNames.length
-              ? imageNames[i - 1]
-              : "default-image.jpeg";
+          // // 🖼 Pick image (or fallback to default)
+          // Uint8List imageBytes = (i - 1) < imageBytesList.length ? imageBytesList[i - 1] : defaultImageBytes;
+          //
+          // String fileName = (i - 1) < imageNames.length
+          //     ? imageNames[i - 1]
+          //     : "default-image.jpeg";
 
           // 🧾 Log matching
-          if (imageBytes == defaultImageBytes) {
-            debugPrint("⚠️ Row $i using default image");
-          } else {
-            debugPrint("✅ Row $i matched with image: $fileName");
-            usedImages.putIfAbsent(fileName, () => []).add(i);
-          }
+          // if (imageBytes == defaultImageBytes) {
+          //   debugPrint("⚠️ Row $i using default image");
+          // } else {
+          //   debugPrint("✅ Row $i matched with image: $fileName");
+          //   usedImages.putIfAbsent(fileName, () => []).add(i);
+          // }
 
           Map<String, dynamic> body = {
             "name": name,
@@ -487,15 +493,16 @@ class StoreProductProvider extends ChangeNotifier {
             "unit_value": unitValue,
             "description": description,
             "store_id": "${store.id}",
+            "image_url" : imageUrl
           };
 
-          Map<String, dynamic>? productMap = {
-            'image': imageBytes,
-            'fileName': fileName,
-          };
+          // Map<String, dynamic>? productMap = {
+          //   'image': imageBytes,
+          //   'fileName': fileName,
+          // };
 
           bool productAdded =
-              await addExcelProductToDataBase(body, context, productMap);
+              await addExcelProductToDataBase(body, context);
 
           print("PRODUCT ADDED AT INDEX::::$i");
           if (productAdded == true) {
@@ -515,19 +522,6 @@ class StoreProductProvider extends ChangeNotifier {
         }
       }
 
-      for (final entry in usedImages.entries) {
-        if (entry.value.length > 1) {
-          debugPrint(
-              "⚠️ Image '${entry.key}' used in multiple rows: ${entry.value.join(', ')}");
-        }
-      }
-
-      debugPrint("====== Excel Image Matching Summary ======");
-      debugPrint("Total images extracted: ${imageNames.length}");
-      debugPrint("Total rows processed: ${sheet.maxRows - 1}");
-      debugPrint(
-          "Duplicate image references: ${usedImages.entries.where((e) => e.value.length > 1).length}");
-      debugPrint("==========================================");
 
       EasyLoading.dismiss();
       EasyLoading.showToast(
@@ -543,7 +537,7 @@ class StoreProductProvider extends ChangeNotifier {
   }
 
   Future<bool> addExcelProductToDataBase(Map<String, dynamic> body,
-      BuildContext context, Map<String, dynamic>? productMap) async {
+      BuildContext context,) async {
     try {
       final uri =
           Uri.parse(APIConstants.addProduct); // 🔁 Replace with your API
@@ -563,27 +557,27 @@ class StoreProductProvider extends ChangeNotifier {
       //   );
       // }
 
-      if (productMap != null && productMap.isNotEmpty) {
-        var imageBytes = productMap['image'];
-
-        // If it's base64 String → decode it
-        if (imageBytes is String) {
-          imageBytes = base64Decode(imageBytes);
-        }
-
-        if (imageBytes is List<int> && imageBytes.isNotEmpty) {
-          print("ADDING FILE::::");
-          request.files.add(
-            http.MultipartFile.fromBytes(
-              'img',
-              imageBytes,
-              filename: productMap['fileName'] ?? "product_image.png",
-            ),
-          );
-        } else {
-          debugPrint("⚠️ No valid image bytes found for product.");
-        }
-      }
+      // if (productMap != null && productMap.isNotEmpty) {
+      //   var imageBytes = productMap['image'];
+      //
+      //   // If it's base64 String → decode it
+      //   if (imageBytes is String) {
+      //     imageBytes = base64Decode(imageBytes);
+      //   }
+      //
+      //   if (imageBytes is List<int> && imageBytes.isNotEmpty) {
+      //     print("ADDING FILE::::");
+      //     request.files.add(
+      //       http.MultipartFile.fromBytes(
+      //         'img',
+      //         imageBytes,
+      //         filename: productMap['fileName'] ?? "product_image.png",
+      //       ),
+      //     );
+      //   } else {
+      //     debugPrint("⚠️ No valid image bytes found for product.");
+      //   }
+      // }
 
       request.headers['Content-Type'] = 'multipart/form-data';
       request.headers['Authorization'] = 'Bearer ${AppConstants.authToken}';
@@ -596,6 +590,7 @@ class StoreProductProvider extends ChangeNotifier {
       request.fields['unit_value'] = body['unit_value'];
       request.fields['description'] = body['description'];
       request.fields['store_id'] = body['store_id'];
+      request.fields['img'] = body['image_url'];
 
       // Send request
       final response = await request.send();

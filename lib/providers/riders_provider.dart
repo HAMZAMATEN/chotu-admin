@@ -208,11 +208,18 @@ class RidersProvider with ChangeNotifier {
     }
 
     final String apiKey = AppConstants.googleMapApiKey;
-    final String baseURL =
-        'https://maps.googleapis.com/maps/api/place/autocomplete/json';
-    final String request =
-        '$baseURL?input=$input&key=$apiKey&components=country:pk';
-    final response = await http.get(Uri.parse(request));
+    http.Response response = await apiServicesProvider.postRequestResponse(
+    'https://firebase-notifications-topaz.vercel.app/api/places',
+        body: {
+          "apiKey": "${apiKey}",
+          "query": "${input}"
+        }
+    );
+    // final String baseURL =
+    //     'https://maps.googleapis.com/maps/api/place/autocomplete/json';
+    // final String request =
+    //     '$baseURL?input=$input&key=$apiKey&components=country:pk';
+    // final response = await http.get(Uri.parse(request));
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
