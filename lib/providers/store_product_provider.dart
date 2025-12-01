@@ -493,7 +493,8 @@ class StoreProductProvider extends ChangeNotifier {
             "unit_value": unitValue,
             "description": description,
             "store_id": "${store.id}",
-            "image_url" : imageUrl
+            "image_url" : imageUrl,
+            "img": null
           };
 
           // Map<String, dynamic>? productMap = {
