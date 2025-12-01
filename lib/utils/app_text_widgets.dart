@@ -1,7 +1,7 @@
 
 
-import 'package:flutter/material.dart';
 import 'package:chotu_admin/utils/fonts_manager.dart';
+import 'package:flutter/material.dart';
 
 TextStyle _getTextStyle(
     double fontSize,

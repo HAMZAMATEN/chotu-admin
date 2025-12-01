@@ -1,9 +1,9 @@
 import 'package:chotu_admin/providers/additional_settings_provider.dart';
-import 'package:chotu_admin/utils/app_Colors.dart';
-import 'package:flutter/material.dart';
 import 'package:chotu_admin/screens/additional_settings/tab_screens/FAQS_screen.dart';
+import 'package:chotu_admin/utils/app_Colors.dart';
 import 'package:chotu_admin/utils/app_Paddings.dart';
 import 'package:chotu_admin/utils/app_text_widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'tab_screens/about_us_screen.dart';

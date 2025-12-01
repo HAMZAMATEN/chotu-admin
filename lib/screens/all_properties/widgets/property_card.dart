@@ -1,9 +1,9 @@
+import 'package:chotu_admin/providers/side_bar_provider.dart';
+import 'package:chotu_admin/screens/all_properties/property_details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
-import 'package:chotu_admin/providers/side_bar_provider.dart';
-import 'package:chotu_admin/screens/all_properties/property_details_screen.dart';
 
 import '../../../generated/assets.dart';
 import '../../../utils/app_Colors.dart';

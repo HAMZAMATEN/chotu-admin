@@ -78,6 +78,7 @@ class Assets {
   static const String imagesAppStore = 'assets/images/appStore.png';
   static const String imagesGradiantImage = 'assets/images/gradiantImage.png';
   static const String imagesImage = 'assets/images/image.png';
+  static const String imagesImageNoImage = 'assets/images/image-no-image.jpg';
   static const String imagesLandingBackground = 'assets/images/landingBackground.png';
   static const String imagesLandingGalleryImage = 'assets/images/landing_gallery_image.png';
   static const String imagesOverlay = 'assets/images/Overlay.png';

@@ -2,7 +2,6 @@ import 'package:chotu_admin/model/shop_model.dart';
 import 'package:chotu_admin/providers/store_product_provider.dart';
 import 'package:chotu_admin/providers/store_provider.dart';
 import 'package:chotu_admin/utils/app_Colors.dart';
-import 'package:chotu_admin/utils/app_Paddings.dart';
 import 'package:chotu_admin/utils/app_text_widgets.dart';
 import 'package:chotu_admin/utils/functions.dart';
 import 'package:flutter/material.dart';

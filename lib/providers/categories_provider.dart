@@ -6,8 +6,8 @@ import 'package:chotu_admin/utils/api_consts.dart';
 import 'package:chotu_admin/utils/functions.dart';
 import 'package:chotu_admin/utils/toast_dialogue.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 import '../model/category_model.dart';
 

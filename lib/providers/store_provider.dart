@@ -9,12 +9,11 @@ import 'package:chotu_admin/utils/api_consts.dart';
 import 'package:chotu_admin/utils/app_constants.dart';
 import 'package:chotu_admin/utils/functions.dart';
 import 'package:chotu_admin/utils/toast_dialogue.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class StoreProvider extends ChangeNotifier {
   ApiServicesProvider apiServicesProvider =
@@ -47,7 +46,6 @@ class StoreProvider extends ChangeNotifier {
 
   bool get suggestionLoading => _suggestionLoading;
 
-
   /// adding shop variables
 
   TextEditingController latitudeController = TextEditingController();
@@ -63,7 +61,8 @@ class StoreProvider extends ChangeNotifier {
 
       print("RESPONSE CODE FOR getAllStores ${response.statusCode}");
       if (response.statusCode == 200) {
-        storePagination = PaginationModel.fromJson(jsonDecode(response.body)['pagination']);
+        storePagination =
+            PaginationModel.fromJson(jsonDecode(response.body)['pagination']);
         List<StoreModel> tempStoresList = [];
         List<dynamic> dataList = (jsonDecode(response.body))['data'];
         dataList.forEach((shopData) {
@@ -135,8 +134,6 @@ class StoreProvider extends ChangeNotifier {
       ShowToastDialog.closeLoader();
     }
   }
-
-
 
   setImagesMapsToNull() {
     storeImageMap = null;
@@ -221,27 +218,30 @@ class StoreProvider extends ChangeNotifier {
         EasyLoading.dismiss();
         clearControllers();
         Navigator.pop(context);
-        AppFunctions.showToastMessage(message: "Failed to add shop. Please try again.");
+        AppFunctions.showToastMessage(
+            message: "Failed to add shop. Please try again.");
         // ScaffoldMessenger.of(context).showSnackBar(
         //   const SnackBar(content: Text('Failed to add shop. Please try again.')),
         // );
         print('Store Addition failed: ${response.statusCode}');
-        print('Store Addition failed: ${await response.stream.bytesToString()}');
+        print(
+            'Store Addition failed: ${await response.stream.bytesToString()}');
       }
     } catch (e) {
       EasyLoading.dismiss();
       clearControllers();
       Navigator.pop(context);
-      AppFunctions.showToastMessage(message: "Failed to add shop. Please try again.");
+      AppFunctions.showToastMessage(
+          message: "Failed to add shop. Please try again.");
       print('Store Addition failed: ${e}');
       print("EXCEPTION WHILE ADDING SHOP TO DB");
     }
   }
 
-  clearControllers(){
+  clearControllers() {
     selectedAddress = "";
-    latitudeController.text = "" ;
-    longitudeController.text = "" ;
+    latitudeController.text = "";
+    longitudeController.text = "";
     storeImageMap = null;
     storeCoverImageMap = null;
     categoryId = null;
@@ -263,12 +263,18 @@ class StoreProvider extends ChangeNotifier {
     setSuggestionLoading(true);
     if (query.isEmpty) return;
 
-    String country = "PK";
-
-    String url =
-        "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$query&components=country:$country&key=${AppConstants.googleMapApiKey}";
-
-    final response = await http.get(Uri.parse(url));
+    // String country = "PK";
+    //
+    // String url =
+    //     "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$query&components=country:$country&key=${AppConstants.googleMapApiKey}";
+    //
+    // final response = await http.get(Uri.parse(url));
+    final String apiKey = AppConstants.googleMapApiKey;
+    print("API KEY IS ${apiKey}");
+    print("Query IS ${query}");
+    http.Response response = await apiServicesProvider.postRequestResponse(
+        'https://firebase-notifications-topaz.vercel.app/api/places',
+        body: {"apiKey": "${apiKey}", "query": "${query}"});
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
@@ -327,28 +333,28 @@ class StoreProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-
   /// searching function
   List<StoreModel>? searchedStoresList;
   bool isSearching = false;
   PaginationModel? searchPagination;
 
-  Future<void> searchStore(String input,{int? page = 1}) async{
-    try{
+  Future<void> searchStore(String input, {int? page = 1}) async {
+    try {
       print("input is");
       print(input);
       updateIsSearchingValue(true);
-      if(page == 1){
+      if (page == 1) {
         searchedStoresList = [];
       }
-      http.Response response = await apiServicesProvider
-          .getRequestResponse('${APIConstants.searchStore}${input}?page=${page}');
+      http.Response response = await apiServicesProvider.getRequestResponse(
+          '${APIConstants.searchStore}${input}?page=${page}');
 
       print("RESPONSE CODE FOR searchStore ${response.statusCode}");
       print("RESPONSE IS ${jsonDecode(response.body)}");
 
-      if(response.statusCode == 200) {
-        searchPagination = PaginationModel.fromJson(jsonDecode(response.body)['pagination']);
+      if (response.statusCode == 200) {
+        searchPagination =
+            PaginationModel.fromJson(jsonDecode(response.body)['pagination']);
         List<StoreModel> tempStoresList = [];
         List<dynamic> dataList = (jsonDecode(response.body))['data'];
         dataList.forEach((shopData) {
@@ -356,41 +362,40 @@ class StoreProvider extends ChangeNotifier {
           tempStoresList.add(store);
         });
         searchedStoresList = searchedStoresList! + tempStoresList;
-      }else{
+      } else {
         print("No Stores Found");
         print("Error while searching store: ${response.statusCode}");
         searchedStoresList = [];
       }
       notifyListeners();
-    }catch(e){
+    } catch (e) {
       print("EXCEPTION WHILE SEARCHING STORE ${e}");
       searchedStoresList = [];
       notifyListeners();
     }
   }
 
-  updateIsSearchingValue(bool val){
+  updateIsSearchingValue(bool val) {
     isSearching = val;
     notifyListeners();
   }
 
-  resetSearchStoreList(){
-    searchedStoresList = null ;
+  resetSearchStoreList() {
+    searchedStoresList = null;
     notifyListeners();
   }
 
   Future<void> updateShopToDataBase(
-      String storeId,
-      Map<String, dynamic> body, BuildContext context) async {
+      String storeId, Map<String, dynamic> body, BuildContext context) async {
     try {
       print("Update SHOP BODY IS ");
       print(body);
       EasyLoading.showToast("Uploading image files");
       EasyLoading.show();
-      final uri = Uri.parse(APIConstants.updateStore+'$storeId');
+      final uri = Uri.parse(APIConstants.updateStore + '$storeId');
       final request = await http.MultipartRequest('POST', uri);
 
-      if(storeImageMap != null){
+      if (storeImageMap != null) {
         // Add f_image file if it is not equal to null
         request.files.add(
           http.MultipartFile.fromBytes(
@@ -401,7 +406,7 @@ class StoreProvider extends ChangeNotifier {
         );
       }
 
-      if(storeCoverImageMap != null){
+      if (storeCoverImageMap != null) {
         // Add c_image file if it is not equal to null
         request.files.add(
           http.MultipartFile.fromBytes(
@@ -440,18 +445,20 @@ class StoreProvider extends ChangeNotifier {
         EasyLoading.dismiss();
         clearControllers();
         Navigator.pop(context);
-        AppFunctions.showToastMessage(message: "Failed to add shop. Please try again.");
+        AppFunctions.showToastMessage(
+            message: "Failed to add shop. Please try again.");
         print('Store Updation failed: ${response.statusCode}');
-        print('Store Updation failed: ${await response.stream.bytesToString()}');
+        print(
+            'Store Updation failed: ${await response.stream.bytesToString()}');
       }
     } catch (e) {
       EasyLoading.dismiss();
       clearControllers();
       Navigator.pop(context);
-      AppFunctions.showToastMessage(message: "Failed to update shop. Please try again.");
+      AppFunctions.showToastMessage(
+          message: "Failed to update shop. Please try again.");
       print('Store Updation failed: ${e}');
       print("EXCEPTION WHILE Updation SHOP TO DB");
     }
   }
-
 }

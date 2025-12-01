@@ -1,9 +1,6 @@
-import 'package:chotu_admin/main.dart';
 import 'package:chotu_admin/providers/session_provider.dart';
 import 'package:chotu_admin/utils/app_Paddings.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
 import '../../generated/assets.dart';
@@ -11,7 +8,6 @@ import '../../utils/app_Colors.dart';
 import '../../utils/app_text_widgets.dart';
 import '../../utils/toast_dialogue.dart';
 import '../../widgets/custom_Button.dart';
-import '../sidebar/side_bar_screen.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -209,7 +205,7 @@ class _LoginViewState extends State<LoginView> {
                                   onPress: () async {
                                     value.emailController.text =
                                         'jane@example.com';
-                                    value.passController.text = 'password';
+                                    value.passController.text = 'admin1235';
                                     if (fromKey.currentState!.validate()) {
                                       ShowToastDialog.showLoader('Please Wait');
                                       await value.login();

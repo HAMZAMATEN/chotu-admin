@@ -2,7 +2,6 @@ import 'package:chotu_admin/model/category_model.dart';
 import 'package:chotu_admin/providers/categories_provider.dart';
 import 'package:chotu_admin/screens/categories/widgets/add_new_category_alert.dart';
 import 'package:chotu_admin/screens/categories/widgets/category_tile_widget.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
@@ -11,10 +10,7 @@ import '../../generated/assets.dart';
 import '../../utils/app_Colors.dart';
 import '../../utils/app_Paddings.dart';
 import '../../utils/app_text_widgets.dart';
-import '../../utils/functions.dart';
 import '../../widgets/custom_TextField.dart';
-import '../../widgets/pagination_widget.dart';
-import '../users/widgets/user_tile_widget.dart';
 
 class CategoriesScreen extends StatefulWidget {
   const CategoriesScreen({super.key});

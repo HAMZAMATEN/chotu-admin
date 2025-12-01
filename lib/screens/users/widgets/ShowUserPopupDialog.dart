@@ -1,11 +1,11 @@
-import 'package:chotu_admin/model/user_model.dart';
-import 'package:chotu_admin/widgets/cache_image_widget.dart';
-import 'package:flutter/material.dart';
 import 'package:chotu_admin/generated/assets.dart';
+import 'package:chotu_admin/model/user_model.dart';
 import 'package:chotu_admin/utils/app_Colors.dart';
 import 'package:chotu_admin/utils/app_Paddings.dart';
 import 'package:chotu_admin/utils/app_text_widgets.dart';
+import 'package:chotu_admin/widgets/cache_image_widget.dart';
 import 'package:chotu_admin/widgets/custom_Button.dart';
+import 'package:flutter/material.dart';
 
 void showUserProfileDialog(UserModel user, BuildContext context) {
   showDialog(

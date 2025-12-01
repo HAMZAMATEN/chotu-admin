@@ -1,12 +1,10 @@
 import 'package:chotu_admin/model/user_model.dart';
 import 'package:chotu_admin/providers/users_provider.dart';
-import 'package:chotu_admin/utils/toast_dialogue.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:chotu_admin/screens/users/widgets/ShowUserPopupDialog.dart';
 import 'package:chotu_admin/utils/app_Paddings.dart';
 import 'package:chotu_admin/utils/app_text_widgets.dart';
-import 'package:chotu_admin/widgets/custom_TextField.dart';
+import 'package:chotu_admin/utils/toast_dialogue.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
