@@ -13,7 +13,6 @@ class APIConstants {
   static String updateStore = baseUrl + "api/update/store/";
   static String getStoreAnalytics = baseUrl + "api/store/analytics/";
 
-
   /// categories constants
   static String getAllCategories = baseUrl + "api/store/categories";
   static String updateCategoryStatus = baseUrl + "api/update/category/status/";
@@ -45,24 +44,27 @@ class APIConstants {
   static String getDashboardAnalytics = baseUrl + "api/dashboardAnalytics";
 
   /// Dashboard Delivery Settings
-  static String getDashboardDeliverySettings = baseUrl + "api/delivery-settings";
-  static String setDashboardDeliverySettings = baseUrl + "api/delivery-settings";
+  static String getDashboardDeliverySettings =
+      baseUrl + "api/delivery-settings";
+  static String setDashboardDeliverySettings =
+      baseUrl + "api/delivery-settings";
 
   /// OrderAnalytics
   static String getOrdersAnalytics = baseUrl + "api/order/analytics";
 
   /// All orders
   static String getAllOrders = baseUrl + "api/orders";
+
   /// search-order
   static String getOrderByIdOrName = baseUrl + "api/orderByIdOrName";
-
 
   /// ===============> Additional Settings <===============
 
   /// these settings have same endpoints, just difference is the get & put request
   static String getPrivacyPolicy = baseUrl + "api/pages/privacy-policy";
   static String getAboutUs = baseUrl + "api/pages/about-us";
-  static String getTermsAndConditions = baseUrl + "api/pages/terms-and-conditions";
+  static String getTermsAndConditions =
+      baseUrl + "api/pages/terms-and-conditions";
   static String updateAdditionalSettings = baseUrl + "api/pages/";
 
   /// getting FAQs
@@ -71,9 +73,11 @@ class APIConstants {
   static String updateFaq = baseUrl + "api/faqs/";
   static String deleteFaq = baseUrl + "api/faqs/";
 
-
   /// getting Contact-Us
   static String getContactUs = baseUrl + "api/contact-info";
   static String updateContactUs = baseUrl + "api/contact-info";
-}
 
+  /// fetch product images
+  static String uploadProductImages = baseUrl + "api/upload/bulk/images";
+  static String fetchProductImages = baseUrl + "api/get/bulk/images";
+}

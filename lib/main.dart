@@ -9,6 +9,7 @@ import 'package:chotu_admin/providers/riders_provider.dart';
 import 'package:chotu_admin/providers/session_provider.dart';
 import 'package:chotu_admin/providers/side_bar_provider.dart';
 import 'package:chotu_admin/providers/users_provider.dart';
+import 'package:chotu_admin/screens/all_product_images/all_product_images.dart';
 import 'package:chotu_admin/screens/sidebar/side_bar_screen.dart';
 import 'package:chotu_admin/utils/app_Colors.dart';
 import 'package:chotu_admin/utils/app_constants.dart';
@@ -155,8 +156,10 @@ class _LoadingScreenState extends State<LoadingScreen> {
         debugPrint("AUTH TOKEN IS ${AppConstants.authToken}");
       } else {
         Get.offAll(() => LoginView());
+        // Get.offAll(() => AllProductImagesScreen());
       }
       Get.offAll(() => SideBarScreen());
+      // Get.offAll(() => AllProductImagesScreen());
     } else {
       Get.offAll(() => LoginView());
     }
