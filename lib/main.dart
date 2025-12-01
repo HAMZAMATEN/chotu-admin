@@ -155,12 +155,13 @@ class _LoadingScreenState extends State<LoadingScreen> {
         AppConstants.authToken = storedToken;
         debugPrint("AUTH TOKEN IS ${AppConstants.authToken}");
       } else {
-        // Get.offAll(() => LoginView());
-        Get.offAll(() => AllProductImagesScreen());
+        Get.offAll(() => LoginView());
+        // Get.offAll(() => AllProductImagesScreen());
       }
       Get.offAll(() => SideBarScreen());
+      // Get.offAll(() => AllProductImagesScreen());
     } else {
-      Get.offAll(() => AllProductImagesScreen());
+      Get.offAll(() => LoginView());
     }
   }
 
