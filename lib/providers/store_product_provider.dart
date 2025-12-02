@@ -450,8 +450,8 @@ class StoreProductProvider extends ChangeNotifier {
           String brand = row[2]?.value.toString() ?? '';
           String price = row[3]?.value.toString() ?? '';
           String discountPrice = row[4]?.value.toString() ?? '0';
-          String unit = row[5]?.value.toString() ?? '';
-          String unitValue = row[6]?.value.toString() ?? '';
+          String unitValue = row[5]?.value.toString() ?? '';
+          String unit = row[6]?.value.toString() ?? '';
           String description = row[7]?.value.toString() ?? '';
           String imageUrl = row[8]?.value.toString() ?? '';
 
