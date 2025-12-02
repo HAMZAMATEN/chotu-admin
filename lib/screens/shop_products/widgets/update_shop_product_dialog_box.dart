@@ -112,7 +112,9 @@ class _UpdateShopProductDialogState extends State<UpdateShopProductDialog> {
                                   fit: BoxFit.cover,
                                 )
                               : Image.network(
-                                  '${widget.productModel.img}',
+                                  '${
+                                      widget.productModel.imgUrl ??
+                                      widget.productModel.img}',
                                   fit: BoxFit.cover,
                                 )
                           // Center(

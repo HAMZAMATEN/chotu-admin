@@ -1,4 +1,5 @@
 import 'package:chotu_admin/screens/additional_settings/additional_settings_tab_screen.dart';
+import 'package:chotu_admin/screens/all_product_images/all_product_images.dart';
 import 'package:chotu_admin/screens/dashboard/dashboard_screen.dart';
 import 'package:chotu_admin/screens/riders/all_riders_screen.dart';
 import 'package:chotu_admin/screens/users/all_users.dart';
@@ -28,6 +29,7 @@ class SideBarProvider with ChangeNotifier {
     {"name": "All Riders", "icon": Icons.delivery_dining_outlined},
     {"name": "Categories", "icon": Icons.category},
     {"name": "Additional Settings", "icon": FontAwesomeIcons.gear},
+    {"name": "Product Images", "icon": FontAwesomeIcons.images},
   ];
 
   /// Set new screen & push to stack
@@ -77,8 +79,11 @@ class SideBarProvider with ChangeNotifier {
       case 6:
         setScreen(const AddSettingsTabScreen());
         break;
+      case 7:
+        setScreen(const AllProductImagesScreen());
+        break;
       default:
-        setScreen(Container());
+        setScreen(DashboardScreen());
     }
   }
 }

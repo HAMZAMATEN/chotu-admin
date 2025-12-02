@@ -13,7 +13,7 @@ class StoreAnalyticsModel {
     return StoreAnalyticsModel(
       total: json['total'] ?? 0,
       active: json['active'] ?? 0,
-      nonActive: json['non-active'] ?? 0,
+      nonActive: json['non_active'] ?? 0,
     );
   }
 
@@ -21,7 +21,7 @@ class StoreAnalyticsModel {
     return {
       'total': total,
       'active': active,
-      'non-active': nonActive,
+      'non_active': nonActive,
     };
   }
 }
