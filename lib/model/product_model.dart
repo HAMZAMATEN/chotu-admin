@@ -12,7 +12,8 @@ class ProductModel {
   final String unitValue;
   final String description;
   final StoreModel store;
-  final String img;
+  final String? img;
+  final String? imgUrl;
    int status;
 
   ProductModel({
@@ -26,7 +27,8 @@ class ProductModel {
     required this.unitValue,
     required this.description,
     required this.store,
-    required this.img,
+    this.img,
+    this.imgUrl,
     required this.status,
   });
 
@@ -44,6 +46,7 @@ class ProductModel {
         description: json['description'],
         store: StoreModel.fromJson(json['store']),
         img: json['img'],
+        imgUrl: json['image_url'],
         status: json['status'],
       );
 
@@ -62,6 +65,7 @@ class ProductModel {
       'description': description,
       'store_id': store.toJson(),
       'img': img,
+      'image_url': imgUrl,
       'status': status,
     };
   }

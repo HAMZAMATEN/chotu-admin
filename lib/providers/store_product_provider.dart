@@ -93,7 +93,7 @@ class StoreProductProvider extends ChangeNotifier {
       debugPrint("RESPONSE CODE FOR getStoreAnalytics ${response.statusCode}");
       if (response.statusCode == 200) {
         storeAnalyticsModelMap[storeId] =
-            StoreAnalyticsModel.fromJson((jsonDecode(response.body)['data']));
+            StoreAnalyticsModel.fromJson((jsonDecode(response.body)['products']));
       } else {
         storeAnalyticsModelMap[storeId] =
             StoreAnalyticsModel(total: 0, active: 0, nonActive: 0);
@@ -323,8 +323,7 @@ class StoreProductProvider extends ChangeNotifier {
       http.Response response = await apiServicesProvider.getRequestResponse(
           APIConstants.searchProduct + 'name=${searchText}&shopId=${storeId}');
 
-      debugPrint(
-          "RESPONSE CODE FOR searchProductByName ${response.statusCode}");
+      debugPrint("RESPONSE CODE FOR searchProductByName ${response.statusCode}");
       if (response.statusCode == 200) {
         List<ProductModel> tempProdList = [];
         List<dynamic> dataList = (jsonDecode(response.body))['data'];
@@ -337,6 +336,7 @@ class StoreProductProvider extends ChangeNotifier {
       } else {
         searchedProducts = [];
       }
+      print("LENGTH OF SEARCHED PRODUC IS ${searchedProducts?.length}");
       notifyListeners();
     } catch (e) {
       searchedProducts = [];
@@ -502,8 +502,7 @@ class StoreProductProvider extends ChangeNotifier {
           //   'fileName': fileName,
           // };
 
-          bool productAdded =
-              await addExcelProductToDataBase(body, context);
+          bool productAdded = await addExcelProductToDataBase(body, context);
 
           print("PRODUCT ADDED AT INDEX::::$i");
           if (productAdded == true) {
@@ -544,41 +543,6 @@ class StoreProductProvider extends ChangeNotifier {
           Uri.parse(APIConstants.addProduct); // 🔁 Replace with your API
       final request = await http.MultipartRequest('POST', uri);
 
-      // Add image file
-      // if (productMap != null || productMap != {}) {
-      //
-      //   print("ADDING FILE::::");
-      //
-      //   request.files.add(
-      //     http.MultipartFile.fromBytes(
-      //       'img',
-      //       productMap?['image'] ?? "",
-      //       filename: productMap?['fileName'] ?? "",
-      //     ),
-      //   );
-      // }
-
-      // if (productMap != null && productMap.isNotEmpty) {
-      //   var imageBytes = productMap['image'];
-      //
-      //   // If it's base64 String → decode it
-      //   if (imageBytes is String) {
-      //     imageBytes = base64Decode(imageBytes);
-      //   }
-      //
-      //   if (imageBytes is List<int> && imageBytes.isNotEmpty) {
-      //     print("ADDING FILE::::");
-      //     request.files.add(
-      //       http.MultipartFile.fromBytes(
-      //         'img',
-      //         imageBytes,
-      //         filename: productMap['fileName'] ?? "product_image.png",
-      //       ),
-      //     );
-      //   } else {
-      //     debugPrint("⚠️ No valid image bytes found for product.");
-      //   }
-      // }
 
       request.headers['Content-Type'] = 'multipart/form-data';
       request.headers['Authorization'] = 'Bearer ${AppConstants.authToken}';
@@ -591,7 +555,7 @@ class StoreProductProvider extends ChangeNotifier {
       request.fields['unit_value'] = body['unit_value'];
       request.fields['description'] = body['description'];
       request.fields['store_id'] = body['store_id'];
-      request.fields['img'] = body['image_url'];
+      request.fields['image_url'] = body['image_url'];
 
       // Send request
       final response = await request.send();

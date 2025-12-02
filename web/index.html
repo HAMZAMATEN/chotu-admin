@@ -37,5 +37,12 @@
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC2fWxeerzaACQnhahbU85T83o4fTTOszw&libraries=geometry,visualization"></script>
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC2fWxeerzaACQnhahbU85T83o4fTTOszw&libraries=places"></script>
   <script src="flutter_bootstrap.js" async></script>
+<script>
+  window.addEventListener('wheel', function(event) {
+    if (event.deltaX !== 0) {
+      event.preventDefault();
+    }
+  }, { passive: false });
+</script>
 </body>
 </html>

@@ -3,6 +3,7 @@ import 'package:chotu_admin/model/product_model.dart';
 import 'package:chotu_admin/model/shop_model.dart';
 import 'package:chotu_admin/providers/store_product_provider.dart';
 import 'package:chotu_admin/providers/store_provider.dart';
+// import 'package:chotu_admin/screens/shop_products/widgets/product_body_widget.dart';
 // import 'package:chotu_admin/screens/shops/shop_products/addShopProductDialogBox.dart';
 import 'package:chotu_admin/screens/shops/widgets/shop_screen_card_widgets.dart';
 import 'package:chotu_admin/screens/shops/widgets/update_shop_dialogue.dart';
@@ -13,6 +14,7 @@ import 'package:chotu_admin/utils/functions.dart';
 import 'package:chotu_admin/widgets/ShowConformationAlert.dart';
 import 'package:chotu_admin/widgets/custom_TextField.dart';
 import 'package:chotu_admin/widgets/pagination_button.dart';
+import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_svg/svg.dart';
@@ -261,70 +263,253 @@ class _ShopProductsScreenState extends State<ShopProductsScreen> {
 
   Widget productsBodyWidget(
       StoreProductProvider provider, BuildContext context) {
+
+    final productList = provider.storeProductsMap[store.id]?
+    [provider.storeProductPagination!.currentPage] ?? [];
+
+    if (productList.isEmpty) {
+      return SizedBox(
+        height: 300,
+        child: Center(
+          child: Text(
+            "No Products Found",
+            style: getMediumStyle(color: Colors.black, fontSize: 40),
+          ),
+        ),
+      );
+    }
+
     return Column(
       children: [
-        if (provider.storeProductsMap[store.id] != null) ...[
-          if (provider
-              .storeProductsMap[store.id]![
-                  provider.storeProductPagination!.currentPage]!
-              .isNotEmpty) ...[
-            Align(
-              alignment: Alignment.topLeft,
-              child: Wrap(
-                spacing: 16,
-                runSpacing: 16,
-                alignment: WrapAlignment.start,
-                runAlignment: WrapAlignment.start,
-                children: List.generate(
-                    provider
-                        .storeProductsMap[store.id]![
-                            provider.storeProductPagination!.currentPage]!
-                        .length, (index) {
-                  return _buildProductCard(
-                      context,
-                      provider.storeProductsMap[store.id]![provider
-                          .storeProductPagination!.currentPage]![index]);
-                }),
-              ),
+        Container(
+          height: 700,
+          width: MediaQuery.of(context).size.width,
+          padding: const EdgeInsets.all(12),
+          child: Card(
+            elevation: 4,
+            shadowColor: Colors.black12,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: buildProductTable(context, productList),
             ),
-            if (provider.storeProductPagination != null) ...[
-              SizedBox(
-                height: 10,
-              ),
-              PaginationButton(
-                pagination: provider.storeProductPagination!,
-                onPrevious: () {
-                  // handle going to previous page
-                  provider.getStoreProducts(
-                      storeId: store.id!,
-                      page: provider.storeProductPagination!.currentPage - 1);
-                },
-                onNext: () {
-                  // handle going to next page
-                  provider.getStoreProducts(
-                      storeId: store.id!,
-                      page: provider.storeProductPagination!.currentPage + 1);
-                },
-              ),
-              padding30,
-            ]
-          ] else ...[
-            Container(
-                width: double.infinity,
-                height: 200,
-                child: Center(
-                  child: Text(
-                    "No Products Found",
-                    style: getMediumStyle(color: Colors.black, fontSize: 40),
-                  ),
-                )),
-          ]
-        ] else ...[
-          shimmerProductsWidget(context),
-        ],
+          ),
+        ),
+
+        // Pagination
+        if (provider.storeProductPagination != null) ...[
+          SizedBox(height: 12),
+          PaginationButton(
+            pagination: provider.storeProductPagination!,
+            onPrevious: () {
+              provider.getStoreProducts(
+                  storeId: store.id!,
+                  page: provider.storeProductPagination!.currentPage - 1);
+            },
+            onNext: () {
+              provider.getStoreProducts(
+                  storeId: store.id!,
+                  page: provider.storeProductPagination!.currentPage + 1);
+            },
+          ),
+          SizedBox(height: 20),
+        ]
       ],
     );
   }
+
+  Widget buildProductTable(BuildContext context, List<ProductModel> products) {
+    return DataTable2(
+      columnSpacing: 14,
+      horizontalMargin: 12,
+      minWidth: 1400,
+      headingRowColor: WidgetStateProperty.all(Colors.green.shade700),
+      headingTextStyle: getMediumStyle(color: Colors.white, fontSize: 15),
+      dataRowHeight: 95,
+      headingRowHeight: 55,
+      border: TableBorder(
+        verticalInside: BorderSide(color: Colors.grey.shade300),
+        horizontalInside: BorderSide(color: Colors.grey.shade300),
+      ),
+      columns: const [
+        DataColumn(label: Text("Image")),
+        DataColumn(label: Text("Name")),
+        DataColumn(label: Text("Category")),
+        DataColumn(label: Text("Brand")),
+        DataColumn(label: Text("Description")),
+        DataColumn(label: Text("Price")),
+        DataColumn(label: Text("Discount")),
+        DataColumn(label: Text("Qty")),
+        DataColumn(label: Text("Store")),
+        DataColumn(label: Text("Status")),
+        DataColumn(label: Text("Actions")),
+      ],
+      rows: products.map((p) => _buildTableRow(context, p)).toList(),
+    );
+  }
+  DataRow _buildTableRow(BuildContext context, ProductModel product) {
+    return DataRow(
+      cells: [
+        // Image
+        DataCell(Container(
+          width: 70,
+          height: 70,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(6),
+            image: DecorationImage(
+              fit: BoxFit.cover,
+              image: CachedNetworkImageProvider(
+                "${product.imgUrl ?? product.img}",
+              ),
+            ),
+          ),
+        )),
+
+        // Product Name
+        DataCell(Text(
+          product.name,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: getMediumStyle(color: Colors.black),
+        )),
+
+        // Category
+        DataCell(Text(product.category.name ?? "N/A")),
+
+        // Brand
+        DataCell(Text(product.brand.toString())),
+
+        // Description
+        DataCell(SingleChildScrollView(child: Text(product.description.toString()))),
+
+        // Price
+        DataCell(Text("${product.price}")),
+
+        // Discounted Price
+        DataCell(Text("${product.discountPrice}")),
+
+        // Quantity
+        DataCell(Text("${product.unitValue}/${product.unit}")),
+
+        // Store Name
+        DataCell(Text(product.store.name)),
+
+        // Status Toggle
+        DataCell(
+          Switch(
+            value: product.status == 1,
+            activeColor: Colors.green,
+            onChanged: (value) {
+              showCustomConfirmationDialog(
+                context: context,
+                message: value
+                    ? "Activate this product?"
+                    : "Deactivate this product?",
+                onConfirm: () async {
+                  await storeProductProvider.updateProductStatus(
+                    product: product,
+                  );
+                  await storeProductProvider.getStoreAnalytics(
+                    storeId: product.store.id!,
+                  );
+                },
+              );
+            },
+          ),
+        ),
+
+        // ACTIONS
+        DataCell(Row(
+          children: [
+            IconButton(
+              icon: Icon(Icons.edit, color: Colors.blue),
+              onPressed: () => showUpdateShopProductDialog(context, product),
+            ),
+            IconButton(
+              icon: Icon(Icons.delete, color: Colors.red),
+              onPressed: () async {
+                await showCustomConfirmationDialog(
+                  context: context,
+                  message: "Delete this product?",
+                  onConfirm: () async {
+                    await storeProductProvider.deleteProduct(product: product);
+                    await storeProductProvider.getStoreAnalytics(
+                        storeId: product.store.id!);
+                  },
+                );
+              },
+            )
+          ],
+        )),
+      ],
+    );
+  }
+
+  // Widget productsBodyWidget(
+  //     StoreProductProvider provider, BuildContext context) {
+  //   return Column(
+  //     children: [
+  //       if (provider.storeProductsMap[store.id] != null) ...[
+  //         if (provider
+  //             .storeProductsMap[store.id]![
+  //                 provider.storeProductPagination!.currentPage]!
+  //             .isNotEmpty) ...[
+  //           Align(
+  //             alignment: Alignment.topLeft,
+  //             child: Wrap(
+  //               spacing: 16,
+  //               runSpacing: 16,
+  //               alignment: WrapAlignment.start,
+  //               runAlignment: WrapAlignment.start,
+  //               children: List.generate(
+  //                   provider
+  //                       .storeProductsMap[store.id]![
+  //                           provider.storeProductPagination!.currentPage]!
+  //                       .length, (index) {
+  //                 return _buildProductCard(
+  //                     context,
+  //                     provider.storeProductsMap[store.id]![provider
+  //                         .storeProductPagination!.currentPage]![index]);
+  //               }),
+  //             ),
+  //           ),
+  //           if (provider.storeProductPagination != null) ...[
+  //             SizedBox(
+  //               height: 10,
+  //             ),
+  //             PaginationButton(
+  //               pagination: provider.storeProductPagination!,
+  //               onPrevious: () {
+  //                 // handle going to previous page
+  //                 provider.getStoreProducts(
+  //                     storeId: store.id!,
+  //                     page: provider.storeProductPagination!.currentPage - 1);
+  //               },
+  //               onNext: () {
+  //                 // handle going to next page
+  //                 provider.getStoreProducts(
+  //                     storeId: store.id!,
+  //                     page: provider.storeProductPagination!.currentPage + 1);
+  //               },
+  //             ),
+  //             padding30,
+  //           ]
+  //         ] else ...[
+  //           Container(
+  //               width: double.infinity,
+  //               height: 200,
+  //               child: Center(
+  //                 child: Text(
+  //                   "No Products Found",
+  //                   style: getMediumStyle(color: Colors.black, fontSize: 40),
+  //                 ),
+  //               )),
+  //         ]
+  //       ] else ...[
+  //         shimmerProductsWidget(context),
+  //       ],
+  //     ],
+  //   );
+  // }
 
   Widget searchFieldWidget(BuildContext context) {
     return Row(
@@ -336,6 +521,7 @@ class _ShopProductsScreenState extends State<ShopProductsScreen> {
             title: '',
             controller: searchController,
             obscureText: false,
+            enabled: false,
             textInputAction: TextInputAction.search,
             keyboardType: TextInputType.text,
             hintText: 'Search Product by name',
@@ -604,18 +790,20 @@ class _ShopProductsScreenState extends State<ShopProductsScreen> {
                     decoration: BoxDecoration(
                       image: DecorationImage(
                         image: CachedNetworkImageProvider(
-                          '${product.img}',
-                          cacheKey: '${product.img}',
+                          '${product.imgUrl ?? product.img}',
+                          cacheKey: '${product.imgUrl ?? product.img}',
                           cacheManager: CacheManager(
                             Config(
-                              '${product.img}',
+                              '${
+                                  product.imgUrl ??
+                                  product.img}',
                               stalePeriod: const Duration(days: 5),
                             ),
                           ),
                         ),
                         fit: BoxFit.contain,
                         onError: (error, stackTrace) {
-                          print(
+                          debugPrint(
                               "ERROR WHILE LOADING IMAGE URL : ${product.img} & error : $error");
                         },
                       ),
@@ -1050,3 +1238,6 @@ class StoreCard extends StatelessWidget {
     );
   }
 }
+
+
+
