@@ -80,4 +80,7 @@ class APIConstants {
   /// fetch product images
   static String uploadProductImages = baseUrl + "api/upload/bulk/images";
   static String fetchProductImages = baseUrl + "api/get/bulk/images";
+
+  /// fetch auto complete places
+  static String getAutoCompletePlaces = "https://api.locationiq.com/v1/autocomplete?";
 }
