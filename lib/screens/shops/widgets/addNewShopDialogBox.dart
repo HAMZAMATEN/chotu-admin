@@ -280,12 +280,12 @@ class _AddShopDialogState extends State<AddShopDialog> {
                               // place['description'] ?? '',
                               place.displayName ?? '',
                               style: getRegularStyle(
-                                  color: AppColors.textColor, fontSize: 10),
+                                  color: AppColors.textColor, fontSize: 12),
                             ),
                             subtitle: Text(
                               '${place.address?.city ?? ''}, ${place.address?.state ?? ''}',
                               style: getRegularStyle(
-                                  color: AppColors.textColor, fontSize: 8),
+                                  color: AppColors.textColor, fontSize: 10),
                             ),
                             onTap: () async {
                               // provider.selectedAddress = place["description"] ?? '';
