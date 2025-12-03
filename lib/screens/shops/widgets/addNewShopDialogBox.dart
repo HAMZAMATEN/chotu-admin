@@ -306,6 +306,7 @@ class _AddShopDialogState extends State<AddShopDialog> {
                                     infoWindow: InfoWindow(title: "Selected Location"),
                                   );
                                   provider.addMarker(marker);
+                                  provider.clearPlacesSuggestions();
                                 }else{
                                   debugPrint("MAP CONTROLLER IS NULL");
                                 }
