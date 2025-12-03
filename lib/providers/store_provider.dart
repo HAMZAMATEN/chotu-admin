@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:chotu_admin/main.dart';
 import 'package:chotu_admin/model/category_model.dart';
+import 'package:chotu_admin/model/location_iq_model.dart';
 import 'package:chotu_admin/model/pagination_model.dart';
 import 'package:chotu_admin/model/shop_model.dart';
 import 'package:chotu_admin/providers/api_services_provider.dart';
@@ -313,6 +314,11 @@ class StoreProvider extends ChangeNotifier {
     }
   }
 
+  updateLatLang(LatLng val){
+    _latLng = val;
+    notifyListeners();
+  }
+
   setMapController(GoogleMapController controller) {
     mapController = controller;
     notifyListeners();
@@ -461,4 +467,39 @@ class StoreProvider extends ChangeNotifier {
       print("EXCEPTION WHILE Updation SHOP TO DB");
     }
   }
+
+
+  List<LocationIQPlace> suggestionList = [];
+  Future<void> fetchLocationIQPlaces({required String query}) async{
+    try{
+      String url =
+          "${APIConstants.getAutoCompletePlaces}key=${AppConstants.kLocationKey}&q=${query}&limit=10&dedupe=1";
+
+      final response = await http.get(Uri.parse(url));
+      
+      debugPrint("Status Code of fetchLocationIQPlaces ${response.statusCode}");
+      
+      if(response.statusCode == 200){
+        suggestionList = [];
+        List<dynamic> dataList = jsonDecode(response.body);
+        for(var data in dataList){
+          LocationIQPlace place = LocationIQPlace.fromJson(data);
+          suggestionList.add(place);
+        }
+      }else{
+        suggestionList = [];
+      }
+      print("SUGGESTION LIST LENGTH ${suggestionList.length}");
+      notifyListeners();
+    }catch(e){
+      debugPrint("Exception whilte fetchLocationIQPlaces ${e}");
+    }
+  }
+
+  clearPlacesSuggestions(){
+    locationSearchController.clear();
+    suggestionList = [];
+    notifyListeners();
+  }
+
 }

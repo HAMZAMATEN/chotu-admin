@@ -245,18 +245,25 @@ class _AddShopDialogState extends State<AddShopDialog> {
                           }
                           return null;
                         },
-                      onChanged: (value) {
+                      onFieldSubmitted: (value){
                         if (value.isNotEmpty) {
-                          provider.fetchSuggestions(value);
+                          provider.fetchLocationIQPlaces(query: value);
                         } else {
-                          provider.clearSuggestions();
+                          provider.clearPlacesSuggestions();
                         }
                       },
+                      // onChanged: (value) {
+                      //   if (value.isNotEmpty) {
+                      //     provider.fetchSuggestions(value);
+                      //   } else {
+                      //     provider.clearSuggestions();
+                      //   }
+                      // },
                     ),
 
                   ),
                   const SizedBox(height: 20),
-                  if(provider.suggestions.isNotEmpty)...[
+                  if(provider.suggestionList.isNotEmpty)...[
                     Container(
                       height: 400,
                       decoration: BoxDecoration(
@@ -265,49 +272,68 @@ class _AddShopDialogState extends State<AddShopDialog> {
                       ),
                       child: ListView.builder(
                         shrinkWrap: true,
-                        itemCount: provider.suggestions.length,
+                        itemCount: provider.suggestionList.length,
                         itemBuilder: (context, index) {
-                          final place = provider.suggestions[index];
+                          final place = provider.suggestionList[index];
                           return ListTile(
                             title: Text(
-                              place['description'] ?? '',
+                              // place['description'] ?? '',
+                              place.displayName ?? '',
                               style: getRegularStyle(
-                                  color: AppColors.textColor, fontSize: 14),
+                                  color: AppColors.textColor, fontSize: 10),
                             ),
                             subtitle: Text(
-                              place['structured_formatting']
-                              ?['secondary_text'] ??
-                                  '',
+                              '${place.address?.city ?? ''}, ${place.address?.state ?? ''}',
                               style: getRegularStyle(
-                                  color: AppColors.textColor, fontSize: 12),
+                                  color: AppColors.textColor, fontSize: 8),
                             ),
                             onTap: () async {
-                              provider.selectedAddress =
-                                  place["description"] ?? '';
+                              // provider.selectedAddress = place["description"] ?? '';
+                              provider.selectedAddress = place.displayName ?? '';
+                              print("SELECTED ADDRESS IS ${place.displayName}");
 
-                              final placeId = place["place_id"];
-                              if (placeId != null) {
-                                final latLng =
-                                await provider.getPlaceDetails(placeId);
-                                if (latLng != null) {
-                                  print("PICKED LAT LANG ARE:::$latLng");
-                                  if(provider.mapController != null){
-                                    print("MAP CONTROLLER IS NOT NULL");
-                                    provider.mapController!.animateCamera(
-                                      CameraUpdate.newLatLng(latLng),
-                                    );
-                                    Marker marker = Marker(
-                                      markerId: MarkerId("selected"),
-                                      position: latLng,
-                                      infoWindow: InfoWindow(title: "Selected Location"),
-                                    );
-                                    provider.addMarker(marker);
-                                  }else{
-                                    print("MAP CONTROLLER IS NULL");
-                                  }
-
+                              if(place.lat != null && place.lon != null){
+                                LatLng placLatLng = LatLng(double.parse(place.lat!),double.parse(place.lon!));
+                                provider.updateLatLang(placLatLng);
+                                if(provider.mapController != null){
+                                  debugPrint("MAP CONTROLLER IS NOT NULL");
+                                  provider.mapController!.animateCamera(
+                                    CameraUpdate.newLatLng(placLatLng),
+                                  );
+                                  Marker marker = Marker(
+                                    markerId: MarkerId("selected"),
+                                    position: placLatLng,
+                                    infoWindow: InfoWindow(title: "Selected Location"),
+                                  );
+                                  provider.addMarker(marker);
+                                }else{
+                                  debugPrint("MAP CONTROLLER IS NULL");
                                 }
                               }
+
+
+                              // final placeId = place["place_id"];
+                              // if (placeId != null) {
+                              //   final latLng = await provider.getPlaceDetails(placeId);
+                              //   if (latLng != null) {
+                              //     print("PICKED LAT LANG ARE:::$latLng");
+                              //     if(provider.mapController != null){
+                              //       print("MAP CONTROLLER IS NOT NULL");
+                              //       provider.mapController!.animateCamera(
+                              //         CameraUpdate.newLatLng(latLng),
+                              //       );
+                              //       Marker marker = Marker(
+                              //         markerId: MarkerId("selected"),
+                              //         position: latLng,
+                              //         infoWindow: InfoWindow(title: "Selected Location"),
+                              //       );
+                              //       provider.addMarker(marker);
+                              //     }else{
+                              //       print("MAP CONTROLLER IS NULL");
+                              //     }
+                              //
+                              //   }
+                              // }
                               FocusScope.of(context).unfocus();
                               provider.clearSuggestions();
                             },
